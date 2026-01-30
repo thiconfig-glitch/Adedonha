@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Adedonha Security</title>
+    <title>Adedonha Roulette</title>
     
     <link rel="manifest" href="manifest.json">
     <meta name="theme-color" content="#050014">
@@ -14,24 +14,12 @@
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
 
     <style>
-        /* --- VISUAL CYBERPUNK --- */
-        :root { 
-            --bg: #050014; 
-            --thiago: #00f3ff; 
-            --samella: #ff0055; 
-            --roxo: #bd00ff; 
-            --amarelo: #ffeb3b; 
-            --ouro: #ffd700; 
-            --vidro: rgba(255, 255, 255, 0.05); 
-        }
-        
+        :root { --bg: #050014; --thiago: #00f3ff; --samella: #ff0055; --roxo: #bd00ff; --amarelo: #ffeb3b; --ouro: #ffd700; --vidro: rgba(255, 255, 255, 0.05); }
         * { box-sizing: border-box; margin: 0; padding: 0; user-select: none; -webkit-tap-highlight-color: transparent; }
         
         body { 
             background: var(--bg); 
-            background-image: 
-                radial-gradient(circle at 10% 20%, rgba(189, 0, 255, 0.2) 0%, transparent 40%),
-                radial-gradient(circle at 90% 80%, rgba(0, 243, 255, 0.2) 0%, transparent 40%);
+            background-image: radial-gradient(circle at 50% 50%, #151525 0%, #000 100%);
             color: #fff; font-family: 'Rajdhani', sans-serif; 
             min-height: 100vh; overflow-x: hidden; display: flex; flex-direction: column;
         }
@@ -39,83 +27,99 @@
         /* HEADER */
         header {
             display: flex; justify-content: space-between; align-items: center; padding: 15px 20px;
-            background: rgba(0,0,0,0.6); backdrop-filter: blur(10px); 
-            border-bottom: 1px solid rgba(255,255,255,0.1); position: sticky; top: 0; z-index: 100;
+            background: rgba(0,0,0,0.8); border-bottom: 1px solid #333; position: sticky; top: 0; z-index: 100;
         }
         .logo { font-family: 'Orbitron'; font-weight: 900; letter-spacing: 2px; background: linear-gradient(90deg, var(--thiago), var(--samella)); -webkit-background-clip: text; color: transparent; }
-        .round-badge { border: 1px solid var(--amarelo); color: var(--amarelo); padding: 5px 12px; border-radius: 20px; font-size: 0.9rem; font-family: 'Orbitron'; box-shadow: 0 0 10px rgba(255, 235, 59, 0.3); }
-        
+        .round-badge { border: 1px solid var(--amarelo); color: var(--amarelo); padding: 5px 12px; border-radius: 20px; font-size: 0.9rem; font-family: 'Orbitron'; }
+
         /* PLACAR */
         #scoreboard {
             display: flex; justify-content: space-between; align-items: center;
-            padding: 15px; margin: 15px; background: var(--vidro); 
-            border: 1px solid rgba(255,255,255,0.1); border-radius: 15px;
-            box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+            padding: 10px 15px; margin: 10px; background: var(--vidro); 
+            border: 1px solid #333; border-radius: 12px;
         }
         .score-box { text-align: center; width: 45%; }
-        .s-name { font-size: 0.8rem; color: #aaa; letter-spacing: 2px; margin-bottom: 5px; }
-        .s-val { font-family: 'Orbitron'; font-size: 2rem; font-weight: bold; text-shadow: 0 0 10px currentColor; }
-        
+        .s-name { font-size: 0.7rem; color: #888; letter-spacing: 1px; }
+        .s-val { font-family: 'Orbitron'; font-size: 1.8rem; font-weight: bold; }
+
         /* TELAS */
         .screen { display: none; padding: 20px; flex-direction: column; align-items: center; flex: 1; animation: fadeIn 0.4s ease; }
         .active { display: flex; }
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
 
-        /* TELA SENHA */
-        .lock-icon { font-size: 4rem; margin-bottom: 20px; color: var(--roxo); text-shadow: 0 0 20px var(--roxo); }
-
-        /* TELA SELEÇÃO */
-        .p-card {
-            width: 100%; max-width: 350px; height: 110px; margin-bottom: 20px;
-            background: linear-gradient(90deg, rgba(255,255,255,0.03), rgba(255,255,255,0));
-            border: 1px solid #444; border-radius: 15px;
-            display: flex; align-items: center; justify-content: space-between; padding: 25px; cursor: pointer;
-            transition: 0.3s; position: relative; overflow: hidden;
+        /* --- ROLETA REAL (CSS PURE) --- */
+        .wheel-wrapper {
+            position: relative;
+            width: 280px; height: 280px;
+            margin: 20px auto;
+            display: flex; justify-content: center; align-items: center;
         }
-        .p-card::before { content:''; position: absolute; left: 0; top: 0; bottom: 0; width: 5px; }
-        .card-t { border-color: var(--thiago); } .card-t::before { background: var(--thiago); box-shadow: 2px 0 15px var(--thiago); }
-        .card-s { border-color: var(--samella); } .card-s::before { background: var(--samella); box-shadow: 2px 0 15px var(--samella); }
-        .p-card:active { transform: scale(0.98); filter: brightness(1.2); }
-
-        /* JOGO */
-        .roleta {
-            width: 140px; height: 140px; border-radius: 50%; border: 4px solid var(--roxo);
-            display: flex; justify-content: center; align-items: center; margin: 20px 0;
-            background: rgba(0,0,0,0.3); box-shadow: 0 0 40px rgba(189, 0, 255, 0.4);
+        .pointer {
+            position: absolute; top: -15px; left: 50%; transform: translateX(-50%);
+            width: 0; height: 0; 
+            border-left: 15px solid transparent; border-right: 15px solid transparent; border-top: 30px solid var(--amarelo);
+            z-index: 10; filter: drop-shadow(0 0 10px var(--amarelo));
         }
-        #letra-big { font-family: 'Orbitron'; font-size: 5rem; text-shadow: 0 0 20px #fff; }
-
-        .input-wrap { width: 100%; margin-bottom: 15px; position: relative; }
-        .input-tag { position: absolute; top: -10px; left: 10px; background: #050014; padding: 0 8px; color: var(--roxo); font-size: 0.8rem; font-weight: bold; border: 1px solid #333; border-radius: 4px; }
-        .game-input {
-            width: 100%; background: transparent; border: 1px solid #444; border-radius: 10px;
-            color: #fff; padding: 15px; font-size: 1.2rem; font-family: 'Rajdhani'; transition: 0.3s;
+        .wheel {
+            width: 100%; height: 100%;
+            border-radius: 50%;
+            border: 5px solid var(--roxo);
+            background: radial-gradient(circle, #000 30%, #220033 100%);
+            position: relative;
+            transition: transform 4s cubic-bezier(0.1, 0.7, 0.1, 1); /* Curva de desaceleração realista */
+            box-shadow: 0 0 30px rgba(189, 0, 255, 0.3);
         }
-        .game-input:focus { border-color: var(--thiago); outline: none; background: rgba(0, 243, 255, 0.05); box-shadow: 0 0 15px rgba(0, 243, 255, 0.2); }
+        .wheel-letter {
+            position: absolute; top: 50%; left: 50%;
+            transform-origin: 0 0; /* Gira pelo centro */
+            font-family: 'Orbitron'; font-weight: bold; font-size: 1.2rem; color: #fff;
+            text-shadow: 0 0 5px var(--thiago);
+            height: 130px; /* Metade do tamanho da roda aprox */
+            margin-top: -130px; /* Puxa pra cima */
+            width: 0; display: flex; justify-content: center; padding-top: 10px;
+        }
+        /* Centro decorativo */
+        .wheel-center {
+            position: absolute; width: 50px; height: 50px; background: #fff;
+            border-radius: 50%; z-index: 5; box-shadow: 0 0 20px #fff;
+            top: 50%; left: 50%; transform: translate(-50%, -50%);
+            display: flex; justify-content: center; align-items: center;
+            font-size: 1.5rem; color: #000; font-weight: bold;
+        }
 
-        /* BOTÕES */
-        .btn { width: 100%; padding: 18px; border: none; border-radius: 12px; font-family: 'Orbitron'; font-size: 1.1rem; font-weight: bold; color: #fff; cursor: pointer; margin-bottom: 15px; transition: 0.2s; }
-        .btn-girar { background: linear-gradient(45deg, #7b00ff, #bd00ff); box-shadow: 0 4px 15px rgba(123, 0, 255, 0.4); }
-        .btn-stop { background: linear-gradient(45deg, #ff0055, #ff4d00); font-size: 1.5rem; animation: pulse 1.5s infinite; margin-top: 20px; box-shadow: 0 0 20px rgba(255, 0, 85, 0.4); }
-        @keyframes pulse { 0% { transform: scale(1); } 50% { transform: scale(1.02); } 100% { transform: scale(1); } }
+        /* TIMER */
+        #timer-display { font-family: 'Orbitron'; font-size: 2.5rem; color: var(--amarelo); margin: 20px 0; text-shadow: 0 0 15px var(--amarelo); }
+        .time-critical { color: #ff0055 !important; animation: pulse 0.5s infinite; }
 
+        /* INPUTS */
+        .input-wrap { width: 100%; margin-bottom: 15px; position: relative; opacity: 0; transition: 0.5s; transform: translateY(20px); }
+        .show-inputs { opacity: 1; transform: translateY(0); } /* Classe pra animar entrada */
+        
+        .input-tag { position: absolute; top: -10px; left: 10px; background: #050014; padding: 0 8px; color: var(--roxo); font-size: 0.8rem; font-weight: bold; border: 1px solid #333; }
+        .game-input { width: 100%; background: transparent; border: 1px solid #444; border-radius: 10px; color: #fff; padding: 15px; font-size: 1.2rem; font-family: 'Rajdhani'; }
+        .game-input:focus { border-color: var(--thiago); outline: none; background: rgba(0, 243, 255, 0.05); }
+
+        /* BOTÕES E OUTROS */
+        .btn { width: 100%; padding: 18px; border: none; border-radius: 12px; font-family: 'Orbitron'; font-size: 1.1rem; font-weight: bold; color: #fff; cursor: pointer; margin-bottom: 15px; }
+        .btn-girar { background: linear-gradient(45deg, #7b00ff, #bd00ff); box-shadow: 0 0 15px var(--roxo); }
+        .btn-stop { background: linear-gradient(45deg, #ff0055, #ff4d00); font-size: 1.5rem; animation: pulse 1.5s infinite; margin-top: 20px; }
+        
+        /* LOGIN E CARDS */
+        .p-card { width: 100%; height: 100px; margin-bottom: 20px; background: rgba(255,255,255,0.05); border: 1px solid #444; border-radius: 15px; display: flex; align-items: center; justify-content: space-between; padding: 25px; cursor: pointer; }
+        .card-t { border-color: var(--thiago); } .card-s { border-color: var(--samella); }
+        
         /* RESULTADOS */
-        .res-row { background: rgba(255,255,255,0.03); width: 100%; padding: 12px; margin-bottom: 8px; border-left: 4px solid #555; border-radius: 0 8px 8px 0; text-align: left; }
-        .res-cat { font-size: 0.75rem; color: #888; text-transform: uppercase; margin-bottom: 2px; }
+        .res-row { background: rgba(255,255,255,0.03); width: 100%; padding: 12px; margin-bottom: 8px; border-left: 4px solid #555; text-align: left; }
         .res-pts { float: right; font-family: 'Orbitron'; font-weight: bold; }
-
-        /* MENU CONFIGURAÇÕES */
-        #modal { position: fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.95); z-index:999; display:none; justify-content:center; align-items:center; flex-direction:column; backdrop-filter: blur(8px); }
-        .modal-box { background:#151520; padding:25px; border-radius:20px; border:1px solid #333; text-align:center; width:85%; max-width: 320px; box-shadow: 0 10px 40px rgba(0,0,0,0.5); }
         
-        .cfg-btn { 
-            background: transparent; border: 1px solid #444; color: #888; 
-            padding: 12px; margin: 6px 0; width: 100%; border-radius: 8px; 
-            font-family: 'Orbitron'; cursor: pointer; transition: 0.3s;
-        }
-        .cfg-btn.active { border-color: var(--roxo); color: var(--roxo); background: rgba(189, 0, 255, 0.15); box-shadow: 0 0 15px rgba(189, 0, 255, 0.2); }
-        
+        @keyframes pulse { 0% { transform: scale(1); } 50% { transform: scale(1.02); } 100% { transform: scale(1); } }
         .hidden { display: none !important; }
+        
+        /* MENU & SENHA */
+        #modal { position: fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.95); z-index:999; display:none; justify-content:center; align-items:center; flex-direction:column; }
+        .modal-box { background:#151520; padding:25px; border-radius:20px; border:1px solid #333; text-align:center; width:85%; max-width: 320px; }
+        .cfg-btn { background: transparent; border: 1px solid #444; color: #888; padding: 12px; margin: 6px 0; width: 100%; border-radius: 8px; cursor: pointer; }
+        .cfg-btn.active { border-color: var(--roxo); color: var(--roxo); background: rgba(189, 0, 255, 0.15); }
     </style>
 </head>
 <body>
@@ -123,7 +127,7 @@
     <header>
         <div class="logo">ADEDONHA</div>
         <div class="round-badge" id="hud-round">R: 1/10</div>
-        <div onclick="toggleMenu()" style="font-size:1.5rem; cursor:pointer; color:#fff;">⚙️</div>
+        <div onclick="toggleMenu()" style="font-size:1.5rem; cursor:pointer;">⚙️</div>
     </header>
 
     <div id="scoreboard" class="hidden">
@@ -131,7 +135,7 @@
             <div class="s-name">THIAGO</div>
             <div class="s-val" style="color:var(--thiago)" id="hud-thiago">0</div>
         </div>
-        <div style="font-family:'Orbitron'; color:#555; font-size: 0.8rem;">VS</div>
+        <div style="font-family:'Orbitron'; color:#555;">VS</div>
         <div class="score-box">
             <div class="s-name">SÂMELLA</div>
             <div class="s-val" style="color:var(--samella)" id="hud-samella">0</div>
@@ -139,67 +143,63 @@
     </div>
 
     <div id="screen-password" class="screen active" style="justify-content: center;">
-        <div class="lock-icon">🔒</div>
-        <h2 style="font-family:'Orbitron'; margin-bottom:20px;">ACESSO RESTRITO</h2>
-        <div class="input-wrap">
-            <input type="password" id="senha-input" class="game-input" placeholder="Digite a senha..." style="text-align:center;">
+        <h1 style="font-size:4rem; margin-bottom:20px;">🔒</h1>
+        <div class="input-wrap show-inputs">
+            <input type="password" id="senha-input" class="game-input" placeholder="Senha..." style="text-align:center;">
         </div>
         <button class="btn btn-girar" onclick="verificarSenha()">ENTRAR</button>
     </div>
 
     <div id="screen-login" class="screen">
-        <h1 style="font-family:'Orbitron'; margin:30px 0; color:var(--roxo); text-shadow: 0 0 20px rgba(189,0,255,0.5);">BATTLE MODE</h1>
-        <div class="p-card card-t" onclick="login('THIAGO')">
-            <span style="font-size:2.5rem;">👨🏻</span>
-            <span style="font-family:'Orbitron'; font-size:1.4rem; color:var(--thiago);">THIAGO</span>
-        </div>
-        <div class="p-card card-s" onclick="login('SAMELLA')">
-            <span style="font-size:2.5rem;">👩🏻</span>
-            <span style="font-family:'Orbitron'; font-size:1.4rem; color:var(--samella);">SÂMELLA</span>
-        </div>
+        <h1 style="font-family:'Orbitron'; margin:30px 0; color:var(--roxo);">PLAYER SELECT</h1>
+        <div class="p-card card-t" onclick="login('THIAGO')"><span style="font-size:2rem;">👨🏻</span><span style="font-family:'Orbitron';">THIAGO</span></div>
+        <div class="p-card card-s" onclick="login('SAMELLA')"><span style="font-size:2rem;">👩🏻</span><span style="font-family:'Orbitron';">SÂMELLA</span></div>
     </div>
 
     <div id="screen-game" class="screen">
-        <div class="roleta"><span id="letra-big">?</span></div>
-        <button class="btn btn-girar" onclick="girar()">GIRAR ROLETA</button>
-        <div id="inputs-area" style="width:100%;"></div>
-        <button class="btn btn-stop" onclick="darStop()">STOP!</button>
+        <div class="wheel-wrapper">
+            <div class="pointer"></div>
+            <div class="wheel" id="wheel">
+                </div>
+            <div class="wheel-center">⚡</div>
+        </div>
+
+        <button class="btn btn-girar" id="btn-spin" onclick="girar()">GIRAR ROLETA</button>
+        
+        <div id="game-ui" class="hidden" style="width: 100%;">
+            <div id="timer-display">05:00</div>
+            <div id="inputs-area" style="width:100%;"></div>
+            <button class="btn btn-stop" onclick="darStop()">STOP!</button>
+        </div>
     </div>
 
     <div id="screen-result" class="screen">
-        <h2 style="color:var(--amarelo); font-family:'Orbitron'; margin-bottom:20px;">FIM DE ROUND</h2>
+        <h2 style="color:var(--amarelo); font-family:'Orbitron'; margin-bottom:20px;">RESULTADOS</h2>
         <div id="result-list" style="width:100%;"></div>
-        <div style="margin: 20px 0; font-size:1.5rem;">
-            TOTAL: <strong id="total-round" style="color:var(--amarelo)">0</strong>
-        </div>
+        <div style="margin: 20px 0; font-size:1.5rem;">TOTAL: <strong id="total-round" style="color:var(--amarelo)">0</strong></div>
         <button class="btn btn-girar" id="btn-next" onclick="proximaRodada()">PRÓXIMA >></button>
     </div>
 
     <div id="screen-victory" class="screen" style="justify-content:center;">
-        <div style="font-size:6rem; animation: bounce 1s infinite alternate;">🏆</div>
-        <h1 style="color:var(--ouro); margin-bottom:10px; text-shadow: 0 0 20px var(--ouro);">CAMPEÃO</h1>
-        <h2 id="winner-name" style="font-family:'Orbitron'; font-size:3.5rem; margin-bottom:40px;">...</h2>
+        <div style="font-size:6rem;">🏆</div>
+        <h1 style="color:var(--ouro);">CAMPEÃO</h1>
+        <h2 id="winner-name" style="font-family:'Orbitron'; font-size:3rem; margin-bottom:40px;">...</h2>
         <button class="btn btn-stop" onclick="zerarTudo()">NOVA PARTIDA</button>
     </div>
 
     <div id="modal">
         <div class="modal-box">
-            <h3 style="color:#fff; margin-bottom:20px; font-family:'Orbitron'; border-bottom:1px solid #333; padding-bottom:10px;">CONFIGURAÇÕES</h3>
-            
-            <p style="color:#666; font-size:0.8rem; margin-bottom:10px;">LIMITE DE RODADAS:</p>
-            <button class="cfg-btn" id="cfg-5" onclick="setConfig(5)">RÁPIDO (5)</button>
-            <button class="cfg-btn" id="cfg-10" onclick="setConfig(10)">PADRÃO (10)</button>
-            <button class="cfg-btn" id="cfg-20" onclick="setConfig(20)">LONGO (20)</button>
-            
-            <div style="margin-top:20px; padding-top:15px; border-top:1px solid #333;">
-                <button class="btn" style="background:rgba(255,0,0,0.1); border:1px solid red; color:red; padding:12px; font-size:0.9rem;" onclick="zerarTudo()">⚠️ ZERAR PLACAR</button>
-                <button class="btn" style="background:#000; padding:12px; margin-top:5px;" onclick="toggleMenu()">VOLTAR</button>
-            </div>
+            <h3 style="color:#fff; margin-bottom:15px;">CONFIGURAÇÕES</h3>
+            <button class="cfg-btn" id="cfg-5" onclick="setConfig(5)">5 RODADAS</button>
+            <button class="cfg-btn" id="cfg-10" onclick="setConfig(10)">10 RODADAS</button>
+            <button class="cfg-btn" id="cfg-20" onclick="setConfig(20)">20 RODADAS</button>
+            <button class="btn" style="background:#330000; border:1px solid red; color:red; margin-top:20px;" onclick="zerarTudo()">RESETAR TUDO</button>
+            <button class="btn" style="background:#000; margin-top:5px;" onclick="toggleMenu()">VOLTAR</button>
         </div>
     </div>
 
     <script>
-        // CONFIG FIREBASE
+        // FIREBASE
         const firebaseConfig = {
             apiKey: "AIzaSyAjgEFZB3_FHelXH9YtCnFYFO4RCGO7Wd8",
             authDomain: "adedonha-8b2a4.firebaseapp.com",
@@ -216,52 +216,76 @@
         // CACHE CLEAR
         if ('serviceWorker' in navigator) navigator.serviceWorker.getRegistrations().then(r => r.forEach(i => i.unregister()));
 
+        // CONSTANTES DA ROLETA
+        const letras = "ABCDEFGHIJKLMNOPQRSTUVZ".split(""); // Sem K, W, Y
+        const numLetras = letras.length;
+        const anglePerLetter = 360 / numLetras;
+        let currentRotation = 0;
+
         // VARS
-        let eu = "";
-        let ele = "";
-        let maxR = 10;
-        let rodada = 1;
-        let lastLetter = ""; 
+        let eu = ""; let ele = ""; let maxR = 10; let rodada = 1; let timerInterval = null;
         const cats = ["Nome", "Animal", "Cor", "Fruta", "Objeto", "CEP", "Profissão", "Marca", "Corpo", "Sogra"];
 
-        // LÓGICA DE SENHA
+        // SETUP ROLETA
+        function setupWheel() {
+            const wheel = document.getElementById('wheel');
+            wheel.innerHTML = "";
+            letras.forEach((letra, index) => {
+                const el = document.createElement('div');
+                el.className = 'wheel-letter';
+                // Girar cada letra para formar o círculo
+                el.style.transform = `rotate(${index * anglePerLetter}deg)`;
+                el.innerText = letra;
+                wheel.appendChild(el);
+            });
+        }
+        setupWheel(); // Inicia roleta visualmente
+
+        // LOGICA DE GIRO
+        function spinTo(letraDestino) {
+            const index = letras.indexOf(letraDestino);
+            if (index === -1) return;
+
+            // O ponteiro está no topo (0 graus). 
+            // Para trazer o índice X para o topo, precisamos girar negativo.
+            // Adicionamos voltas extras (360 * 5) para dar emoção.
+            const voltasExtras = 360 * 5; 
+            const anguloDestino = -(index * anglePerLetter);
+            
+            // Ajuste para sempre girar pra frente (acumulativo)
+            // Arredondamos currentRotation para o múltiplo de 360 mais próximo e somamos
+            const novaRotacao = currentRotation + voltasExtras + (anguloDestino - (currentRotation % 360));
+
+            currentRotation = novaRotacao;
+            document.getElementById('wheel').style.transform = `rotate(${novaRotacao}deg)`;
+        }
+
+        // SENHA
         function verificarSenha() {
-            const pass = document.getElementById('senha-input').value;
-            if (pass === 'ceros') {
+            if (document.getElementById('senha-input').value === 'ceros') {
                 document.getElementById('screen-password').classList.remove('active');
                 document.getElementById('screen-login').classList.add('active');
-            } else {
-                alert('SENHA INCORRETA! Tente novamente.');
-                document.getElementById('senha-input').value = "";
-            }
+            } else alert('SENHA ERRADA!');
         }
 
         // LOGIN
         function login(nome) {
-            eu = nome;
-            ele = (nome === 'THIAGO') ? 'SAMELLA' : 'THIAGO';
+            eu = nome; ele = (nome === 'THIAGO') ? 'SAMELLA' : 'THIAGO';
             document.getElementById('screen-login').classList.remove('active');
             document.getElementById('scoreboard').classList.remove('hidden');
             document.getElementById('screen-game').classList.add('active');
-            
             const div = document.getElementById('inputs-area');
             div.innerHTML = "";
-            cats.forEach(c => {
-                div.innerHTML += `
-                    <div class="input-wrap">
-                        <span class="input-tag">${c}</span>
-                        <input type="text" class="game-input" id="in-${c}" oninput="salvarLocal()" autocomplete="off">
-                    </div>`;
-            });
+            cats.forEach(c => { div.innerHTML += `<div class="input-wrap"><span class="input-tag">${c}</span><input type="text" class="game-input" id="in-${c}" oninput="salvarLocal()" autocomplete="off"></div>`; });
             ouvirBanco();
         }
 
         function salvarLocal() {
-            let r = {};
-            cats.forEach(c => r[c] = document.getElementById(`in-${c}`).value);
+            let r = {}; cats.forEach(c => r[c] = document.getElementById(`in-${c}`).value);
             ref.child('respostas').child(eu).update(r);
         }
 
+        // LISTENERS
         function ouvirBanco() {
             ref.on('value', snap => {
                 const d = snap.val() || {};
@@ -272,151 +296,141 @@
                 maxR = d.config_max || 10;
                 rodada = d.rodada || 1;
                 document.getElementById('hud-round').innerText = `R: ${rodada}/${maxR}`;
-                
-                // ATUALIZA VISUAL DO MENU (DESTAQUE NA OPÇÃO ATIVA)
                 updateMenuHighlight(maxR);
 
-                // LETRA
-                if(d.letra) document.getElementById('letra-big').innerText = d.letra;
-
                 // ESTADOS
-                if (d.status === 'STOP') {
-                    mostrarResultado(d.respostas);
-                } 
-                else if (d.status === 'JOGANDO') {
+                if (d.status === 'ANIMANDO') {
+                    // Estado Especial: A roleta gira VISUALMENTE para os dois
+                    document.getElementById('btn-spin').style.display = 'none'; // Esconde botão
+                    document.getElementById('game-ui').classList.add('hidden'); // Esconde jogo anterior
                     trocarTela('screen-game');
-                    // Limpa inputs APENAS se mudou a rodada/letra
-                    if (d.limpar_id && d.limpar_id !== lastLetter) {
-                        lastLetter = d.limpar_id;
+                    spinTo(d.letra); // GIRA A RODA!
+                }
+                else if (d.status === 'JOGANDO') {
+                    // Exibe inputs e timer após o giro
+                    document.getElementById('btn-spin').style.display = 'none';
+                    document.getElementById('game-ui').classList.remove('hidden');
+                    
+                    // Animação de entrada dos inputs
+                    setTimeout(() => {
+                        document.querySelectorAll('.input-wrap').forEach((el, i) => {
+                            setTimeout(() => el.classList.add('show-inputs'), i * 50);
+                        });
+                    }, 100);
+
+                    if (d.deadline) iniciarTimer(d.deadline);
+                    
+                    // Se nova rodada, limpa inputs visualmente
+                    if (d.limpar_id && d.limpar_id !== window.lastClean) {
+                        window.lastClean = d.limpar_id;
                         document.querySelectorAll('input').forEach(i => i.value = "");
                     }
-                } 
+                    trocarTela('screen-game');
+                }
+                else if (d.status === 'STOP') {
+                    pararTimer();
+                    mostrarResultado(d.respostas);
+                }
                 else if (d.status === 'VITORIA') {
+                    pararTimer();
                     trocarTela('screen-victory');
-                    let pt = d.placar_thiago || 0;
-                    let ps = d.placar_samella || 0;
-                    let w = (pt > ps) ? "THIAGO" : (ps > pt) ? "SÂMELLA" : "EMPATE";
-                    let c = (pt > ps) ? "var(--thiago)" : (ps > pt) ? "var(--samella)" : "#fff";
-                    document.getElementById('winner-name').innerText = w;
-                    document.getElementById('winner-name').style.color = c;
+                    let pt = d.placar_thiago || 0; ps = d.placar_samella || 0;
+                    document.getElementById('winner-name').innerText = (pt > ps) ? "THIAGO" : (ps > pt) ? "SÂMELLA" : "EMPATE";
                 }
             });
         }
 
+        // TIMER
+        function iniciarTimer(end) {
+            if (timerInterval) clearInterval(timerInterval);
+            const display = document.getElementById('timer-display');
+            display.classList.remove('time-critical');
+            timerInterval = setInterval(() => {
+                const left = end - Date.now();
+                if (left <= 0) {
+                    clearInterval(timerInterval);
+                    display.innerText = "00:00";
+                    ref.once('value').then(s => { if(s.val().status === 'JOGANDO') darStop(); });
+                } else {
+                    const m = Math.floor((left/1000/60)%60); s = Math.floor((left/1000)%60);
+                    display.innerText = `${m<10?'0'+m:m}:${s<10?'0'+s:s}`;
+                    if(left < 10000) display.classList.add('time-critical');
+                }
+            }, 1000);
+        }
+        function pararTimer() { if (timerInterval) clearInterval(timerInterval); }
+
+        // AÇÕES
         function girar() {
             if(rodada > maxR) { ref.update({status:'VITORIA'}); return; }
-            const abc = "ABCDEFGHILMNOPQRSTUVZ";
-            const l = abc[Math.floor(Math.random() * abc.length)];
             
+            const l = letras[Math.floor(Math.random() * letras.length)];
+            
+            // 1. Manda estado ANIMANDO primeiro (pra girar a roda)
             ref.update({
-                status: 'JOGANDO',
+                status: 'ANIMANDO',
                 letra: l,
-                respostas: {}, 
-                limpar_id: Date.now() 
+                respostas: {},
+                limpar_id: Date.now()
             });
+
+            // 2. Depois de 4 segundos (tempo do giro), muda pra JOGANDO e inicia timer
+            setTimeout(() => {
+                ref.update({
+                    status: 'JOGANDO',
+                    deadline: Date.now() + (5 * 60 * 1000)
+                });
+            }, 4000);
         }
 
-        function darStop() {
-            salvarLocal();
-            ref.update({ status: 'STOP', quem: eu });
-        }
+        function darStop() { salvarLocal(); ref.update({ status: 'STOP', quem: eu }); }
 
-        function mostrarResultado(allResps) {
+        function mostrarResultado(all) {
             trocarTela('screen-result');
-            const lista = document.getElementById('result-list');
-            lista.innerHTML = "";
-            
-            const meus = (allResps && allResps[eu]) ? allResps[eu] : {};
-            const dele = (allResps && allResps[ele]) ? allResps[ele] : {};
-            let total = 0;
-
+            const lista = document.getElementById('result-list'); lista.innerHTML = "";
+            const m = (all && all[eu]) ? all[eu] : {}; const o = (all && all[ele]) ? all[ele] : {};
+            let t = 0;
             cats.forEach(c => {
-                let m = (meus[c] || "").trim();
-                let o = (dele[c] || "").trim();
-                let mN = m.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
-                let oN = o.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
-
-                let p = 0; let color = "#fff"; let border = "#333";
-                if(mN === "") { p = 0; border="#f05"; color="#f05"; }
-                else if(mN === oN) { p = 5; border="#fe0"; color="#fe0"; }
-                else { p = 10; border="#0ff"; color="#0ff"; }
-                
-                total += p;
-                
-                lista.innerHTML += `
-                    <div class="res-row" style="border-color:${border}">
-                        <div class="res-cat">${c} <span class="res-pts" style="color:${color}">+${p}</span></div>
-                        <div style="font-size:1.1rem;">${m || "-"}</div>
-                        <div style="font-size:0.8rem; color:#666;">${ele}: ${o || "-"}</div>
-                    </div>`;
+                let mv = (m[c]||"").trim().toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g,"");
+                let ov = (o[c]||"").trim().toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g,"");
+                let p = 0; let b = "#333";
+                if(mv==="") { p=0; b="#f05"; } else if(mv===ov) { p=5; b="#fe0"; } else { p=10; b="#0ff"; }
+                t += p;
+                lista.innerHTML += `<div class="res-row" style="border-color:${b}"><span class="res-pts">+${p}</span><div style="font-size:0.7rem;color:#888;">${c}</div><div>${m[c]||"-"}</div><div style="font-size:0.8rem;color:#555;">${ele}: ${o[c]||"-"}</div></div>`;
             });
+            document.getElementById('total-round').innerText = t;
             
-            document.getElementById('total-round').innerText = total;
-
             const btn = document.getElementById('btn-next');
-            if(rodada >= maxR) {
-                btn.innerText = "VER CAMPEÃO 🏆";
-                btn.style.background = "var(--ouro)";
-                btn.style.color = "#000";
-            } else {
-                btn.innerText = "PRÓXIMA RODADA >>";
-                btn.style.background = "";
-            }
+            if(rodada >= maxR) { btn.innerText = "VER CAMPEÃO 🏆"; btn.style.background = "var(--ouro)"; btn.style.color="#000"; } 
+            else { btn.innerText = "PRÓXIMA >>"; btn.style.background=""; btn.style.color="#fff"; }
 
             ref.once('value').then(s => {
                 const d = s.val();
                 if(d.quem === eu) {
-                    let key = `placar_${eu.toLowerCase()}`;
-                    let atual = d[key] || 0;
-                    ref.child(key).set(atual + total);
+                    let k = `placar_${eu.toLowerCase()}`;
+                    ref.child(k).set((d[k]||0) + t);
                 } else {
-                     let key = `placar_${eu.toLowerCase()}`;
-                     let atual = d[key] || 0;
-                     ref.child(key).set(atual + total);
+                     let k = `placar_${eu.toLowerCase()}`;
+                     ref.child(k).set((d[k]||0) + t);
                 }
             });
         }
 
         function proximaRodada() {
-            if(rodada >= maxR) {
-                ref.update({status:'VITORIA'});
-            } else {
-                ref.child('rodada').transaction(r => (r||1)+1);
-                girar();
+            if(rodada >= maxR) ref.update({status:'VITORIA'});
+            else { 
+                document.getElementById('btn-spin').style.display = 'block'; // Mostra botão de girar
+                document.getElementById('game-ui').classList.add('hidden'); // Esconde inputs
+                ref.child('rodada').transaction(r=>(r||1)+1); 
+                trocarTela('screen-game');
             }
         }
 
-        function trocarTela(id) {
-            document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
-            document.getElementById(id).classList.add('active');
-        }
-
-        function toggleMenu() {
-            const m = document.getElementById('modal');
-            m.style.display = (m.style.display == 'flex') ? 'none' : 'flex';
-        }
-
-        function setConfig(n) {
-            ref.update({ config_max: n });
-            toggleMenu();
-        }
-        
-        function updateMenuHighlight(val) {
-            document.querySelectorAll('.cfg-btn').forEach(b => b.classList.remove('active'));
-            const btn = document.getElementById(`cfg-${val}`);
-            if(btn) btn.classList.add('active');
-        }
-
-        function zerarTudo() {
-            if(confirm("ZERAR TUDO?")) {
-                ref.update({
-                    placar_thiago: 0, placar_samella: 0,
-                    rodada: 1, status: 'JOGANDO', letra: '?',
-                    respostas: {}
-                });
-                toggleMenu();
-            }
-        }
+        function trocarTela(id) { document.querySelectorAll('.screen').forEach(s => s.classList.remove('active')); document.getElementById(id).classList.add('active'); }
+        function toggleMenu() { const m=document.getElementById('modal'); m.style.display=(m.style.display=='flex')?'none':'flex'; }
+        function setConfig(n) { ref.update({ config_max: n }); toggleMenu(); }
+        function updateMenuHighlight(n) { document.querySelectorAll('.cfg-btn').forEach(b=>b.classList.remove('active')); const b=document.getElementById(`cfg-${n}`); if(b) b.classList.add('active'); }
+        function zerarTudo() { if(confirm("ZERAR?")) { ref.update({placar_thiago:0, placar_samella:0, rodada:1, status:'JOGANDO', letra:'?', respostas:{}}); toggleMenu(); } }
     </script>
 </body>
 </html>
