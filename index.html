@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Adedonha Ultimate</title>
+    <title>Adedonha Security</title>
     
     <link rel="manifest" href="manifest.json">
     <meta name="theme-color" content="#050014">
@@ -60,6 +60,9 @@
         .screen { display: none; padding: 20px; flex-direction: column; align-items: center; flex: 1; animation: fadeIn 0.4s ease; }
         .active { display: flex; }
         @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+
+        /* TELA SENHA */
+        .lock-icon { font-size: 4rem; margin-bottom: 20px; color: var(--roxo); text-shadow: 0 0 20px var(--roxo); }
 
         /* TELA SELEÇÃO */
         .p-card {
@@ -135,7 +138,16 @@
         </div>
     </div>
 
-    <div id="screen-login" class="screen active">
+    <div id="screen-password" class="screen active" style="justify-content: center;">
+        <div class="lock-icon">🔒</div>
+        <h2 style="font-family:'Orbitron'; margin-bottom:20px;">ACESSO RESTRITO</h2>
+        <div class="input-wrap">
+            <input type="password" id="senha-input" class="game-input" placeholder="Digite a senha..." style="text-align:center;">
+        </div>
+        <button class="btn btn-girar" onclick="verificarSenha()">ENTRAR</button>
+    </div>
+
+    <div id="screen-login" class="screen">
         <h1 style="font-family:'Orbitron'; margin:30px 0; color:var(--roxo); text-shadow: 0 0 20px rgba(189,0,255,0.5);">BATTLE MODE</h1>
         <div class="p-card card-t" onclick="login('THIAGO')">
             <span style="font-size:2.5rem;">👨🏻</span>
@@ -211,6 +223,18 @@
         let rodada = 1;
         let lastLetter = ""; 
         const cats = ["Nome", "Animal", "Cor", "Fruta", "Objeto", "CEP", "Profissão", "Marca", "Corpo", "Sogra"];
+
+        // LÓGICA DE SENHA
+        function verificarSenha() {
+            const pass = document.getElementById('senha-input').value;
+            if (pass === 'ceros') {
+                document.getElementById('screen-password').classList.remove('active');
+                document.getElementById('screen-login').classList.add('active');
+            } else {
+                alert('SENHA INCORRETA! Tente novamente.');
+                document.getElementById('senha-input').value = "";
+            }
+        }
 
         // LOGIN
         function login(nome) {
@@ -378,9 +402,7 @@
         }
         
         function updateMenuHighlight(val) {
-            // Remove destaque de todos
             document.querySelectorAll('.cfg-btn').forEach(b => b.classList.remove('active'));
-            // Adiciona no atual
             const btn = document.getElementById(`cfg-${val}`);
             if(btn) btn.classList.add('active');
         }
