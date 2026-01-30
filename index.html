@@ -9,9 +9,8 @@
     <meta name="theme-color" content="#050014">
     <link rel="apple-touch-icon" href="icon.png">
 
-    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
-
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@700;900&family=Rajdhani:wght@500;700&display=swap" rel="stylesheet">
     
     <style>
@@ -20,6 +19,11 @@
         * { box-sizing: border-box; margin: 0; padding: 0; }
         body { background: var(--bg); background-image: radial-gradient(circle at 50% 10%, #1a0b38 0%, #050014 80%); color: #fff; font-family: 'Rajdhani'; min-height: 100vh; padding: 20px; display: flex; flex-direction: column; align-items: center; }
         
+        /* TELA DE LOADING (Preloader) */
+        #preloader { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #050014; z-index: 9999; display: flex; justify-content: center; align-items: center; flex-direction: column; transition: opacity 0.5s; }
+        .spinner { width: 50px; height: 50px; border: 5px solid var(--vidro); border-top: 5px solid var(--roxo); border-radius: 50%; animation: spin 1s linear infinite; margin-bottom: 20px; }
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+
         h1 { font-family: 'Orbitron'; font-size: 2.5rem; color: transparent; -webkit-text-stroke: 1px var(--roxo); text-shadow: 0 0 15px var(--roxo); text-align: center; }
         .subtitle { color: var(--azul); letter-spacing: 2px; font-size: 0.8rem; text-transform: uppercase; text-shadow: 0 0 5px var(--azul); margin-bottom: 20px; text-align: center; }
 
@@ -38,28 +42,36 @@
 
         /* Jogo */
         .status-bar { width: 100%; display: flex; justify-content: space-between; align-items: center; background: rgba(255,255,255,0.1); padding: 10px 15px; border-radius: 10px; margin-bottom: 20px; border: 1px solid var(--azul); }
-        .info-player { font-weight: bold; color: var(--azul); text-transform: uppercase; }
-        .letra-mini { font-family: 'Orbitron'; font-size: 1.5rem; color: #fff; }
+        .info-player { font-weight: bold; color: var(--azul); text-transform: uppercase; font-size: 0.9rem; }
+        .letra-mini { font-family: 'Orbitron'; font-size: 1.5rem; color: #fff; margin-right: 10px; }
+        #timer-display { font-family: 'Orbitron'; font-size: 1.5rem; color: var(--rosa); font-weight: bold; text-shadow: 0 0 10px var(--rosa); }
 
         .input-group { margin-bottom: 15px; width: 100%; }
         label { display: block; color: var(--roxo); font-size: 0.9rem; margin-bottom: 5px; font-weight: bold; }
         input { width: 100%; background: transparent; border: none; border-bottom: 1px solid #555; color: #fff; font-size: 1.2rem; padding: 5px 0; font-family: 'Rajdhani'; }
         input:focus { outline: none; border-bottom: 2px solid var(--azul); }
-        input:disabled { opacity: 0.5; color: var(--rosa); border-bottom: 1px solid var(--rosa); }
+        input:disabled { opacity: 0.5; color: #aaa; border-bottom: 1px solid #333; }
 
         .btn-stop { width: 100%; padding: 20px; background: linear-gradient(45deg, #ff0055, #ff4d00); border: none; border-radius: 50px; color: #fff; font-family: 'Orbitron'; font-size: 2rem; font-weight: 900; margin-top: 20px; margin-bottom: 50px; box-shadow: 0 0 20px var(--rosa); animation: pulsar 1.5s infinite; cursor: pointer; }
         @keyframes pulsar { 50% { transform: scale(1.02); box-shadow: 0 0 30px var(--rosa); } }
         @keyframes piscar { 0%, 100% { opacity: 1; } 50% { opacity: 0.5; } }
 
         /* Resumo Final */
-        #lista-respostas-oponente { margin-top: 20px; padding: 15px; background: rgba(0,0,0,0.3); border-radius: 10px; width: 100%; }
-        .item-resumo { margin-bottom: 10px; border-bottom: 1px solid #333; padding-bottom: 5px; }
+        #area-resumo { width: 100%; animation: slideUp 0.5s ease; padding-bottom: 50px; }
+        #lista-respostas-oponente { margin-top: 20px; padding: 15px; background: rgba(0,0,0,0.5); border: 1px solid var(--azul); border-radius: 10px; width: 100%; }
+        .item-resumo { margin-bottom: 10px; border-bottom: 1px solid #333; padding-bottom: 5px; display: flex; justify-content: space-between; }
         .item-resumo span { color: var(--azul); font-weight: bold; }
-        
+        .resposta-dela { color: #fff; text-align: right; }
         .btn-neon { width: 100%; padding: 15px; background: transparent; border: 2px solid var(--roxo); color: var(--roxo); font-family: 'Orbitron'; font-size: 1.2rem; margin-top: 20px; box-shadow: 0 0 10px var(--roxo); cursor: pointer;}
+        @keyframes slideUp { from { transform: translateY(50px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
     </style>
 </head>
 <body>
+
+    <div id="preloader">
+        <div class="spinner"></div>
+        <p style="font-family: 'Orbitron'; letter-spacing: 2px;">CONECTANDO...</p>
+    </div>
 
     <header>
         <h1>ADEDONHA</h1>
@@ -77,31 +89,54 @@
     <div id="tela-roleta" class="tela">
         <h3 style="color: #fff;">Olá, <span id="nome-jogador" style="color: var(--azul);">...</span></h3>
         <div class="roleta-box"><span id="letra-destaque">?</span></div>
-        
         <button id="btn-girar" class="btn-neon" onclick="iniciarGiro()">GIRAR LETRA</button>
         <p id="status-rede" class="aviso-espera">Aguardando oponente...</p>
     </div>
 
     <div id="tela-jogo" class="tela">
         <div class="status-bar">
-            <span class="info-player" id="info-player-game">PLAYER</span>
-            <div>Letra: <span class="letra-mini" id="letra-fixa">-</span></div>
+            <div>
+                <span class="info-player" id="info-player-game">PLAYER</span><br>
+                Letra: <span class="letra-mini" id="letra-fixa">-</span>
+            </div>
+            <div id="timer-display">05:00</div>
         </div>
+        
         <form id="formulario"></form>
-        <button class="btn-stop" onclick="enviarStop()">STOP!</button>
+        <button class="btn-stop" onclick="enviarStopManual()">STOP!</button>
         
         <div id="area-resumo" style="display:none;">
-            <h3 style="color:var(--azul); margin-top:20px;">O QUE O OUTRO RESPONDEU:</h3>
-            <div id="lista-respostas-oponente"></div>
+            <h2 style="color:var(--rosa); text-align:center; margin-top:20px;">FIM DE PAPO!</h2>
+            <h3 style="color:var(--azul); margin-top:10px;">O que o outro respondeu:</h3>
+            <div id="lista-respostas-oponente">
+                <p style="text-align:center; color:#888;">Carregando respostas...</p>
+            </div>
             <button class="btn-neon" onclick="reiniciarJogo()">PRÓXIMA RODADA</button>
         </div>
     </div>
 
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
+
     <script>
-        // -----------------------------------------------------------
-        // CONFIGURAÇÃO DO FIREBASE (JÁ COM SUAS CHAVES)
-        // -----------------------------------------------------------
-        
+        // ATIVAR MODO TURBO (Service Worker)
+        if ('serviceWorker' in navigator) {
+            navigator.serviceWorker.register('./sw.js')
+                .then(() => console.log("Modo Turbo Ativado!"))
+                .catch((erro) => console.log("Erro no Turbo:", erro));
+        }
+
+        // REMOVER TELA DE LOADING
+        window.onload = function() {
+            setTimeout(() => {
+                document.getElementById('preloader').style.opacity = '0';
+                setTimeout(() => {
+                    document.getElementById('preloader').style.display = 'none';
+                }, 500);
+            }, 1000); // Garante 1s de loading pra ficar bonito
+        };
+
+        // CONFIGURAÇÃO DO FIREBASE
         const firebaseConfig = {
             apiKey: "AIzaSyAjgEFZB3_FHelXH9YtCnFYFO4RCGO7Wd8",
             authDomain: "adedonha-8b2a4.firebaseapp.com",
@@ -112,14 +147,14 @@
             appId: "1:1061633793316:web:e4f9a23ce9e28ae8d2e7b1"
         };
 
-        // INICIALIZAÇÃO
         firebase.initializeApp(firebaseConfig);
         const db = firebase.database();
         const gameRef = db.ref('partida_casal');
 
-        // Variáveis Locais
+        // VARIÁVEIS
         let meuNome = "";
         let oponenteNome = "";
+        let timerInterval = null;
         
         const categorias = [
             "Nome", "Animal", "Cor", "Fruta/Alimento", "Objeto", 
@@ -127,16 +162,14 @@
             "Instrumento Musical", "Verbo", "Minha Sogra é..."
         ];
 
-        // --- 1. FUNÇÕES DE LOGIN ---
+        // LOGAR
         function logar(nome) {
             meuNome = nome;
             oponenteNome = (nome === 'THIAGO') ? 'SAMELLA' : 'THIAGO';
-            
             document.getElementById('nome-jogador').innerText = nome;
             document.getElementById('info-player-game').innerText = nome;
-            
             trocarTela('tela-login', 'tela-roleta');
-            escutarBancoDeDados(); // Começa a ouvir o Firebase
+            escutarBancoDeDados();
         }
 
         function trocarTela(atual, proxima) {
@@ -144,150 +177,155 @@
             document.getElementById(proxima).classList.add('ativa');
         }
 
-        // --- 2. ESCUTAR O BANCO DE DADOS (SYNC REAL) ---
+        // BANCO DE DADOS
         function escutarBancoDeDados() {
             gameRef.on('value', (snapshot) => {
                 const dados = snapshot.val();
-                
-                if (!dados) return; // Banco vazio
+                if (!dados) return;
 
-                // Atualiza status na tela da roleta
                 const statusTxt = document.getElementById('status-rede');
                 
-                // LÓGICA DE ESTADOS
                 if (dados.status === 'GIRANDO') {
                     statusTxt.innerText = "A roleta está girando...";
-                    animarRoletaLocal(false); // Apenas visual
+                    animarRoletaLocal();
                 } 
                 else if (dados.status === 'JOGANDO') {
-                    // Se o jogo começou e eu ainda não estou na tela, vai pra lá
                     if (!document.getElementById('tela-jogo').classList.contains('ativa')) {
                         iniciarRodadaLocal(dados.letra);
                     }
+                    if (dados.deadline) iniciarCronometro(dados.deadline);
                 }
                 else if (dados.status === 'STOP') {
-                    // Só bloqueia se NÃO fui eu quem parou
-                    if (dados.quemParou !== meuNome) {
-                        bloquearTelaLocal();
-                    }
-                    // Mostra o que o outro escreveu
+                    pararCronometro();
+                    finalizarRodadaVisual();
                     if (dados.respostas && dados.respostas[oponenteNome]) {
                         mostrarRespostasOponente(dados.respostas[oponenteNome]);
                     }
                 }
                 else if (dados.status === 'ESPERA') {
-                     trocarTela('tela-jogo', 'tela-roleta');
-                     document.getElementById('formulario').reset();
-                     document.querySelectorAll('input').forEach(i => i.disabled = false);
-                     document.getElementById('area-resumo').style.display = 'none';
-                     document.querySelector('.btn-stop').style.display = 'block';
-                     document.getElementById('letra-destaque').innerText = "?";
+                     resetarJogoLocal();
                 }
             });
         }
 
-        // --- 3. AÇÕES DO JOGADOR ---
-
+        // AÇÕES
         function iniciarGiro() {
             const letras = "ABCDEFGHIJLMNO PQRSTUVWXYZ".replace(" ", "").split("").filter(l => !['K','W','Y'].includes(l));
-            const letraSorteada = letras[Math.floor(Math.random() * letras.length)];
-            
+            const letra = letras[Math.floor(Math.random() * letras.length)];
+            const tempoLimite = Date.now() + (5 * 60 * 1000); 
+
             gameRef.update({ status: 'GIRANDO' });
 
             setTimeout(() => {
                 gameRef.update({
                     status: 'JOGANDO',
-                    letra: letraSorteada,
+                    letra: letra,
+                    deadline: tempoLimite,
                     respostas: {} 
                 });
             }, 2000);
         }
 
-        function enviarStop() {
+        function enviarStopManual() {
             salvarRespostas();
-            gameRef.update({ 
-                status: 'STOP',
-                quemParou: meuNome
-            });
-            // Bloqueio a mim mesmo também
-            bloquearTelaLocal();
+            gameRef.update({ status: 'STOP', quemParou: meuNome });
         }
         
-        function salvarRespostas() {
-            const inputs = document.querySelectorAll('#formulario input');
-            let minhasRespostas = {};
-            
-            inputs.forEach((input, index) => {
-                minhasRespostas[categorias[index]] = input.value;
-            });
-
-            gameRef.child('respostas').child(meuNome).set(minhasRespostas);
+        function iniciarCronometro(deadline) {
+            if (timerInterval) clearInterval(timerInterval);
+            timerInterval = setInterval(() => {
+                const agora = Date.now();
+                const restante = deadline - agora;
+                if (restante <= 0) {
+                    document.getElementById('timer-display').innerText = "00:00";
+                    clearInterval(timerInterval);
+                    salvarRespostas();
+                    gameRef.update({ status: 'STOP', quemParou: 'TEMPO' });
+                } else {
+                    const min = Math.floor((restante / 1000 / 60) % 60);
+                    const sec = Math.floor((restante / 1000) % 60);
+                    document.getElementById('timer-display').innerText = 
+                        `${min < 10 ? '0'+min : min}:${sec < 10 ? '0'+sec : sec}`;
+                }
+            }, 1000);
         }
-        
-        // Salva automaticamente enquanto digita
-        document.getElementById('formulario').addEventListener('input', () => {
-             salvarRespostas();
-        });
 
-        function reiniciarJogo() {
-            gameRef.update({ status: 'ESPERA', letra: '' });
+        function pararCronometro() {
+            if (timerInterval) clearInterval(timerInterval);
         }
 
-        // --- 4. EFEITOS VISUAIS LOCAIS ---
-
-        function animarRoletaLocal(ehMestre) {
+        // VISUAIS
+        function animarRoletaLocal() {
             const display = document.getElementById('letra-destaque');
             let chars = "ABCDEF";
             let i = 0;
-            let loop = setInterval(() => {
-                display.innerText = chars[i++ % chars.length];
-            }, 100);
-            
+            let loop = setInterval(() => { display.innerText = chars[i++ % chars.length]; }, 100);
             setTimeout(() => clearInterval(loop), 2000);
         }
 
         function iniciarRodadaLocal(letra) {
             document.getElementById('letra-destaque').innerText = letra;
             document.getElementById('letra-fixa').innerText = letra;
-            
             setTimeout(() => {
                 trocarTela('tela-roleta', 'tela-jogo');
                 window.scrollTo(0,0);
             }, 500);
         }
 
-        function bloquearTelaLocal() {
-            if(navigator.vibrate) navigator.vibrate([500, 200, 500]);
-            
+        function finalizarRodadaVisual() {
+            if(navigator.vibrate) navigator.vibrate([1000]);
             const inputs = document.querySelectorAll('input');
             inputs.forEach(i => i.disabled = true);
-            
-            const btn = document.querySelector('.btn-stop');
-            btn.style.display = 'none'; 
-            
+            document.querySelector('.btn-stop').style.display = 'none';
             document.getElementById('area-resumo').style.display = 'block';
+            setTimeout(() => {
+                document.getElementById('area-resumo').scrollIntoView({behavior: "smooth"});
+            }, 500);
         }
 
         function mostrarRespostasOponente(respostasObj) {
             const lista = document.getElementById('lista-respostas-oponente');
             lista.innerHTML = "";
-            
             categorias.forEach(cat => {
                 const resp = respostasObj[cat] || "---";
-                lista.innerHTML += `<div class="item-resumo"><span>${cat}:</span> ${resp}</div>`;
+                const cor = (resp === "---" || resp === "") ? "#ff0055" : "#fff";
+                lista.innerHTML += `
+                    <div class="item-resumo">
+                        <span>${cat}</span>
+                        <span class="resposta-dela" style="color:${cor}">${resp}</span>
+                    </div>`;
             });
         }
 
-        // Gera os campos
+        function reiniciarJogo() {
+            gameRef.update({ status: 'ESPERA', letra: '', deadline: 0 });
+        }
+        
+        function resetarJogoLocal() {
+            trocarTela('tela-jogo', 'tela-roleta');
+            document.getElementById('formulario').reset();
+            document.querySelectorAll('input').forEach(i => i.disabled = false);
+            document.getElementById('area-resumo').style.display = 'none';
+            document.querySelector('.btn-stop').style.display = 'block';
+            document.getElementById('letra-destaque').innerText = "?";
+            document.getElementById('timer-display').innerText = "05:00";
+        }
+
+        function salvarRespostas() {
+            const inputs = document.querySelectorAll('#formulario input');
+            let minhasRespostas = {};
+            inputs.forEach((input, index) => {
+                minhasRespostas[categorias[index]] = input.value;
+            });
+            gameRef.child('respostas').child(meuNome).set(minhasRespostas);
+        }
+        
+        document.getElementById('formulario').addEventListener('input', salvarRespostas);
+        
         const form = document.getElementById('formulario');
         categorias.forEach(cat => {
-            form.innerHTML += `
-                <div class="input-group">
-                    <label>${cat}</label>
-                    <input type="text" autocomplete="off" placeholder="...">
-                </div>`;
+            form.innerHTML += `<div class="input-group"><label>${cat}</label><input type="text" autocomplete="off" placeholder="..."></div>`;
         });
-
     </script>
 </body>
 </html>
