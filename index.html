@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Adedonha Roulette Fix</title>
+    <title>Adedonha Final Fix</title>
     
     <link rel="manifest" href="manifest.json">
     <meta name="theme-color" content="#050014">
@@ -37,11 +37,28 @@
         .active { display: flex; }
         @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
 
-        /* ROLETA */
+        /* ROLETA CORRIGIDA */
         .wheel-wrapper { position: relative; width: 280px; height: 280px; margin: 20px auto; display: flex; justify-content: center; align-items: center; }
         .pointer { position: absolute; top: -20px; left: 50%; transform: translateX(-50%); width: 0; height: 0; border-left: 20px solid transparent; border-right: 20px solid transparent; border-top: 40px solid var(--amarelo); z-index: 10; filter: drop-shadow(0 0 10px var(--amarelo)); }
-        .wheel { width: 100%; height: 100%; border-radius: 50%; border: 5px solid var(--roxo); background: radial-gradient(circle, #000 30%, #220033 100%); position: relative; transition: transform 4s cubic-bezier(0.1, 0.7, 0.1, 1); box-shadow: 0 0 30px rgba(189, 0, 255, 0.3); }
-        .wheel-letter { position: absolute; top: 50%; left: 50%; transform-origin: 0 0; font-family: 'Orbitron'; font-weight: bold; font-size: 1.2rem; color: #fff; text-shadow: 0 0 5px var(--thiago); height: 130px; margin-top: -130px; width: 0; display: flex; justify-content: center; padding-top: 10px; }
+        
+        .wheel { 
+            width: 100%; height: 100%; border-radius: 50%; border: 5px solid var(--roxo); 
+            background: radial-gradient(circle, #220033 0%, #000 100%); 
+            position: relative; transition: transform 4s cubic-bezier(0.1, 0.7, 0.1, 1); 
+            box-shadow: 0 0 30px rgba(189, 0, 255, 0.3); overflow: hidden; /* Garante que nada saia */
+        }
+        
+        .wheel-letter { 
+            position: absolute; top: 50%; left: 50%; 
+            transform-origin: center; /* Centro absoluto */
+            font-family: 'Orbitron'; font-weight: 900; font-size: 1.2rem; color: #fff; 
+            text-shadow: 0 0 5px var(--thiago); 
+            height: 50%; /* Metade da altura */
+            margin-top: -50%; /* Puxa para o topo */
+            width: 20px; margin-left: -10px; /* Centraliza horizontal */
+            display: flex; justify-content: center; padding-top: 15px;
+        }
+
         .wheel-center { position: absolute; width: 50px; height: 50px; background: #fff; border-radius: 50%; z-index: 5; box-shadow: 0 0 20px #fff; top: 50%; left: 50%; transform: translate(-50%, -50%); display: flex; justify-content: center; align-items: center; font-size: 1.5rem; color: #000; font-weight: bold; }
 
         #timer-display { font-family: 'Orbitron'; font-size: 2.5rem; color: var(--amarelo); margin: 20px 0; text-shadow: 0 0 15px var(--amarelo); }
@@ -67,8 +84,11 @@
         
         #modal { position: fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.95); z-index:999; display:none; justify-content:center; align-items:center; flex-direction:column; }
         .modal-box { background:#151520; padding:25px; border-radius:20px; border:1px solid #333; text-align:center; width:85%; max-width: 320px; }
-        .cfg-btn { background: transparent; border: 1px solid #444; color: #888; padding: 12px; margin: 6px 0; width: 100%; border-radius: 8px; cursor: pointer; }
-        .cfg-btn.active { border-color: var(--roxo); color: var(--roxo); background: rgba(189, 0, 255, 0.15); }
+        
+        /* BOTÕES DE CONFIGURAÇÃO (MENU) */
+        .cfg-btn { background: transparent; border: 1px solid #444; color: #888; padding: 15px; margin: 8px 0; width: 100%; border-radius: 10px; cursor: pointer; font-family: 'Orbitron'; transition: 0.3s; }
+        /* O segredo do destaque está aqui */
+        .cfg-btn.selected { border: 2px solid var(--thiago); color: #fff; background: rgba(0, 243, 255, 0.2); box-shadow: 0 0 15px var(--thiago); font-weight: bold; }
     </style>
 </head>
 <body>
@@ -161,8 +181,7 @@
         if ('serviceWorker' in navigator) navigator.serviceWorker.getRegistrations().then(r => r.forEach(i => i.unregister()));
 
         const letras = "ABCDEFGHIJKLMNOPQRSTUVZ".split("");
-        const numLetras = letras.length;
-        const anglePerLetter = 360 / numLetras;
+        const anglePerLetter = 360 / letras.length;
         let currentRotation = 0;
         let eu = ""; let ele = ""; let maxR = 10; let rodada = 1; let timerInterval = null;
         const cats = ["Nome", "Animal", "Cor", "Fruta", "Objeto", "CEP", "Profissão", "Marca", "Corpo", "Sogra"];
@@ -173,21 +192,24 @@
             letras.forEach((letra, index) => {
                 const el = document.createElement('div');
                 el.className = 'wheel-letter';
-                el.style.transform = `rotate(${index * anglePerLetter}deg)`;
+                // Correção no ângulo para a letra ficar em pé
+                el.style.transform = `rotate(${index * anglePerLetter}deg) translateY(0px)`;
                 el.innerText = letra;
                 wheel.appendChild(el);
             });
         }
-        setupWheel();
+        // Chamada atrasada para garantir carga
+        setTimeout(setupWheel, 500);
 
         function spinTo(letraDestino) {
             const index = letras.indexOf(letraDestino);
             if (index === -1) return;
-            const voltasExtras = 360 * 5; 
-            const anguloDestino = -(index * anglePerLetter);
-            const novaRotacao = currentRotation + voltasExtras + (anguloDestino - (currentRotation % 360));
-            currentRotation = novaRotacao;
-            document.getElementById('wheel').style.transform = `rotate(${novaRotacao}deg)`;
+            // 5 voltas completas + angulo
+            const voltas = 360 * 5; 
+            const angulo = -(index * anglePerLetter);
+            const novaRot = currentRotation + voltas + (angulo - (currentRotation % 360));
+            currentRotation = novaRot;
+            document.getElementById('wheel').style.transform = `rotate(${novaRot}deg)`;
         }
 
         function verificarSenha() {
@@ -221,7 +243,10 @@
                 maxR = d.config_max || 10;
                 rodada = d.rodada || 1;
                 document.getElementById('hud-round').innerText = `R: ${rodada}/${maxR}`;
-                updateMenuHighlight(maxR);
+                
+                // ATUALIZA MENU COM CORES
+                document.querySelectorAll('.cfg-btn').forEach(b => b.classList.remove('selected'));
+                if(document.getElementById(`cfg-${maxR}`)) document.getElementById(`cfg-${maxR}`).classList.add('selected');
 
                 if (d.status === 'ANIMANDO') {
                     document.getElementById('btn-spin').style.display = 'none';
@@ -273,8 +298,11 @@
         function pararTimer() { if (timerInterval) clearInterval(timerInterval); }
 
         function girar() {
+            // DEBUG PRA VOCÊ VER
+            console.log("Tentando girar... Rodada: " + rodada + " Max: " + maxR);
+            
             if(rodada > maxR) { 
-                alert("O jogo acabou! Inicie uma nova partida no menu."); 
+                alert("FIM DE JOGO! O limite de rodadas foi atingido. \nVá na Engrenagem > Resetar Tudo."); 
                 return; 
             }
             
@@ -285,7 +313,9 @@
                 letra: l,
                 respostas: {},
                 limpar_id: Date.now()
-            }).catch(e => alert("ERRO FIREBASE: " + e.message));
+            }).catch(erro => {
+                alert("ERRO DE CONEXÃO: " + erro.message + "\nVerifique sua internet!");
+            });
 
             setTimeout(() => {
                 ref.update({
@@ -341,7 +371,6 @@
         function trocarTela(id) { document.querySelectorAll('.screen').forEach(s => s.classList.remove('active')); document.getElementById(id).classList.add('active'); }
         function toggleMenu() { const m=document.getElementById('modal'); m.style.display=(m.style.display=='flex')?'none':'flex'; }
         function setConfig(n) { ref.update({ config_max: n }); toggleMenu(); }
-        function updateMenuHighlight(n) { document.querySelectorAll('.cfg-btn').forEach(b=>b.classList.remove('active')); const b=document.getElementById(`cfg-${n}`); if(b) b.classList.add('active'); }
         function zerarTudo() { if(confirm("ZERAR?")) { ref.update({placar_thiago:0, placar_samella:0, rodada:1, status:'JOGANDO', letra:'?', respostas:{}}); toggleMenu(); } }
     </script>
 </body>
