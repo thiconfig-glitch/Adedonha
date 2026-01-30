@@ -1,0 +1,294 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Adedonha Casal</title>
+    
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#050014">
+    <link rel="apple-touch-icon" href="icon.png">
+
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@700;900&family=Rajdhani:wght@500;700&display=swap" rel="stylesheet">
+    
+    <style>
+        /* --- ESTILOS VISUAIS (NEON) --- */
+        :root {
+            --bg-color: #050014;
+            --neon-purple: #bd00ff;
+            --neon-blue: #00f3ff;
+            --neon-pink: #ff0055;
+            --glass: rgba(255, 255, 255, 0.05);
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+
+        body {
+            background-color: var(--bg-color);
+            background-image: radial-gradient(circle at 50% 10%, #1a0b38 0%, #050014 80%);
+            color: #fff;
+            font-family: 'Rajdhani', sans-serif;
+            min-height: 100vh;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        /* Títulos */
+        header { text-align: center; margin-bottom: 30px; }
+        
+        h1 {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 2.8rem;
+            color: transparent;
+            -webkit-text-stroke: 1px var(--neon-purple);
+            text-shadow: 0 0 15px var(--neon-purple);
+        }
+
+        .subtitle {
+            color: var(--neon-blue);
+            letter-spacing: 4px;
+            font-size: 0.8rem;
+            text-transform: uppercase;
+            text-shadow: 0 0 5px var(--neon-blue);
+        }
+
+        /* Tela Inicial (Roleta) */
+        #tela-roleta {
+            width: 100%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .roleta-box {
+            width: 200px;
+            height: 200px;
+            background: var(--glass);
+            border: 4px solid var(--neon-blue);
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            box-shadow: 0 0 30px rgba(0, 243, 255, 0.2), inset 0 0 20px rgba(0, 243, 255, 0.2);
+            margin-bottom: 40px;
+            position: relative;
+        }
+
+        #letra-destaque {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 6rem;
+            color: #fff;
+            text-shadow: 0 0 20px #fff, 0 0 40px var(--neon-blue);
+        }
+
+        /* Botões */
+        .btn-neon {
+            width: 100%;
+            max-width: 300px;
+            padding: 18px;
+            background: transparent;
+            border: 2px solid var(--neon-purple);
+            color: var(--neon-purple);
+            font-family: 'Orbitron', sans-serif;
+            font-size: 1.2rem;
+            font-weight: bold;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            cursor: pointer;
+            box-shadow: 0 0 10px var(--neon-purple);
+            transition: 0.3s;
+            margin-bottom: 15px;
+        }
+
+        .btn-neon:active {
+            background: var(--neon-purple);
+            color: #fff;
+            box-shadow: 0 0 30px var(--neon-purple);
+        }
+
+        /* Tela do Jogo (Inputs) */
+        #tela-jogo {
+            width: 100%;
+            max-width: 500px;
+            display: none; /* Escondido no início */
+            padding-bottom: 50px;
+        }
+
+        .card-letra {
+            text-align: center;
+            font-family: 'Orbitron';
+            font-size: 1.5rem;
+            color: var(--neon-blue);
+            margin-bottom: 20px;
+            border-bottom: 1px solid #333;
+            padding-bottom: 10px;
+        }
+
+        .input-group {
+            margin-bottom: 18px;
+            background: rgba(255,255,255,0.02);
+            padding: 10px;
+            border-left: 2px solid var(--neon-purple);
+        }
+
+        label {
+            display: block;
+            color: var(--neon-purple);
+            font-size: 0.9rem;
+            margin-bottom: 5px;
+            text-transform: uppercase;
+            font-weight: bold;
+        }
+
+        input {
+            width: 100%;
+            background: transparent;
+            border: none;
+            border-bottom: 1px solid #555;
+            color: #fff;
+            font-size: 1.3rem;
+            padding: 5px 0;
+            font-family: 'Rajdhani', sans-serif;
+        }
+
+        input:focus {
+            outline: none;
+            border-bottom: 2px solid var(--neon-blue);
+        }
+
+        /* Botão STOP */
+        .btn-stop {
+            width: 100%;
+            padding: 20px;
+            background: linear-gradient(45deg, #ff0055, #ff4d00);
+            border: none;
+            border-radius: 50px;
+            color: #fff;
+            font-family: 'Orbitron', sans-serif;
+            font-size: 2rem;
+            font-weight: 900;
+            margin-top: 30px;
+            box-shadow: 0 0 20px var(--neon-pink);
+            animation: pulsar 1.5s infinite;
+        }
+
+        @keyframes pulsar {
+            0% { transform: scale(1); box-shadow: 0 0 10px var(--neon-pink); }
+            50% { transform: scale(1.02); box-shadow: 0 0 30px var(--neon-pink); }
+            100% { transform: scale(1); box-shadow: 0 0 10px var(--neon-pink); }
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <h1>ADEDONHA</h1>
+        <p class="subtitle">THIAGO & SÂMELLA</p>
+    </header>
+
+    <div id="tela-roleta">
+        <div class="roleta-box">
+            <span id="letra-destaque">?</span>
+        </div>
+        <button class="btn-neon" onclick="girarRoleta()">GIRAR LETRA</button>
+    </div>
+
+    <div id="tela-jogo">
+        <div class="card-letra">Letra da vez: <span id="letra-fixa" style="color: #fff; font-size: 2rem;">-</span></div>
+        
+        <form id="formulario">
+            </form>
+
+        <button class="btn-stop" onclick="darStop()">STOP!</button>
+    </div>
+
+    <script>
+        /* --- LÓGICA DO JOGO --- */
+        
+        // As 12 Categorias Oficiais
+        const categorias = [
+            "Nome", 
+            "Animal", 
+            "Cor", 
+            "Fruta/Alimento", 
+            "Objeto", 
+            "CEP (Cidade/Estado)", 
+            "Profissão", 
+            "Marca", 
+            "Parte do Corpo", 
+            "Instrumento Musical", 
+            "Verbo", 
+            "Minha Sogra é..."
+        ];
+
+        // Elementos da Tela
+        const telaRoleta = document.getElementById('tela-roleta');
+        const telaJogo = document.getElementById('tela-jogo');
+        const displayLetra = document.getElementById('letra-destaque');
+        const displayLetraFixa = document.getElementById('letra-fixa');
+        const formContainer = document.getElementById('formulario');
+
+        // 1. Gerar os campos automaticamente ao carregar
+        function gerarCampos() {
+            formContainer.innerHTML = '';
+            categorias.forEach(cat => {
+                formContainer.innerHTML += `
+                    <div class="input-group">
+                        <label>${cat}</label>
+                        <input type="text" inputmode="text" autocomplete="off">
+                    </div>
+                `;
+            });
+        }
+        gerarCampos(); // Chama a função
+
+        // 2. Função de Girar a Roleta
+        function girarRoleta() {
+            // Tira K, W e Y pra facilitar a vida
+            const letras = "ABCDEFGHIJLMNO PQRSTUVWXYZ".replace(" ", "").split("").filter(l => !['K','W','Y'].includes(l));
+            let voltas = 0;
+            let velocidade = 50;
+
+            const intervalo = setInterval(() => {
+                const letraAleatoria = letras[Math.floor(Math.random() * letras.length)];
+                displayLetra.innerText = letraAleatoria;
+                voltas++;
+
+                if (voltas > 25) {
+                    clearInterval(intervalo);
+                    // Começar o Jogo
+                    iniciarPartida(letraAleatoria);
+                }
+            }, velocidade);
+        }
+
+        // 3. Transição para o Jogo
+        function iniciarPartida(letra) {
+            setTimeout(() => {
+                telaRoleta.style.display = 'none';
+                telaJogo.style.display = 'block';
+                displayLetraFixa.innerText = letra;
+                window.scrollTo(0,0);
+            }, 500);
+        }
+
+        // 4. Função do Botão STOP
+        function darStop() {
+            // Simulação Visual (Depois conectamos no Firebase)
+            alert("🛑 STOP ACIONADO!\n\nBloqueando tela da Sâmella...");
+            
+            // Bloqueia os inputs visualmente
+            const inputs = document.querySelectorAll('input');
+            inputs.forEach(input => input.disabled = true);
+            
+            document.querySelector('.btn-stop').innerText = "EM ANÁLISE...";
+            document.querySelector('.btn-stop').style.background = "#333";
+            document.querySelector('.btn-stop').style.animation = "none";
+        }
+
+    </script>
+</body>
+</html>
+
