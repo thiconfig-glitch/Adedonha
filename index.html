@@ -3,10 +3,10 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Adedonha Tournament Fixed</title>
+    <title>Adedonha Ultimate</title>
     
     <link rel="manifest" href="manifest.json">
-    <meta name="theme-color" content="#0a0a12">
+    <meta name="theme-color" content="#050014">
     <link rel="apple-touch-icon" href="icon.png">
 
     <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500;700;900&family=Rajdhani:wght@500;700&display=swap" rel="stylesheet">
@@ -14,77 +14,103 @@
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
 
     <style>
-        /* --- ESTILOS VISUAIS --- */
-        :root { --bg: #0a0a12; --thiago: #00f3ff; --samella: #ff0055; --roxo: #bd00ff; --amarelo: #ffeb3b; --ouro: #ffd700; --vidro: rgba(255, 255, 255, 0.08); }
+        /* --- VISUAL CYBERPUNK --- */
+        :root { 
+            --bg: #050014; 
+            --thiago: #00f3ff; 
+            --samella: #ff0055; 
+            --roxo: #bd00ff; 
+            --amarelo: #ffeb3b; 
+            --ouro: #ffd700; 
+            --vidro: rgba(255, 255, 255, 0.05); 
+        }
+        
         * { box-sizing: border-box; margin: 0; padding: 0; user-select: none; -webkit-tap-highlight-color: transparent; }
         
         body { 
             background: var(--bg); 
-            background-image: radial-gradient(circle at 50% 50%, rgba(20,20,30,1) 0%, rgba(0,0,0,1) 100%);
+            background-image: 
+                radial-gradient(circle at 10% 20%, rgba(189, 0, 255, 0.2) 0%, transparent 40%),
+                radial-gradient(circle at 90% 80%, rgba(0, 243, 255, 0.2) 0%, transparent 40%);
             color: #fff; font-family: 'Rajdhani', sans-serif; 
             min-height: 100vh; overflow-x: hidden; display: flex; flex-direction: column;
         }
 
-        /* HEADER & PLACAR */
+        /* HEADER */
         header {
             display: flex; justify-content: space-between; align-items: center; padding: 15px 20px;
-            background: rgba(0,0,0,0.8); border-bottom: 1px solid #333; position: sticky; top: 0; z-index: 100;
+            background: rgba(0,0,0,0.6); backdrop-filter: blur(10px); 
+            border-bottom: 1px solid rgba(255,255,255,0.1); position: sticky; top: 0; z-index: 100;
         }
-        .logo { font-family: 'Orbitron'; font-weight: 900; letter-spacing: 2px; color: #fff; }
-        .round-badge { border: 1px solid var(--amarelo); color: var(--amarelo); padding: 4px 10px; border-radius: 20px; font-size: 0.8rem; font-family: 'Orbitron'; }
+        .logo { font-family: 'Orbitron'; font-weight: 900; letter-spacing: 2px; background: linear-gradient(90deg, var(--thiago), var(--samella)); -webkit-background-clip: text; color: transparent; }
+        .round-badge { border: 1px solid var(--amarelo); color: var(--amarelo); padding: 5px 12px; border-radius: 20px; font-size: 0.9rem; font-family: 'Orbitron'; box-shadow: 0 0 10px rgba(255, 235, 59, 0.3); }
         
+        /* PLACAR */
         #scoreboard {
             display: flex; justify-content: space-between; align-items: center;
-            padding: 15px; margin: 10px; background: var(--vidro); border: 1px solid #333; border-radius: 12px;
+            padding: 15px; margin: 15px; background: var(--vidro); 
+            border: 1px solid rgba(255,255,255,0.1); border-radius: 15px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.3);
         }
         .score-box { text-align: center; width: 45%; }
-        .s-name { font-size: 0.7rem; color: #888; letter-spacing: 1px; }
-        .s-val { font-family: 'Orbitron'; font-size: 1.8rem; font-weight: bold; }
+        .s-name { font-size: 0.8rem; color: #aaa; letter-spacing: 2px; margin-bottom: 5px; }
+        .s-val { font-family: 'Orbitron'; font-size: 2rem; font-weight: bold; text-shadow: 0 0 10px currentColor; }
         
         /* TELAS */
-        .screen { display: none; padding: 20px; flex-direction: column; align-items: center; flex: 1; animation: fadeIn 0.3s ease; }
+        .screen { display: none; padding: 20px; flex-direction: column; align-items: center; flex: 1; animation: fadeIn 0.4s ease; }
         .active { display: flex; }
-        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
 
         /* TELA SELEÇÃO */
         .p-card {
-            width: 100%; max-width: 350px; height: 100px; margin-bottom: 15px;
-            background: rgba(255,255,255,0.05); border: 1px solid #444; border-radius: 15px;
-            display: flex; align-items: center; justify-content: space-between; padding: 20px; cursor: pointer;
+            width: 100%; max-width: 350px; height: 110px; margin-bottom: 20px;
+            background: linear-gradient(90deg, rgba(255,255,255,0.03), rgba(255,255,255,0));
+            border: 1px solid #444; border-radius: 15px;
+            display: flex; align-items: center; justify-content: space-between; padding: 25px; cursor: pointer;
+            transition: 0.3s; position: relative; overflow: hidden;
         }
-        .card-t { border-color: var(--thiago); }
-        .card-s { border-color: var(--samella); }
+        .p-card::before { content:''; position: absolute; left: 0; top: 0; bottom: 0; width: 5px; }
+        .card-t { border-color: var(--thiago); } .card-t::before { background: var(--thiago); box-shadow: 2px 0 15px var(--thiago); }
+        .card-s { border-color: var(--samella); } .card-s::before { background: var(--samella); box-shadow: 2px 0 15px var(--samella); }
+        .p-card:active { transform: scale(0.98); filter: brightness(1.2); }
 
         /* JOGO */
         .roleta {
-            width: 120px; height: 120px; border-radius: 50%; border: 4px solid var(--roxo);
-            display: flex; justify-content: center; align-items: center; margin: 10px 0;
-            background: rgba(0,0,0,0.5); box-shadow: 0 0 20px var(--roxo);
+            width: 140px; height: 140px; border-radius: 50%; border: 4px solid var(--roxo);
+            display: flex; justify-content: center; align-items: center; margin: 20px 0;
+            background: rgba(0,0,0,0.3); box-shadow: 0 0 40px rgba(189, 0, 255, 0.4);
         }
-        #letra-big { font-family: 'Orbitron'; font-size: 4rem; text-shadow: 0 0 10px #fff; }
+        #letra-big { font-family: 'Orbitron'; font-size: 5rem; text-shadow: 0 0 20px #fff; }
 
-        .input-wrap { width: 100%; margin-bottom: 12px; position: relative; }
-        .input-tag { position: absolute; top: -8px; left: 10px; background: #000; padding: 0 5px; color: var(--roxo); font-size: 0.75rem; font-weight: bold; }
+        .input-wrap { width: 100%; margin-bottom: 15px; position: relative; }
+        .input-tag { position: absolute; top: -10px; left: 10px; background: #050014; padding: 0 8px; color: var(--roxo); font-size: 0.8rem; font-weight: bold; border: 1px solid #333; border-radius: 4px; }
         .game-input {
-            width: 100%; background: transparent; border: 1px solid #555; border-radius: 8px;
-            color: #fff; padding: 12px; font-size: 1.1rem; font-family: 'Rajdhani';
+            width: 100%; background: transparent; border: 1px solid #444; border-radius: 10px;
+            color: #fff; padding: 15px; font-size: 1.2rem; font-family: 'Rajdhani'; transition: 0.3s;
         }
-        .game-input:focus { border-color: var(--thiago); outline: none; background: rgba(255,255,255,0.05); }
+        .game-input:focus { border-color: var(--thiago); outline: none; background: rgba(0, 243, 255, 0.05); box-shadow: 0 0 15px rgba(0, 243, 255, 0.2); }
 
         /* BOTÕES */
-        .btn { width: 100%; padding: 18px; border: none; border-radius: 12px; font-family: 'Orbitron'; font-size: 1.1rem; font-weight: bold; color: #fff; cursor: pointer; margin-bottom: 15px; }
-        .btn-girar { background: linear-gradient(45deg, #7b00ff, #bd00ff); }
-        .btn-stop { background: linear-gradient(45deg, #ff0055, #ff4d00); font-size: 1.5rem; animation: pulse 1.5s infinite; margin-top: 20px; }
-        @keyframes pulse { 0% { box-shadow: 0 0 0 0 rgba(255, 0, 85, 0.4); } 70% { box-shadow: 0 0 0 10px rgba(255, 0, 85, 0); } 100% { box-shadow: 0 0 0 0 rgba(255, 0, 85, 0); } }
+        .btn { width: 100%; padding: 18px; border: none; border-radius: 12px; font-family: 'Orbitron'; font-size: 1.1rem; font-weight: bold; color: #fff; cursor: pointer; margin-bottom: 15px; transition: 0.2s; }
+        .btn-girar { background: linear-gradient(45deg, #7b00ff, #bd00ff); box-shadow: 0 4px 15px rgba(123, 0, 255, 0.4); }
+        .btn-stop { background: linear-gradient(45deg, #ff0055, #ff4d00); font-size: 1.5rem; animation: pulse 1.5s infinite; margin-top: 20px; box-shadow: 0 0 20px rgba(255, 0, 85, 0.4); }
+        @keyframes pulse { 0% { transform: scale(1); } 50% { transform: scale(1.02); } 100% { transform: scale(1); } }
 
         /* RESULTADOS */
-        .res-row { background: rgba(255,255,255,0.05); width: 100%; padding: 10px; margin-bottom: 5px; border-left: 4px solid #555; border-radius: 0 5px 5px 0; text-align: left; }
-        .res-cat { font-size: 0.7rem; color: #aaa; text-transform: uppercase; }
+        .res-row { background: rgba(255,255,255,0.03); width: 100%; padding: 12px; margin-bottom: 8px; border-left: 4px solid #555; border-radius: 0 8px 8px 0; text-align: left; }
+        .res-cat { font-size: 0.75rem; color: #888; text-transform: uppercase; margin-bottom: 2px; }
         .res-pts { float: right; font-family: 'Orbitron'; font-weight: bold; }
 
-        /* MODAL */
-        #modal { position: fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.9); z-index:999; display:none; justify-content:center; align-items:center; flex-direction:column; }
-        .modal-box { background:#222; padding:20px; border-radius:10px; border:1px solid #444; text-align:center; width:80%; }
+        /* MENU CONFIGURAÇÕES */
+        #modal { position: fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.95); z-index:999; display:none; justify-content:center; align-items:center; flex-direction:column; backdrop-filter: blur(8px); }
+        .modal-box { background:#151520; padding:25px; border-radius:20px; border:1px solid #333; text-align:center; width:85%; max-width: 320px; box-shadow: 0 10px 40px rgba(0,0,0,0.5); }
+        
+        .cfg-btn { 
+            background: transparent; border: 1px solid #444; color: #888; 
+            padding: 12px; margin: 6px 0; width: 100%; border-radius: 8px; 
+            font-family: 'Orbitron'; cursor: pointer; transition: 0.3s;
+        }
+        .cfg-btn.active { border-color: var(--roxo); color: var(--roxo); background: rgba(189, 0, 255, 0.15); box-shadow: 0 0 15px rgba(189, 0, 255, 0.2); }
         
         .hidden { display: none !important; }
     </style>
@@ -94,7 +120,7 @@
     <header>
         <div class="logo">ADEDONHA</div>
         <div class="round-badge" id="hud-round">R: 1/10</div>
-        <div onclick="toggleMenu()" style="font-size:1.5rem; cursor:pointer;">⚙️</div>
+        <div onclick="toggleMenu()" style="font-size:1.5rem; cursor:pointer; color:#fff;">⚙️</div>
     </header>
 
     <div id="scoreboard" class="hidden">
@@ -102,7 +128,7 @@
             <div class="s-name">THIAGO</div>
             <div class="s-val" style="color:var(--thiago)" id="hud-thiago">0</div>
         </div>
-        <div style="font-family:'Orbitron'; color:#555;">VS</div>
+        <div style="font-family:'Orbitron'; color:#555; font-size: 0.8rem;">VS</div>
         <div class="score-box">
             <div class="s-name">SÂMELLA</div>
             <div class="s-val" style="color:var(--samella)" id="hud-samella">0</div>
@@ -110,14 +136,14 @@
     </div>
 
     <div id="screen-login" class="screen active">
-        <h1 style="font-family:'Orbitron'; margin:30px 0; color:var(--roxo);">START GAME</h1>
+        <h1 style="font-family:'Orbitron'; margin:30px 0; color:var(--roxo); text-shadow: 0 0 20px rgba(189,0,255,0.5);">BATTLE MODE</h1>
         <div class="p-card card-t" onclick="login('THIAGO')">
-            <span style="font-size:2rem;">👨🏻</span>
-            <span style="font-family:'Orbitron'; font-size:1.2rem;">THIAGO</span>
+            <span style="font-size:2.5rem;">👨🏻</span>
+            <span style="font-family:'Orbitron'; font-size:1.4rem; color:var(--thiago);">THIAGO</span>
         </div>
         <div class="p-card card-s" onclick="login('SAMELLA')">
-            <span style="font-size:2rem;">👩🏻</span>
-            <span style="font-family:'Orbitron'; font-size:1.2rem;">SÂMELLA</span>
+            <span style="font-size:2.5rem;">👩🏻</span>
+            <span style="font-family:'Orbitron'; font-size:1.4rem; color:var(--samella);">SÂMELLA</span>
         </div>
     </div>
 
@@ -129,7 +155,7 @@
     </div>
 
     <div id="screen-result" class="screen">
-        <h2 style="color:var(--amarelo); font-family:'Orbitron'; margin-bottom:20px;">FIM DE RODADA</h2>
+        <h2 style="color:var(--amarelo); font-family:'Orbitron'; margin-bottom:20px;">FIM DE ROUND</h2>
         <div id="result-list" style="width:100%;"></div>
         <div style="margin: 20px 0; font-size:1.5rem;">
             TOTAL: <strong id="total-round" style="color:var(--amarelo)">0</strong>
@@ -138,24 +164,30 @@
     </div>
 
     <div id="screen-victory" class="screen" style="justify-content:center;">
-        <div style="font-size:5rem;">🏆</div>
-        <h1 style="color:var(--ouro); margin-bottom:10px;">CAMPEÃO</h1>
-        <h2 id="winner-name" style="font-family:'Orbitron'; font-size:3rem; margin-bottom:30px;">...</h2>
+        <div style="font-size:6rem; animation: bounce 1s infinite alternate;">🏆</div>
+        <h1 style="color:var(--ouro); margin-bottom:10px; text-shadow: 0 0 20px var(--ouro);">CAMPEÃO</h1>
+        <h2 id="winner-name" style="font-family:'Orbitron'; font-size:3.5rem; margin-bottom:40px;">...</h2>
         <button class="btn btn-stop" onclick="zerarTudo()">NOVA PARTIDA</button>
     </div>
 
     <div id="modal">
         <div class="modal-box">
-            <h3 style="color:#fff; margin-bottom:15px;">CONFIGURAÇÕES</h3>
-            <button class="btn" style="background:#333; font-size:0.9rem;" onclick="setConfig(5)">JOGO RÁPIDO (5)</button>
-            <button class="btn" style="background:#333; font-size:0.9rem;" onclick="setConfig(10)">JOGO NORMAL (10)</button>
-            <button class="btn" style="background:#330000; border:1px solid red; color:red; margin-top:10px;" onclick="zerarTudo()">RESETAR TUDO</button>
-            <button class="btn" style="background:#000; margin-top:10px;" onclick="toggleMenu()">VOLTAR</button>
+            <h3 style="color:#fff; margin-bottom:20px; font-family:'Orbitron'; border-bottom:1px solid #333; padding-bottom:10px;">CONFIGURAÇÕES</h3>
+            
+            <p style="color:#666; font-size:0.8rem; margin-bottom:10px;">LIMITE DE RODADAS:</p>
+            <button class="cfg-btn" id="cfg-5" onclick="setConfig(5)">RÁPIDO (5)</button>
+            <button class="cfg-btn" id="cfg-10" onclick="setConfig(10)">PADRÃO (10)</button>
+            <button class="cfg-btn" id="cfg-20" onclick="setConfig(20)">LONGO (20)</button>
+            
+            <div style="margin-top:20px; padding-top:15px; border-top:1px solid #333;">
+                <button class="btn" style="background:rgba(255,0,0,0.1); border:1px solid red; color:red; padding:12px; font-size:0.9rem;" onclick="zerarTudo()">⚠️ ZERAR PLACAR</button>
+                <button class="btn" style="background:#000; padding:12px; margin-top:5px;" onclick="toggleMenu()">VOLTAR</button>
+            </div>
         </div>
     </div>
 
     <script>
-        // FIREBASE INIT
+        // CONFIG FIREBASE
         const firebaseConfig = {
             apiKey: "AIzaSyAjgEFZB3_FHelXH9YtCnFYFO4RCGO7Wd8",
             authDomain: "adedonha-8b2a4.firebaseapp.com",
@@ -169,7 +201,7 @@
         const db = firebase.database();
         const ref = db.ref('partida_casal');
 
-        // CACHE CLEANUP
+        // CACHE CLEAR
         if ('serviceWorker' in navigator) navigator.serviceWorker.getRegistrations().then(r => r.forEach(i => i.unregister()));
 
         // VARS
@@ -180,7 +212,7 @@
         let lastLetter = ""; 
         const cats = ["Nome", "Animal", "Cor", "Fruta", "Objeto", "CEP", "Profissão", "Marca", "Corpo", "Sogra"];
 
-        // SETUP INICIAL
+        // LOGIN
         function login(nome) {
             eu = nome;
             ele = (nome === 'THIAGO') ? 'SAMELLA' : 'THIAGO';
@@ -188,7 +220,6 @@
             document.getElementById('scoreboard').classList.remove('hidden');
             document.getElementById('screen-game').classList.add('active');
             
-            // GERA INPUTS APENAS UMA VEZ
             const div = document.getElementById('inputs-area');
             div.innerHTML = "";
             cats.forEach(c => {
@@ -198,7 +229,6 @@
                         <input type="text" class="game-input" id="in-${c}" oninput="salvarLocal()" autocomplete="off">
                     </div>`;
             });
-            
             ouvirBanco();
         }
 
@@ -212,23 +242,26 @@
             ref.on('value', snap => {
                 const d = snap.val() || {};
                 
-                // Atualiza HUD
+                // HUD
                 document.getElementById('hud-thiago').innerText = d.placar_thiago || 0;
                 document.getElementById('hud-samella').innerText = d.placar_samella || 0;
                 maxR = d.config_max || 10;
                 rodada = d.rodada || 1;
                 document.getElementById('hud-round').innerText = `R: ${rodada}/${maxR}`;
                 
-                // Atualiza Letra
+                // ATUALIZA VISUAL DO MENU (DESTAQUE NA OPÇÃO ATIVA)
+                updateMenuHighlight(maxR);
+
+                // LETRA
                 if(d.letra) document.getElementById('letra-big').innerText = d.letra;
 
-                // CONTROLE DE TELAS
+                // ESTADOS
                 if (d.status === 'STOP') {
                     mostrarResultado(d.respostas);
                 } 
                 else if (d.status === 'JOGANDO') {
                     trocarTela('screen-game');
-                    // Só limpa se a flag mudou (evita limpar enquanto digita)
+                    // Limpa inputs APENAS se mudou a rodada/letra
                     if (d.limpar_id && d.limpar_id !== lastLetter) {
                         lastLetter = d.limpar_id;
                         document.querySelectorAll('input').forEach(i => i.value = "");
@@ -254,13 +287,13 @@
             ref.update({
                 status: 'JOGANDO',
                 letra: l,
-                respostas: {}, // Limpa respostas no banco
-                limpar_id: Date.now() // Token unico pra forçar limpeza local
+                respostas: {}, 
+                limpar_id: Date.now() 
             });
         }
 
         function darStop() {
-            salvarLocal(); // Salva ultima vez
+            salvarLocal();
             ref.update({ status: 'STOP', quem: eu });
         }
 
@@ -296,7 +329,6 @@
             
             document.getElementById('total-round').innerText = total;
 
-            // BOTÃO PRÓXIMO
             const btn = document.getElementById('btn-next');
             if(rodada >= maxR) {
                 btn.innerText = "VER CAMPEÃO 🏆";
@@ -307,7 +339,6 @@
                 btn.style.background = "";
             }
 
-            // ATUALIZA PLACAR (SÓ QUEM DEU STOP PRA NÃO DUPLICAR)
             ref.once('value').then(s => {
                 const d = s.val();
                 if(d.quem === eu) {
@@ -315,7 +346,6 @@
                     let atual = d[key] || 0;
                     ref.child(key).set(atual + total);
                 } else {
-                    // Fallback de segurança local
                      let key = `placar_${eu.toLowerCase()}`;
                      let atual = d[key] || 0;
                      ref.child(key).set(atual + total);
@@ -344,8 +374,15 @@
 
         function setConfig(n) {
             ref.update({ config_max: n });
-            alert('Configurado para ' + n + ' rodadas!');
             toggleMenu();
+        }
+        
+        function updateMenuHighlight(val) {
+            // Remove destaque de todos
+            document.querySelectorAll('.cfg-btn').forEach(b => b.classList.remove('active'));
+            // Adiciona no atual
+            const btn = document.getElementById(`cfg-${val}`);
+            if(btn) btn.classList.add('active');
         }
 
         function zerarTudo() {
