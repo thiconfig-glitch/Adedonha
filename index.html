@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Adedonha Roulette</title>
+    <title>Adedonha Roulette Fix</title>
     
     <link rel="manifest" href="manifest.json">
     <meta name="theme-color" content="#050014">
@@ -24,98 +24,47 @@
             min-height: 100vh; overflow-x: hidden; display: flex; flex-direction: column;
         }
 
-        /* HEADER */
-        header {
-            display: flex; justify-content: space-between; align-items: center; padding: 15px 20px;
-            background: rgba(0,0,0,0.8); border-bottom: 1px solid #333; position: sticky; top: 0; z-index: 100;
-        }
+        header { display: flex; justify-content: space-between; align-items: center; padding: 15px 20px; background: rgba(0,0,0,0.8); border-bottom: 1px solid #333; position: sticky; top: 0; z-index: 100; }
         .logo { font-family: 'Orbitron'; font-weight: 900; letter-spacing: 2px; background: linear-gradient(90deg, var(--thiago), var(--samella)); -webkit-background-clip: text; color: transparent; }
         .round-badge { border: 1px solid var(--amarelo); color: var(--amarelo); padding: 5px 12px; border-radius: 20px; font-size: 0.9rem; font-family: 'Orbitron'; }
 
-        /* PLACAR */
-        #scoreboard {
-            display: flex; justify-content: space-between; align-items: center;
-            padding: 10px 15px; margin: 10px; background: var(--vidro); 
-            border: 1px solid #333; border-radius: 12px;
-        }
+        #scoreboard { display: flex; justify-content: space-between; align-items: center; padding: 10px 15px; margin: 10px; background: var(--vidro); border: 1px solid #333; border-radius: 12px; }
         .score-box { text-align: center; width: 45%; }
         .s-name { font-size: 0.7rem; color: #888; letter-spacing: 1px; }
         .s-val { font-family: 'Orbitron'; font-size: 1.8rem; font-weight: bold; }
 
-        /* TELAS */
         .screen { display: none; padding: 20px; flex-direction: column; align-items: center; flex: 1; animation: fadeIn 0.4s ease; }
         .active { display: flex; }
         @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
 
-        /* --- ROLETA REAL (CSS PURE) --- */
-        .wheel-wrapper {
-            position: relative;
-            width: 280px; height: 280px;
-            margin: 20px auto;
-            display: flex; justify-content: center; align-items: center;
-        }
-        .pointer {
-            position: absolute; top: -15px; left: 50%; transform: translateX(-50%);
-            width: 0; height: 0; 
-            border-left: 15px solid transparent; border-right: 15px solid transparent; border-top: 30px solid var(--amarelo);
-            z-index: 10; filter: drop-shadow(0 0 10px var(--amarelo));
-        }
-        .wheel {
-            width: 100%; height: 100%;
-            border-radius: 50%;
-            border: 5px solid var(--roxo);
-            background: radial-gradient(circle, #000 30%, #220033 100%);
-            position: relative;
-            transition: transform 4s cubic-bezier(0.1, 0.7, 0.1, 1); /* Curva de desaceleração realista */
-            box-shadow: 0 0 30px rgba(189, 0, 255, 0.3);
-        }
-        .wheel-letter {
-            position: absolute; top: 50%; left: 50%;
-            transform-origin: 0 0; /* Gira pelo centro */
-            font-family: 'Orbitron'; font-weight: bold; font-size: 1.2rem; color: #fff;
-            text-shadow: 0 0 5px var(--thiago);
-            height: 130px; /* Metade do tamanho da roda aprox */
-            margin-top: -130px; /* Puxa pra cima */
-            width: 0; display: flex; justify-content: center; padding-top: 10px;
-        }
-        /* Centro decorativo */
-        .wheel-center {
-            position: absolute; width: 50px; height: 50px; background: #fff;
-            border-radius: 50%; z-index: 5; box-shadow: 0 0 20px #fff;
-            top: 50%; left: 50%; transform: translate(-50%, -50%);
-            display: flex; justify-content: center; align-items: center;
-            font-size: 1.5rem; color: #000; font-weight: bold;
-        }
+        /* ROLETA */
+        .wheel-wrapper { position: relative; width: 280px; height: 280px; margin: 20px auto; display: flex; justify-content: center; align-items: center; }
+        .pointer { position: absolute; top: -20px; left: 50%; transform: translateX(-50%); width: 0; height: 0; border-left: 20px solid transparent; border-right: 20px solid transparent; border-top: 40px solid var(--amarelo); z-index: 10; filter: drop-shadow(0 0 10px var(--amarelo)); }
+        .wheel { width: 100%; height: 100%; border-radius: 50%; border: 5px solid var(--roxo); background: radial-gradient(circle, #000 30%, #220033 100%); position: relative; transition: transform 4s cubic-bezier(0.1, 0.7, 0.1, 1); box-shadow: 0 0 30px rgba(189, 0, 255, 0.3); }
+        .wheel-letter { position: absolute; top: 50%; left: 50%; transform-origin: 0 0; font-family: 'Orbitron'; font-weight: bold; font-size: 1.2rem; color: #fff; text-shadow: 0 0 5px var(--thiago); height: 130px; margin-top: -130px; width: 0; display: flex; justify-content: center; padding-top: 10px; }
+        .wheel-center { position: absolute; width: 50px; height: 50px; background: #fff; border-radius: 50%; z-index: 5; box-shadow: 0 0 20px #fff; top: 50%; left: 50%; transform: translate(-50%, -50%); display: flex; justify-content: center; align-items: center; font-size: 1.5rem; color: #000; font-weight: bold; }
 
-        /* TIMER */
         #timer-display { font-family: 'Orbitron'; font-size: 2.5rem; color: var(--amarelo); margin: 20px 0; text-shadow: 0 0 15px var(--amarelo); }
         .time-critical { color: #ff0055 !important; animation: pulse 0.5s infinite; }
 
-        /* INPUTS */
         .input-wrap { width: 100%; margin-bottom: 15px; position: relative; opacity: 0; transition: 0.5s; transform: translateY(20px); }
-        .show-inputs { opacity: 1; transform: translateY(0); } /* Classe pra animar entrada */
-        
+        .show-inputs { opacity: 1; transform: translateY(0); } 
         .input-tag { position: absolute; top: -10px; left: 10px; background: #050014; padding: 0 8px; color: var(--roxo); font-size: 0.8rem; font-weight: bold; border: 1px solid #333; }
         .game-input { width: 100%; background: transparent; border: 1px solid #444; border-radius: 10px; color: #fff; padding: 15px; font-size: 1.2rem; font-family: 'Rajdhani'; }
-        .game-input:focus { border-color: var(--thiago); outline: none; background: rgba(0, 243, 255, 0.05); }
-
-        /* BOTÕES E OUTROS */
+        
         .btn { width: 100%; padding: 18px; border: none; border-radius: 12px; font-family: 'Orbitron'; font-size: 1.1rem; font-weight: bold; color: #fff; cursor: pointer; margin-bottom: 15px; }
         .btn-girar { background: linear-gradient(45deg, #7b00ff, #bd00ff); box-shadow: 0 0 15px var(--roxo); }
         .btn-stop { background: linear-gradient(45deg, #ff0055, #ff4d00); font-size: 1.5rem; animation: pulse 1.5s infinite; margin-top: 20px; }
         
-        /* LOGIN E CARDS */
         .p-card { width: 100%; height: 100px; margin-bottom: 20px; background: rgba(255,255,255,0.05); border: 1px solid #444; border-radius: 15px; display: flex; align-items: center; justify-content: space-between; padding: 25px; cursor: pointer; }
         .card-t { border-color: var(--thiago); } .card-s { border-color: var(--samella); }
         
-        /* RESULTADOS */
         .res-row { background: rgba(255,255,255,0.03); width: 100%; padding: 12px; margin-bottom: 8px; border-left: 4px solid #555; text-align: left; }
         .res-pts { float: right; font-family: 'Orbitron'; font-weight: bold; }
         
         @keyframes pulse { 0% { transform: scale(1); } 50% { transform: scale(1.02); } 100% { transform: scale(1); } }
         .hidden { display: none !important; }
         
-        /* MENU & SENHA */
         #modal { position: fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.95); z-index:999; display:none; justify-content:center; align-items:center; flex-direction:column; }
         .modal-box { background:#151520; padding:25px; border-radius:20px; border:1px solid #333; text-align:center; width:85%; max-width: 320px; }
         .cfg-btn { background: transparent; border: 1px solid #444; color: #888; padding: 12px; margin: 6px 0; width: 100%; border-radius: 8px; cursor: pointer; }
@@ -159,13 +108,10 @@
     <div id="screen-game" class="screen">
         <div class="wheel-wrapper">
             <div class="pointer"></div>
-            <div class="wheel" id="wheel">
-                </div>
+            <div class="wheel" id="wheel"></div>
             <div class="wheel-center">⚡</div>
         </div>
-
         <button class="btn btn-girar" id="btn-spin" onclick="girar()">GIRAR ROLETA</button>
-        
         <div id="game-ui" class="hidden" style="width: 100%;">
             <div id="timer-display">05:00</div>
             <div id="inputs-area" style="width:100%;"></div>
@@ -199,7 +145,6 @@
     </div>
 
     <script>
-        // FIREBASE
         const firebaseConfig = {
             apiKey: "AIzaSyAjgEFZB3_FHelXH9YtCnFYFO4RCGO7Wd8",
             authDomain: "adedonha-8b2a4.firebaseapp.com",
@@ -213,54 +158,38 @@
         const db = firebase.database();
         const ref = db.ref('partida_casal');
 
-        // CACHE CLEAR
         if ('serviceWorker' in navigator) navigator.serviceWorker.getRegistrations().then(r => r.forEach(i => i.unregister()));
 
-        // CONSTANTES DA ROLETA
-        const letras = "ABCDEFGHIJKLMNOPQRSTUVZ".split(""); // Sem K, W, Y
+        const letras = "ABCDEFGHIJKLMNOPQRSTUVZ".split("");
         const numLetras = letras.length;
         const anglePerLetter = 360 / numLetras;
         let currentRotation = 0;
-
-        // VARS
         let eu = ""; let ele = ""; let maxR = 10; let rodada = 1; let timerInterval = null;
         const cats = ["Nome", "Animal", "Cor", "Fruta", "Objeto", "CEP", "Profissão", "Marca", "Corpo", "Sogra"];
 
-        // SETUP ROLETA
         function setupWheel() {
             const wheel = document.getElementById('wheel');
             wheel.innerHTML = "";
             letras.forEach((letra, index) => {
                 const el = document.createElement('div');
                 el.className = 'wheel-letter';
-                // Girar cada letra para formar o círculo
                 el.style.transform = `rotate(${index * anglePerLetter}deg)`;
                 el.innerText = letra;
                 wheel.appendChild(el);
             });
         }
-        setupWheel(); // Inicia roleta visualmente
+        setupWheel();
 
-        // LOGICA DE GIRO
         function spinTo(letraDestino) {
             const index = letras.indexOf(letraDestino);
             if (index === -1) return;
-
-            // O ponteiro está no topo (0 graus). 
-            // Para trazer o índice X para o topo, precisamos girar negativo.
-            // Adicionamos voltas extras (360 * 5) para dar emoção.
             const voltasExtras = 360 * 5; 
             const anguloDestino = -(index * anglePerLetter);
-            
-            // Ajuste para sempre girar pra frente (acumulativo)
-            // Arredondamos currentRotation para o múltiplo de 360 mais próximo e somamos
             const novaRotacao = currentRotation + voltasExtras + (anguloDestino - (currentRotation % 360));
-
             currentRotation = novaRotacao;
             document.getElementById('wheel').style.transform = `rotate(${novaRotacao}deg)`;
         }
 
-        // SENHA
         function verificarSenha() {
             if (document.getElementById('senha-input').value === 'ceros') {
                 document.getElementById('screen-password').classList.remove('active');
@@ -268,7 +197,6 @@
             } else alert('SENHA ERRADA!');
         }
 
-        // LOGIN
         function login(nome) {
             eu = nome; ele = (nome === 'THIAGO') ? 'SAMELLA' : 'THIAGO';
             document.getElementById('screen-login').classList.remove('active');
@@ -285,12 +213,9 @@
             ref.child('respostas').child(eu).update(r);
         }
 
-        // LISTENERS
         function ouvirBanco() {
             ref.on('value', snap => {
                 const d = snap.val() || {};
-                
-                // HUD
                 document.getElementById('hud-thiago').innerText = d.placar_thiago || 0;
                 document.getElementById('hud-samella').innerText = d.placar_samella || 0;
                 maxR = d.config_max || 10;
@@ -298,29 +223,17 @@
                 document.getElementById('hud-round').innerText = `R: ${rodada}/${maxR}`;
                 updateMenuHighlight(maxR);
 
-                // ESTADOS
                 if (d.status === 'ANIMANDO') {
-                    // Estado Especial: A roleta gira VISUALMENTE para os dois
-                    document.getElementById('btn-spin').style.display = 'none'; // Esconde botão
-                    document.getElementById('game-ui').classList.add('hidden'); // Esconde jogo anterior
+                    document.getElementById('btn-spin').style.display = 'none';
+                    document.getElementById('game-ui').classList.add('hidden');
                     trocarTela('screen-game');
-                    spinTo(d.letra); // GIRA A RODA!
+                    spinTo(d.letra);
                 }
                 else if (d.status === 'JOGANDO') {
-                    // Exibe inputs e timer após o giro
                     document.getElementById('btn-spin').style.display = 'none';
                     document.getElementById('game-ui').classList.remove('hidden');
-                    
-                    // Animação de entrada dos inputs
-                    setTimeout(() => {
-                        document.querySelectorAll('.input-wrap').forEach((el, i) => {
-                            setTimeout(() => el.classList.add('show-inputs'), i * 50);
-                        });
-                    }, 100);
-
+                    setTimeout(() => { document.querySelectorAll('.input-wrap').forEach((el, i) => { setTimeout(() => el.classList.add('show-inputs'), i * 50); }); }, 100);
                     if (d.deadline) iniciarTimer(d.deadline);
-                    
-                    // Se nova rodada, limpa inputs visualmente
                     if (d.limpar_id && d.limpar_id !== window.lastClean) {
                         window.lastClean = d.limpar_id;
                         document.querySelectorAll('input').forEach(i => i.value = "");
@@ -340,7 +253,6 @@
             });
         }
 
-        // TIMER
         function iniciarTimer(end) {
             if (timerInterval) clearInterval(timerInterval);
             const display = document.getElementById('timer-display');
@@ -360,21 +272,21 @@
         }
         function pararTimer() { if (timerInterval) clearInterval(timerInterval); }
 
-        // AÇÕES
         function girar() {
-            if(rodada > maxR) { ref.update({status:'VITORIA'}); return; }
+            if(rodada > maxR) { 
+                alert("O jogo acabou! Inicie uma nova partida no menu."); 
+                return; 
+            }
             
             const l = letras[Math.floor(Math.random() * letras.length)];
             
-            // 1. Manda estado ANIMANDO primeiro (pra girar a roda)
             ref.update({
                 status: 'ANIMANDO',
                 letra: l,
                 respostas: {},
                 limpar_id: Date.now()
-            });
+            }).catch(e => alert("ERRO FIREBASE: " + e.message));
 
-            // 2. Depois de 4 segundos (tempo do giro), muda pra JOGANDO e inicia timer
             setTimeout(() => {
                 ref.update({
                     status: 'JOGANDO',
@@ -419,8 +331,8 @@
         function proximaRodada() {
             if(rodada >= maxR) ref.update({status:'VITORIA'});
             else { 
-                document.getElementById('btn-spin').style.display = 'block'; // Mostra botão de girar
-                document.getElementById('game-ui').classList.add('hidden'); // Esconde inputs
+                document.getElementById('btn-spin').style.display = 'block'; 
+                document.getElementById('game-ui').classList.add('hidden'); 
                 ref.child('rodada').transaction(r=>(r||1)+1); 
                 trocarTela('screen-game');
             }
