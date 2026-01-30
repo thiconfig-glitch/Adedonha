@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Adedonha Clean</title>
+    <title>Adedonha Fixed</title>
     
     <link rel="manifest" href="manifest.json">
     <meta name="theme-color" content="#050014">
@@ -197,6 +197,8 @@
         function ouvirBanco() {
             ref.on('value', snap => {
                 const d = snap.val() || {};
+                
+                // HUD
                 document.getElementById('hud-thiago').innerText = d.placar_thiago || 0;
                 document.getElementById('hud-samella').innerText = d.placar_samella || 0;
                 maxR = d.config_max || 10;
@@ -209,10 +211,20 @@
 
                 if(d.letra) document.getElementById('letra-big').innerText = d.letra;
 
-                // ESTADOS SIMPLES
-                if (d.status === 'JOGANDO') {
-                    document.getElementById('btn-spin').style.display = 'none';
-                    document.getElementById('game-ui').classList.remove('hidden');
+                // --- CORREÇÃO DE ESTADOS ---
+                
+                // 1. ESPERA (Novo estado para destravamento)
+                if (d.status === 'ESPERA') {
+                    document.getElementById('btn-spin').style.display = 'block'; // Mostra botão
+                    document.getElementById('game-ui').classList.add('hidden'); // Esconde inputs
+                    document.getElementById('letra-big').innerText = "?";
+                    trocarTela('screen-game');
+                }
+                // 2. JOGANDO
+                else if (d.status === 'JOGANDO') {
+                    document.getElementById('btn-spin').style.display = 'none'; // Esconde botão
+                    document.getElementById('game-ui').classList.remove('hidden'); // Mostra inputs
+                    
                     if (d.deadline) iniciarTimer(d.deadline);
                     if (d.limpar_id && d.limpar_id !== lastLetter) {
                         lastLetter = d.limpar_id;
@@ -220,10 +232,12 @@
                     }
                     trocarTela('screen-game');
                 }
+                // 3. STOP
                 else if (d.status === 'STOP') {
                     pararTimer();
                     mostrarResultado(d.respostas);
                 }
+                // 4. VITORIA
                 else if (d.status === 'VITORIA') {
                     pararTimer();
                     trocarTela('screen-victory');
@@ -258,7 +272,6 @@
             const abc = "ABCDEFGHILMNOPQRSTUVZ";
             const l = abc[Math.floor(Math.random() * abc.length)];
             
-            // Simples e Direto
             ref.update({
                 status: 'JOGANDO',
                 letra: l,
@@ -304,10 +317,8 @@
         function proximaRodada() {
             if(rodada >= maxR) ref.update({status:'VITORIA'});
             else { 
-                document.getElementById('btn-spin').style.display = 'block'; 
-                document.getElementById('game-ui').classList.add('hidden'); 
                 ref.child('rodada').transaction(r=>(r||1)+1); 
-                ref.update({status: 'ESPERA', letra: '?'}); // Volta pra espera
+                ref.update({status: 'ESPERA', letra: '?'}); // VOLTA PARA ESPERA
                 trocarTela('screen-game');
             }
         }
@@ -315,7 +326,21 @@
         function trocarTela(id) { document.querySelectorAll('.screen').forEach(s => s.classList.remove('active')); document.getElementById(id).classList.add('active'); }
         function toggleMenu() { const m=document.getElementById('modal'); m.style.display=(m.style.display=='flex')?'none':'flex'; }
         function setConfig(n) { ref.update({ config_max: n }); toggleMenu(); }
-        function zerarTudo() { if(confirm("ZERAR?")) { ref.update({placar_thiago:0, placar_samella:0, rodada:1, status:'JOGANDO', letra:'?', respostas:{}}); toggleMenu(); } }
+        
+        // ZERAR AGORA MANDA PARA O STATUS 'ESPERA' (O SEGREDO)
+        function zerarTudo() { 
+            if(confirm("ZERAR?")) { 
+                ref.update({
+                    placar_thiago:0, 
+                    placar_samella:0, 
+                    rodada:1, 
+                    status:'ESPERA', // <--- AQUI ESTAVA O ERRO, AGORA ESTÁ 'ESPERA'
+                    letra:'?', 
+                    respostas:{}
+                }); 
+                toggleMenu(); 
+            } 
+        }
     </script>
 </body>
 </html>
