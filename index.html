@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Adedonha Final Fix</title>
+    <title>Adedonha Clean</title>
     
     <link rel="manifest" href="manifest.json">
     <meta name="theme-color" content="#050014">
@@ -19,16 +19,18 @@
         
         body { 
             background: var(--bg); 
-            background-image: radial-gradient(circle at 50% 50%, #151525 0%, #000 100%);
+            background-image: radial-gradient(circle at 50% 20%, #1a0b38 0%, #000 100%);
             color: #fff; font-family: 'Rajdhani', sans-serif; 
             min-height: 100vh; overflow-x: hidden; display: flex; flex-direction: column;
         }
 
+        /* HEADER */
         header { display: flex; justify-content: space-between; align-items: center; padding: 15px 20px; background: rgba(0,0,0,0.8); border-bottom: 1px solid #333; position: sticky; top: 0; z-index: 100; }
         .logo { font-family: 'Orbitron'; font-weight: 900; letter-spacing: 2px; background: linear-gradient(90deg, var(--thiago), var(--samella)); -webkit-background-clip: text; color: transparent; }
         .round-badge { border: 1px solid var(--amarelo); color: var(--amarelo); padding: 5px 12px; border-radius: 20px; font-size: 0.9rem; font-family: 'Orbitron'; }
 
-        #scoreboard { display: flex; justify-content: space-between; align-items: center; padding: 10px 15px; margin: 10px; background: var(--vidro); border: 1px solid #333; border-radius: 12px; }
+        /* PLACAR */
+        #scoreboard { display: flex; justify-content: space-between; align-items: center; padding: 10px 15px; margin: 15px; background: var(--vidro); border: 1px solid #333; border-radius: 12px; }
         .score-box { text-align: center; width: 45%; }
         .s-name { font-size: 0.7rem; color: #888; letter-spacing: 1px; }
         .s-val { font-family: 'Orbitron'; font-size: 1.8rem; font-weight: bold; }
@@ -37,39 +39,30 @@
         .active { display: flex; }
         @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
 
-        /* ROLETA CORRIGIDA */
-        .wheel-wrapper { position: relative; width: 280px; height: 280px; margin: 20px auto; display: flex; justify-content: center; align-items: center; }
-        .pointer { position: absolute; top: -20px; left: 50%; transform: translateX(-50%); width: 0; height: 0; border-left: 20px solid transparent; border-right: 20px solid transparent; border-top: 40px solid var(--amarelo); z-index: 10; filter: drop-shadow(0 0 10px var(--amarelo)); }
-        
-        .wheel { 
-            width: 100%; height: 100%; border-radius: 50%; border: 5px solid var(--roxo); 
-            background: radial-gradient(circle, #220033 0%, #000 100%); 
-            position: relative; transition: transform 4s cubic-bezier(0.1, 0.7, 0.1, 1); 
-            box-shadow: 0 0 30px rgba(189, 0, 255, 0.3); overflow: hidden; /* Garante que nada saia */
+        /* VISUAL CLÁSSICO DA LETRA */
+        .roleta-box {
+            width: 140px; height: 140px; border-radius: 20px; border: 2px solid var(--roxo);
+            display: flex; justify-content: center; align-items: center; margin: 20px 0;
+            background: rgba(0,0,0,0.3); box-shadow: 0 0 40px rgba(189, 0, 255, 0.2);
+            position: relative; overflow: hidden;
         }
+        .roleta-box::before { content:''; position: absolute; width: 100%; height: 5px; background: var(--roxo); top: 0; animation: scan 2s infinite linear; opacity: 0.5; }
+        @keyframes scan { 0% {top:0;} 100% {top:100%;} }
         
-        .wheel-letter { 
-            position: absolute; top: 50%; left: 50%; 
-            transform-origin: center; /* Centro absoluto */
-            font-family: 'Orbitron'; font-weight: 900; font-size: 1.2rem; color: #fff; 
-            text-shadow: 0 0 5px var(--thiago); 
-            height: 50%; /* Metade da altura */
-            margin-top: -50%; /* Puxa para o topo */
-            width: 20px; margin-left: -10px; /* Centraliza horizontal */
-            display: flex; justify-content: center; padding-top: 15px;
-        }
+        #letra-big { font-family: 'Orbitron'; font-size: 5rem; text-shadow: 0 0 20px #fff; z-index: 2; }
 
-        .wheel-center { position: absolute; width: 50px; height: 50px; background: #fff; border-radius: 50%; z-index: 5; box-shadow: 0 0 20px #fff; top: 50%; left: 50%; transform: translate(-50%, -50%); display: flex; justify-content: center; align-items: center; font-size: 1.5rem; color: #000; font-weight: bold; }
-
-        #timer-display { font-family: 'Orbitron'; font-size: 2.5rem; color: var(--amarelo); margin: 20px 0; text-shadow: 0 0 15px var(--amarelo); }
+        /* TIMER */
+        #timer-display { font-family: 'Orbitron'; font-size: 2.5rem; color: var(--amarelo); margin-bottom: 20px; text-shadow: 0 0 15px var(--amarelo); transition: 0.3s; }
         .time-critical { color: #ff0055 !important; animation: pulse 0.5s infinite; }
 
-        .input-wrap { width: 100%; margin-bottom: 15px; position: relative; opacity: 0; transition: 0.5s; transform: translateY(20px); }
-        .show-inputs { opacity: 1; transform: translateY(0); } 
-        .input-tag { position: absolute; top: -10px; left: 10px; background: #050014; padding: 0 8px; color: var(--roxo); font-size: 0.8rem; font-weight: bold; border: 1px solid #333; }
-        .game-input { width: 100%; background: transparent; border: 1px solid #444; border-radius: 10px; color: #fff; padding: 15px; font-size: 1.2rem; font-family: 'Rajdhani'; }
-        
-        .btn { width: 100%; padding: 18px; border: none; border-radius: 12px; font-family: 'Orbitron'; font-size: 1.1rem; font-weight: bold; color: #fff; cursor: pointer; margin-bottom: 15px; }
+        /* INPUTS */
+        .input-wrap { width: 100%; margin-bottom: 15px; position: relative; }
+        .input-tag { position: absolute; top: -10px; left: 10px; background: #050014; padding: 0 8px; color: var(--roxo); font-size: 0.8rem; font-weight: bold; border: 1px solid #333; border-radius: 4px; }
+        .game-input { width: 100%; background: transparent; border: 1px solid #444; border-radius: 10px; color: #fff; padding: 15px; font-size: 1.2rem; font-family: 'Rajdhani'; transition: 0.3s; }
+        .game-input:focus { border-color: var(--thiago); outline: none; background: rgba(0, 243, 255, 0.05); }
+
+        /* BOTÕES */
+        .btn { width: 100%; padding: 18px; border: none; border-radius: 12px; font-family: 'Orbitron'; font-size: 1.1rem; font-weight: bold; color: #fff; cursor: pointer; margin-bottom: 15px; transition: 0.2s; }
         .btn-girar { background: linear-gradient(45deg, #7b00ff, #bd00ff); box-shadow: 0 0 15px var(--roxo); }
         .btn-stop { background: linear-gradient(45deg, #ff0055, #ff4d00); font-size: 1.5rem; animation: pulse 1.5s infinite; margin-top: 20px; }
         
@@ -82,13 +75,10 @@
         @keyframes pulse { 0% { transform: scale(1); } 50% { transform: scale(1.02); } 100% { transform: scale(1); } }
         .hidden { display: none !important; }
         
-        #modal { position: fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.95); z-index:999; display:none; justify-content:center; align-items:center; flex-direction:column; }
+        #modal { position: fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.95); z-index:999; display:none; justify-content:center; align-items:center; flex-direction:column; backdrop-filter: blur(5px); }
         .modal-box { background:#151520; padding:25px; border-radius:20px; border:1px solid #333; text-align:center; width:85%; max-width: 320px; }
-        
-        /* BOTÕES DE CONFIGURAÇÃO (MENU) */
-        .cfg-btn { background: transparent; border: 1px solid #444; color: #888; padding: 15px; margin: 8px 0; width: 100%; border-radius: 10px; cursor: pointer; font-family: 'Orbitron'; transition: 0.3s; }
-        /* O segredo do destaque está aqui */
-        .cfg-btn.selected { border: 2px solid var(--thiago); color: #fff; background: rgba(0, 243, 255, 0.2); box-shadow: 0 0 15px var(--thiago); font-weight: bold; }
+        .cfg-btn { background: transparent; border: 1px solid #444; color: #888; padding: 12px; margin: 6px 0; width: 100%; border-radius: 8px; cursor: pointer; font-family: 'Orbitron'; }
+        .cfg-btn.selected { border: 1px solid var(--roxo); color: var(--roxo); background: rgba(189, 0, 255, 0.15); font-weight: bold; }
     </style>
 </head>
 <body>
@@ -113,27 +103,25 @@
 
     <div id="screen-password" class="screen active" style="justify-content: center;">
         <h1 style="font-size:4rem; margin-bottom:20px;">🔒</h1>
-        <div class="input-wrap show-inputs">
+        <div class="input-wrap">
             <input type="password" id="senha-input" class="game-input" placeholder="Senha..." style="text-align:center;">
         </div>
         <button class="btn btn-girar" onclick="verificarSenha()">ENTRAR</button>
     </div>
 
     <div id="screen-login" class="screen">
-        <h1 style="font-family:'Orbitron'; margin:30px 0; color:var(--roxo);">PLAYER SELECT</h1>
+        <h1 style="font-family:'Orbitron'; margin:30px 0; color:var(--roxo);">BATTLE MODE</h1>
         <div class="p-card card-t" onclick="login('THIAGO')"><span style="font-size:2rem;">👨🏻</span><span style="font-family:'Orbitron';">THIAGO</span></div>
         <div class="p-card card-s" onclick="login('SAMELLA')"><span style="font-size:2rem;">👩🏻</span><span style="font-family:'Orbitron';">SÂMELLA</span></div>
     </div>
 
     <div id="screen-game" class="screen">
-        <div class="wheel-wrapper">
-            <div class="pointer"></div>
-            <div class="wheel" id="wheel"></div>
-            <div class="wheel-center">⚡</div>
-        </div>
-        <button class="btn btn-girar" id="btn-spin" onclick="girar()">GIRAR ROLETA</button>
+        <div class="roleta-box"><span id="letra-big">?</span></div>
+        <div id="timer-display">05:00</div>
+        
+        <button class="btn btn-girar" id="btn-spin" onclick="girar()">GIRAR NOVA LETRA</button>
+        
         <div id="game-ui" class="hidden" style="width: 100%;">
-            <div id="timer-display">05:00</div>
             <div id="inputs-area" style="width:100%;"></div>
             <button class="btn btn-stop" onclick="darStop()">STOP!</button>
         </div>
@@ -180,37 +168,8 @@
 
         if ('serviceWorker' in navigator) navigator.serviceWorker.getRegistrations().then(r => r.forEach(i => i.unregister()));
 
-        const letras = "ABCDEFGHIJKLMNOPQRSTUVZ".split("");
-        const anglePerLetter = 360 / letras.length;
-        let currentRotation = 0;
-        let eu = ""; let ele = ""; let maxR = 10; let rodada = 1; let timerInterval = null;
+        let eu = ""; let ele = ""; let maxR = 10; let rodada = 1; let timerInterval = null; let lastLetter = "";
         const cats = ["Nome", "Animal", "Cor", "Fruta", "Objeto", "CEP", "Profissão", "Marca", "Corpo", "Sogra"];
-
-        function setupWheel() {
-            const wheel = document.getElementById('wheel');
-            wheel.innerHTML = "";
-            letras.forEach((letra, index) => {
-                const el = document.createElement('div');
-                el.className = 'wheel-letter';
-                // Correção no ângulo para a letra ficar em pé
-                el.style.transform = `rotate(${index * anglePerLetter}deg) translateY(0px)`;
-                el.innerText = letra;
-                wheel.appendChild(el);
-            });
-        }
-        // Chamada atrasada para garantir carga
-        setTimeout(setupWheel, 500);
-
-        function spinTo(letraDestino) {
-            const index = letras.indexOf(letraDestino);
-            if (index === -1) return;
-            // 5 voltas completas + angulo
-            const voltas = 360 * 5; 
-            const angulo = -(index * anglePerLetter);
-            const novaRot = currentRotation + voltas + (angulo - (currentRotation % 360));
-            currentRotation = novaRot;
-            document.getElementById('wheel').style.transform = `rotate(${novaRot}deg)`;
-        }
 
         function verificarSenha() {
             if (document.getElementById('senha-input').value === 'ceros') {
@@ -244,23 +203,19 @@
                 rodada = d.rodada || 1;
                 document.getElementById('hud-round').innerText = `R: ${rodada}/${maxR}`;
                 
-                // ATUALIZA MENU COM CORES
+                // Menu ativo
                 document.querySelectorAll('.cfg-btn').forEach(b => b.classList.remove('selected'));
                 if(document.getElementById(`cfg-${maxR}`)) document.getElementById(`cfg-${maxR}`).classList.add('selected');
 
-                if (d.status === 'ANIMANDO') {
-                    document.getElementById('btn-spin').style.display = 'none';
-                    document.getElementById('game-ui').classList.add('hidden');
-                    trocarTela('screen-game');
-                    spinTo(d.letra);
-                }
-                else if (d.status === 'JOGANDO') {
+                if(d.letra) document.getElementById('letra-big').innerText = d.letra;
+
+                // ESTADOS SIMPLES
+                if (d.status === 'JOGANDO') {
                     document.getElementById('btn-spin').style.display = 'none';
                     document.getElementById('game-ui').classList.remove('hidden');
-                    setTimeout(() => { document.querySelectorAll('.input-wrap').forEach((el, i) => { setTimeout(() => el.classList.add('show-inputs'), i * 50); }); }, 100);
                     if (d.deadline) iniciarTimer(d.deadline);
-                    if (d.limpar_id && d.limpar_id !== window.lastClean) {
-                        window.lastClean = d.limpar_id;
+                    if (d.limpar_id && d.limpar_id !== lastLetter) {
+                        lastLetter = d.limpar_id;
                         document.querySelectorAll('input').forEach(i => i.value = "");
                     }
                     trocarTela('screen-game');
@@ -298,31 +253,19 @@
         function pararTimer() { if (timerInterval) clearInterval(timerInterval); }
 
         function girar() {
-            // DEBUG PRA VOCÊ VER
-            console.log("Tentando girar... Rodada: " + rodada + " Max: " + maxR);
+            if(rodada > maxR) { alert("FIM DE JOGO! Vá em Configurações > Resetar."); return; }
             
-            if(rodada > maxR) { 
-                alert("FIM DE JOGO! O limite de rodadas foi atingido. \nVá na Engrenagem > Resetar Tudo."); 
-                return; 
-            }
+            const abc = "ABCDEFGHILMNOPQRSTUVZ";
+            const l = abc[Math.floor(Math.random() * abc.length)];
             
-            const l = letras[Math.floor(Math.random() * letras.length)];
-            
+            // Simples e Direto
             ref.update({
-                status: 'ANIMANDO',
+                status: 'JOGANDO',
                 letra: l,
-                respostas: {},
-                limpar_id: Date.now()
-            }).catch(erro => {
-                alert("ERRO DE CONEXÃO: " + erro.message + "\nVerifique sua internet!");
+                deadline: Date.now() + (5 * 60 * 1000),
+                respostas: {}, 
+                limpar_id: Date.now() 
             });
-
-            setTimeout(() => {
-                ref.update({
-                    status: 'JOGANDO',
-                    deadline: Date.now() + (5 * 60 * 1000)
-                });
-            }, 4000);
         }
 
         function darStop() { salvarLocal(); ref.update({ status: 'STOP', quem: eu }); }
@@ -364,6 +307,7 @@
                 document.getElementById('btn-spin').style.display = 'block'; 
                 document.getElementById('game-ui').classList.add('hidden'); 
                 ref.child('rodada').transaction(r=>(r||1)+1); 
+                ref.update({status: 'ESPERA', letra: '?'}); // Volta pra espera
                 trocarTela('screen-game');
             }
         }
