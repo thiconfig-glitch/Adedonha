@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Adedonha Fixed</title>
+    <title>Adedonha Deluxe</title>
     
     <link rel="manifest" href="manifest.json">
     <meta name="theme-color" content="#050014">
@@ -26,7 +26,7 @@
 
         /* HEADER */
         header { display: flex; justify-content: space-between; align-items: center; padding: 15px 20px; background: rgba(0,0,0,0.8); border-bottom: 1px solid #333; position: sticky; top: 0; z-index: 100; }
-        .logo { font-family: 'Orbitron'; font-weight: 900; letter-spacing: 2px; background: linear-gradient(90deg, var(--thiago), var(--samella)); -webkit-background-clip: text; color: transparent; }
+        .logo { font-family: 'Orbitron'; font-weight: 900; letter-spacing: 2px; background: linear-gradient(90deg, var(--thiago), var(--samella)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
         .round-badge { border: 1px solid var(--amarelo); color: var(--amarelo); padding: 5px 12px; border-radius: 20px; font-size: 0.9rem; font-family: 'Orbitron'; }
 
         /* PLACAR */
@@ -37,7 +37,7 @@
 
         .screen { display: none; padding: 20px; flex-direction: column; align-items: center; flex: 1; animation: fadeIn 0.4s ease; }
         .active { display: flex; }
-        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
 
         /* VISUAL CLÁSSICO DA LETRA */
         .roleta-box {
@@ -49,7 +49,9 @@
         .roleta-box::before { content:''; position: absolute; width: 100%; height: 5px; background: var(--roxo); top: 0; animation: scan 2s infinite linear; opacity: 0.5; }
         @keyframes scan { 0% {top:0;} 100% {top:100%;} }
         
-        #letra-big { font-family: 'Orbitron'; font-size: 5rem; text-shadow: 0 0 20px #fff; z-index: 2; }
+        #letra-big { font-family: 'Orbitron'; font-size: 5rem; text-shadow: 0 0 20px #fff; z-index: 2; transition: 0.3s; }
+        .letra-girando { animation: spin 0.5s ease-in-out; }
+        @keyframes spin { 0% { transform: rotateY(0deg); } 100% { transform: rotateY(360deg); } }
 
         /* TIMER */
         #timer-display { font-family: 'Orbitron'; font-size: 2.5rem; color: var(--amarelo); margin-bottom: 20px; text-shadow: 0 0 15px var(--amarelo); transition: 0.3s; }
@@ -57,31 +59,45 @@
 
         /* INPUTS */
         .input-wrap { width: 100%; margin-bottom: 15px; position: relative; }
-        .input-tag { position: absolute; top: -10px; left: 10px; background: #050014; padding: 0 8px; color: var(--roxo); font-size: 0.8rem; font-weight: bold; border: 1px solid #333; border-radius: 4px; }
+        .input-tag { position: absolute; top: -10px; left: 10px; background: #050014; padding: 0 8px; color: var(--roxo); font-size: 0.8rem; font-weight: bold; border: 1px solid #333; border-radius: 4px; z-index: 1; }
         .game-input { width: 100%; background: transparent; border: 1px solid #444; border-radius: 10px; color: #fff; padding: 15px; font-size: 1.2rem; font-family: 'Rajdhani'; transition: 0.3s; }
         .game-input:focus { border-color: var(--thiago); outline: none; background: rgba(0, 243, 255, 0.05); }
+        .game-input.valido { border-color: #0f0 !important; }
+        .game-input.invalido { border-color: #f00 !important; }
+        
+        /* Indicador de salvamento */
+        .save-indicator { position: fixed; top: 80px; right: 20px; background: rgba(0, 255, 0, 0.8); padding: 8px 15px; border-radius: 20px; font-size: 0.8rem; opacity: 0; transition: 0.3s; z-index: 200; }
+        .save-indicator.show { opacity: 1; }
 
         /* BOTÕES */
         .btn { width: 100%; padding: 18px; border: none; border-radius: 12px; font-family: 'Orbitron'; font-size: 1.1rem; font-weight: bold; color: #fff; cursor: pointer; margin-bottom: 15px; transition: 0.2s; }
+        .btn:active { transform: scale(0.98); }
         .btn-girar { background: linear-gradient(45deg, #7b00ff, #bd00ff); box-shadow: 0 0 15px var(--roxo); }
         .btn-stop { background: linear-gradient(45deg, #ff0055, #ff4d00); font-size: 1.5rem; animation: pulse 1.5s infinite; margin-top: 20px; }
         
-        .p-card { width: 100%; height: 100px; margin-bottom: 20px; background: rgba(255,255,255,0.05); border: 1px solid #444; border-radius: 15px; display: flex; align-items: center; justify-content: space-between; padding: 25px; cursor: pointer; }
+        .p-card { width: 100%; height: 100px; margin-bottom: 20px; background: rgba(255,255,255,0.05); border: 1px solid #444; border-radius: 15px; display: flex; align-items: center; justify-content: space-between; padding: 25px; cursor: pointer; transition: 0.2s; }
+        .p-card:active { transform: scale(0.98); }
         .card-t { border-color: var(--thiago); } .card-s { border-color: var(--samella); }
         
-        .res-row { background: rgba(255,255,255,0.03); width: 100%; padding: 12px; margin-bottom: 8px; border-left: 4px solid #555; text-align: left; }
+        .res-row { background: rgba(255,255,255,0.03); width: 100%; padding: 12px; margin-bottom: 8px; border-left: 4px solid #555; text-align: left; border-radius: 5px; }
         .res-pts { float: right; font-family: 'Orbitron'; font-weight: bold; }
+        .res-adversario { font-size: 0.85rem; color: #888; margin-top: 5px; padding: 5px; background: rgba(0,0,0,0.3); border-radius: 3px; }
         
         @keyframes pulse { 0% { transform: scale(1); } 50% { transform: scale(1.02); } 100% { transform: scale(1); } }
         .hidden { display: none !important; }
         
         #modal { position: fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.95); z-index:999; display:none; justify-content:center; align-items:center; flex-direction:column; backdrop-filter: blur(5px); }
         .modal-box { background:#151520; padding:25px; border-radius:20px; border:1px solid #333; text-align:center; width:85%; max-width: 320px; }
-        .cfg-btn { background: transparent; border: 1px solid #444; color: #888; padding: 12px; margin: 6px 0; width: 100%; border-radius: 8px; cursor: pointer; font-family: 'Orbitron'; }
+        .cfg-btn { background: transparent; border: 1px solid #444; color: #888; padding: 12px; margin: 6px 0; width: 100%; border-radius: 8px; cursor: pointer; font-family: 'Orbitron'; transition: 0.2s; }
+        .cfg-btn:active { transform: scale(0.98); }
         .cfg-btn.selected { border: 1px solid var(--roxo); color: var(--roxo); background: rgba(189, 0, 255, 0.15); font-weight: bold; }
+        
+        .info-box { background: rgba(255, 255, 255, 0.05); padding: 10px; border-radius: 8px; margin: 10px 0; font-size: 0.9rem; color: #aaa; }
     </style>
 </head>
 <body>
+
+    <div class="save-indicator" id="saveIndicator">✓ Salvo</div>
 
     <header>
         <div class="logo">ADEDONHA</div>
@@ -104,7 +120,7 @@
     <div id="screen-password" class="screen active" style="justify-content: center;">
         <h1 style="font-size:4rem; margin-bottom:20px;">🔒</h1>
         <div class="input-wrap">
-            <input type="password" id="senha-input" class="game-input" placeholder="Senha..." style="text-align:center;">
+            <input type="password" id="senha-input" class="game-input" placeholder="Senha..." style="text-align:center;" onkeypress="if(event.key==='Enter')verificarSenha()">
         </div>
         <button class="btn btn-girar" onclick="verificarSenha()">ENTRAR</button>
     </div>
@@ -122,6 +138,7 @@
         <button class="btn btn-girar" id="btn-spin" onclick="girar()">GIRAR NOVA LETRA</button>
         
         <div id="game-ui" class="hidden" style="width: 100%;">
+            <div class="info-box">💡 Todas as respostas devem começar com a letra <strong id="letra-atual-info">?</strong></div>
             <div id="inputs-area" style="width:100%;"></div>
             <button class="btn btn-stop" onclick="darStop()">STOP!</button>
         </div>
@@ -138,13 +155,14 @@
         <div style="font-size:6rem;">🏆</div>
         <h1 style="color:var(--ouro);">CAMPEÃO</h1>
         <h2 id="winner-name" style="font-family:'Orbitron'; font-size:3rem; margin-bottom:40px;">...</h2>
+        <div id="placar-final" style="font-size:1.2rem; margin-bottom:30px; color:#aaa;"></div>
         <button class="btn btn-stop" onclick="zerarTudo()">NOVA PARTIDA</button>
     </div>
 
     <div id="modal">
         <div class="modal-box">
             <h3 style="color:#fff; margin-bottom:15px;">CONFIGURAÇÕES</h3>
-            <button class="cfg-btn" id="cfg-5" onclick="setConfig(5)">5 RODADAS</button>
+            <button class="cfg-btn selected" id="cfg-5" onclick="setConfig(5)">5 RODADAS</button>
             <button class="cfg-btn" id="cfg-10" onclick="setConfig(10)">10 RODADAS</button>
             <button class="cfg-btn" id="cfg-20" onclick="setConfig(20)">20 RODADAS</button>
             <button class="btn" style="background:#330000; border:1px solid red; color:red; margin-top:20px;" onclick="zerarTudo()">RESETAR TUDO</button>
@@ -168,30 +186,79 @@
 
         if ('serviceWorker' in navigator) navigator.serviceWorker.getRegistrations().then(r => r.forEach(i => i.unregister()));
 
-        let eu = ""; let ele = ""; let maxR = 10; let rodada = 1; let timerInterval = null; let lastLetter = "";
+        let eu = ""; 
+        let ele = ""; 
+        let maxR = 10; 
+        let rodada = 1; 
+        let timerInterval = null; 
+        let lastLetter = "";
+        let letraAtual = "";
+        let saveTimeout = null;
+        
         const cats = ["Nome", "Animal", "Cor", "Fruta", "Objeto", "CEP", "Profissão", "Marca", "Corpo", "Sogra"];
 
         function verificarSenha() {
             if (document.getElementById('senha-input').value === 'ceros') {
                 document.getElementById('screen-password').classList.remove('active');
                 document.getElementById('screen-login').classList.add('active');
-            } else alert('SENHA ERRADA!');
+            } else {
+                alert('SENHA ERRADA!');
+                document.getElementById('senha-input').value = '';
+            }
         }
 
         function login(nome) {
-            eu = nome; ele = (nome === 'THIAGO') ? 'SAMELLA' : 'THIAGO';
+            eu = nome; 
+            ele = (nome === 'THIAGO') ? 'SAMELLA' : 'THIAGO';
             document.getElementById('screen-login').classList.remove('active');
             document.getElementById('scoreboard').classList.remove('hidden');
             document.getElementById('screen-game').classList.add('active');
+            
             const div = document.getElementById('inputs-area');
             div.innerHTML = "";
-            cats.forEach(c => { div.innerHTML += `<div class="input-wrap"><span class="input-tag">${c}</span><input type="text" class="game-input" id="in-${c}" oninput="salvarLocal()" autocomplete="off"></div>`; });
+            cats.forEach(c => { 
+                div.innerHTML += `<div class="input-wrap">
+                    <span class="input-tag">${c}</span>
+                    <input type="text" class="game-input" id="in-${c}" oninput="validarInput('${c}')" autocomplete="off">
+                </div>`; 
+            });
             ouvirBanco();
         }
 
+        function validarInput(cat) {
+            const input = document.getElementById(`in-${cat}`);
+            const valor = input.value.trim();
+            
+            // Remove classes anteriores
+            input.classList.remove('valido', 'invalido');
+            
+            if (valor && letraAtual) {
+                const primeiraLetra = valor[0].toUpperCase().normalize("NFD").replace(/[\u0300-\u036f]/g,"");
+                if (primeiraLetra === letraAtual) {
+                    input.classList.add('valido');
+                } else {
+                    input.classList.add('invalido');
+                }
+            }
+            
+            salvarLocal();
+        }
+
         function salvarLocal() {
-            let r = {}; cats.forEach(c => r[c] = document.getElementById(`in-${c}`).value);
-            ref.child('respostas').child(eu).update(r);
+            // Cancela salvamento anterior
+            if (saveTimeout) clearTimeout(saveTimeout);
+            
+            // Salva após 500ms de inatividade
+            saveTimeout = setTimeout(() => {
+                let r = {}; 
+                cats.forEach(c => r[c] = document.getElementById(`in-${c}`).value);
+                ref.child('respostas').child(eu).update(r);
+                
+                // Mostra indicador
+                const indicator = document.getElementById('saveIndicator');
+                indicator.classList.add('show');
+                setTimeout(() => indicator.classList.remove('show'), 1000);
+            }, 500);
         }
 
         function ouvirBanco() {
@@ -209,40 +276,52 @@
                 document.querySelectorAll('.cfg-btn').forEach(b => b.classList.remove('selected'));
                 if(document.getElementById(`cfg-${maxR}`)) document.getElementById(`cfg-${maxR}`).classList.add('selected');
 
-                if(d.letra) document.getElementById('letra-big').innerText = d.letra;
+                if(d.letra) {
+                    letraAtual = d.letra;
+                    document.getElementById('letra-big').innerText = d.letra;
+                    document.getElementById('letra-atual-info').innerText = d.letra;
+                }
 
-                // --- CORREÇÃO DE ESTADOS ---
-                
-                // 1. ESPERA (Novo estado para destravamento)
+                // ESTADOS
                 if (d.status === 'ESPERA') {
-                    document.getElementById('btn-spin').style.display = 'block'; // Mostra botão
-                    document.getElementById('game-ui').classList.add('hidden'); // Esconde inputs
+                    document.getElementById('btn-spin').style.display = 'block';
+                    document.getElementById('game-ui').classList.add('hidden');
                     document.getElementById('letra-big').innerText = "?";
+                    letraAtual = "";
+                    pararTimer();
                     trocarTela('screen-game');
                 }
-                // 2. JOGANDO
                 else if (d.status === 'JOGANDO') {
-                    document.getElementById('btn-spin').style.display = 'none'; // Esconde botão
-                    document.getElementById('game-ui').classList.remove('hidden'); // Mostra inputs
+                    document.getElementById('btn-spin').style.display = 'none';
+                    document.getElementById('game-ui').classList.remove('hidden');
                     
                     if (d.deadline) iniciarTimer(d.deadline);
+                    
+                    // Limpar inputs em nova rodada
                     if (d.limpar_id && d.limpar_id !== lastLetter) {
                         lastLetter = d.limpar_id;
-                        document.querySelectorAll('input').forEach(i => i.value = "");
+                        document.querySelectorAll('.game-input').forEach(i => {
+                            i.value = "";
+                            i.classList.remove('valido', 'invalido');
+                        });
                     }
                     trocarTela('screen-game');
                 }
-                // 3. STOP
                 else if (d.status === 'STOP') {
                     pararTimer();
-                    mostrarResultado(d.respostas);
+                    mostrarResultado(d.respostas, d.quem);
                 }
-                // 4. VITORIA
                 else if (d.status === 'VITORIA') {
                     pararTimer();
                     trocarTela('screen-victory');
-                    let pt = d.placar_thiago || 0; ps = d.placar_samella || 0;
+                    const pt = d.placar_thiago || 0;
+                    const ps = d.placar_samella || 0;
+                    
                     document.getElementById('winner-name').innerText = (pt > ps) ? "THIAGO" : (ps > pt) ? "SÂMELLA" : "EMPATE";
+                    document.getElementById('placar-final').innerHTML = `
+                        <div>Thiago: <strong style="color:var(--thiago)">${pt}</strong> pontos</div>
+                        <div>Sâmella: <strong style="color:var(--samella)">${ps}</strong> pontos</div>
+                    `;
                 }
             });
         }
@@ -251,23 +330,42 @@
             if (timerInterval) clearInterval(timerInterval);
             const display = document.getElementById('timer-display');
             display.classList.remove('time-critical');
+            
             timerInterval = setInterval(() => {
                 const left = end - Date.now();
                 if (left <= 0) {
                     clearInterval(timerInterval);
                     display.innerText = "00:00";
-                    ref.once('value').then(s => { if(s.val().status === 'JOGANDO') darStop(); });
+                    // Auto-stop apenas se ainda estiver jogando
+                    ref.once('value').then(s => { 
+                        if(s.val().status === 'JOGANDO') darStop(); 
+                    });
                 } else {
-                    const m = Math.floor((left/1000/60)%60); s = Math.floor((left/1000)%60);
-                    display.innerText = `${m<10?'0'+m:m}:${s<10?'0'+s:s}`;
+                    const mins = Math.floor((left/1000/60)%60); 
+                    const secs = Math.floor((left/1000)%60);
+                    display.innerText = `${mins<10?'0'+mins:mins}:${secs<10?'0'+secs:secs}`;
                     if(left < 10000) display.classList.add('time-critical');
                 }
             }, 1000);
         }
-        function pararTimer() { if (timerInterval) clearInterval(timerInterval); }
+        
+        function pararTimer() { 
+            if (timerInterval) {
+                clearInterval(timerInterval); 
+                timerInterval = null;
+            }
+        }
 
         function girar() {
-            if(rodada > maxR) { alert("FIM DE JOGO! Vá em Configurações > Resetar."); return; }
+            if(rodada > maxR) { 
+                alert("FIM DE JOGO! Vá em Configurações > Resetar."); 
+                return; 
+            }
+            
+            // Animação de giro
+            const letraBig = document.getElementById('letra-big');
+            letraBig.classList.add('letra-girando');
+            setTimeout(() => letraBig.classList.remove('letra-girando'), 500);
             
             const abc = "ABCDEFGHILMNOPQRSTUVZ";
             const l = abc[Math.floor(Math.random() * abc.length)];
@@ -281,66 +379,121 @@
             });
         }
 
-        function darStop() { salvarLocal(); ref.update({ status: 'STOP', quem: eu }); }
+        function darStop() { 
+            salvarLocal(); 
+            ref.update({ status: 'STOP', quem: eu }); 
+        }
 
-        function mostrarResultado(all) {
+        function mostrarResultado(all, quemParou) {
             trocarTela('screen-result');
-            const lista = document.getElementById('result-list'); lista.innerHTML = "";
-            const m = (all && all[eu]) ? all[eu] : {}; const o = (all && all[ele]) ? all[ele] : {};
+            const lista = document.getElementById('result-list'); 
+            lista.innerHTML = "";
+            
+            const m = (all && all[eu]) ? all[eu] : {};
+            const o = (all && all[ele]) ? all[ele] : {};
             let t = 0;
+            
             cats.forEach(c => {
-                let mv = (m[c]||"").trim().toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g,"");
-                let ov = (o[c]||"").trim().toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g,"");
-                let p = 0; let b = "#333";
-                if(mv==="") { p=0; b="#f05"; } else if(mv===ov) { p=5; b="#fe0"; } else { p=10; b="#0ff"; }
+                let mv = (m[c]||"").trim();
+                let ov = (o[c]||"").trim();
+                
+                // Normaliza para comparação
+                let mvNorm = mv.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g,"");
+                let ovNorm = ov.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g,"");
+                
+                let p = 0; 
+                let b = "#333";
+                let msg = "";
+                
+                // Valida letra inicial
+                const letraCorreta = mvNorm && mvNorm[0] === letraAtual.toLowerCase();
+                
+                if(mvNorm === "") { 
+                    p = 0; b = "#f05"; msg = "Vazio";
+                } else if (!letraCorreta) {
+                    p = 0; b = "#f50"; msg = `Letra errada (${mv[0]} ≠ ${letraAtual})`;
+                } else if(mvNorm === ovNorm) { 
+                    p = 5; b = "#fe0"; msg = "Igual";
+                } else { 
+                    p = 10; b = "#0ff"; msg = "Único";
+                }
+                
                 t += p;
-                lista.innerHTML += `<div class="res-row" style="border-color:${b}"><span class="res-pts">+${p}</span><div style="font-size:0.7rem;color:#888;">${c}</div><div>${m[c]||"-"}</div><div style="font-size:0.8rem;color:#555;">${ele}: ${o[c]||"-"}</div></div>`;
+                
+                lista.innerHTML += `
+                    <div class="res-row" style="border-color:${b}">
+                        <span class="res-pts">+${p}</span>
+                        <div style="font-size:0.7rem;color:#888;">${c} <span style="color:${b}">(${msg})</span></div>
+                        <div><strong>${mv || "-"}</strong></div>
+                        <div class="res-adversario">${ele}: ${ov || "-"}</div>
+                    </div>
+                `;
             });
+            
             document.getElementById('total-round').innerText = t;
             
             const btn = document.getElementById('btn-next');
-            if(rodada >= maxR) { btn.innerText = "VER CAMPEÃO 🏆"; btn.style.background = "var(--ouro)"; btn.style.color="#000"; } 
-            else { btn.innerText = "PRÓXIMA >>"; btn.style.background=""; btn.style.color="#fff"; }
+            if(rodada >= maxR) { 
+                btn.innerText = "VER CAMPEÃO 🏆"; 
+                btn.style.background = "var(--ouro)"; 
+                btn.style.color = "#000"; 
+            } else { 
+                btn.innerText = "PRÓXIMA >>"; 
+                btn.style.background = ""; 
+                btn.style.color = "#fff"; 
+            }
 
-            ref.once('value').then(s => {
-                const d = s.val();
-                if(d.quem === eu) {
-                    let k = `placar_${eu.toLowerCase()}`;
-                    ref.child(k).set((d[k]||0) + t);
-                } else {
-                     let k = `placar_${eu.toLowerCase()}`;
-                     ref.child(k).set((d[k]||0) + t);
-                }
-            });
+            // CORREÇÃO: Soma pontos apenas para quem parou
+            if (quemParou === eu) {
+                ref.once('value').then(s => {
+                    const d = s.val();
+                    const k = `placar_${eu.toLowerCase()}`;
+                    ref.child(k).set((d[k] || 0) + t);
+                });
+            }
         }
 
         function proximaRodada() {
-            if(rodada >= maxR) ref.update({status:'VITORIA'});
-            else { 
-                ref.child('rodada').transaction(r=>(r||1)+1); 
-                ref.update({status: 'ESPERA', letra: '?'}); // VOLTA PARA ESPERA
+            if(rodada >= maxR) {
+                ref.update({status:'VITORIA'});
+            } else { 
+                ref.child('rodada').transaction(r => (r || 1) + 1); 
+                ref.update({status: 'ESPERA', letra: '?'}); 
                 trocarTela('screen-game');
             }
         }
 
-        function trocarTela(id) { document.querySelectorAll('.screen').forEach(s => s.classList.remove('active')); document.getElementById(id).classList.add('active'); }
-        function toggleMenu() { const m=document.getElementById('modal'); m.style.display=(m.style.display=='flex')?'none':'flex'; }
-        function setConfig(n) { ref.update({ config_max: n }); toggleMenu(); }
+        function trocarTela(id) { 
+            document.querySelectorAll('.screen').forEach(s => s.classList.remove('active')); 
+            document.getElementById(id).classList.add('active'); 
+        }
         
-        // ZERAR AGORA MANDA PARA O STATUS 'ESPERA' (O SEGREDO)
+        function toggleMenu() { 
+            const m = document.getElementById('modal'); 
+            m.style.display = (m.style.display == 'flex') ? 'none' : 'flex'; 
+        }
+        
+        function setConfig(n) { 
+            ref.update({ config_max: n }); 
+            toggleMenu(); 
+        }
+        
         function zerarTudo() { 
-            if(confirm("ZERAR?")) { 
+            if(confirm("ZERAR TUDO E COMEÇAR NOVA PARTIDA?")) { 
                 ref.update({
-                    placar_thiago:0, 
-                    placar_samella:0, 
-                    rodada:1, 
-                    status:'ESPERA', // <--- AQUI ESTAVA O ERRO, AGORA ESTÁ 'ESPERA'
-                    letra:'?', 
-                    respostas:{}
+                    placar_thiago: 0, 
+                    placar_samella: 0, 
+                    rodada: 1, 
+                    status: 'ESPERA',
+                    letra: '?', 
+                    respostas: {},
+                    quem: null,
+                    deadline: null,
+                    limpar_id: null
                 }); 
                 toggleMenu(); 
             } 
         }
     </script>
 </body>
-</html>
+    </html>
