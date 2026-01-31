@@ -74,6 +74,7 @@
         .btn:active { transform: scale(0.98); }
         .btn-girar { background: linear-gradient(45deg, #7b00ff, #bd00ff); box-shadow: 0 0 15px var(--roxo); }
         .btn-stop { background: linear-gradient(45deg, #ff0055, #ff4d00); font-size: 1.5rem; animation: pulse 1.5s infinite; margin-top: 20px; }
+        .btn:disabled { opacity: 0.5; cursor: not-allowed; }
         
         .p-card { width: 100%; height: 100px; margin-bottom: 20px; background: rgba(255,255,255,0.05); border: 1px solid #444; border-radius: 15px; display: flex; align-items: center; justify-content: space-between; padding: 25px; cursor: pointer; transition: 0.2s; }
         .p-card:active { transform: scale(0.98); }
@@ -93,6 +94,8 @@
         .cfg-btn.selected { border: 1px solid var(--roxo); color: var(--roxo); background: rgba(189, 0, 255, 0.15); font-weight: bold; }
         
         .info-box { background: rgba(255, 255, 255, 0.05); padding: 10px; border-radius: 8px; margin: 10px 0; font-size: 0.9rem; color: #aaa; }
+        
+        .aguardando-badge { background: rgba(255, 235, 59, 0.2); border: 1px solid var(--amarelo); color: var(--amarelo); padding: 10px 15px; border-radius: 10px; margin: 15px 0; font-size: 0.9rem; }
     </style>
 </head>
 <body>
@@ -146,6 +149,11 @@
 
     <div id="screen-result" class="screen">
         <h2 style="color:var(--amarelo); font-family:'Orbitron'; margin-bottom:20px;">RESULTADOS</h2>
+        
+        <div id="aguardando-msg" class="aguardando-badge hidden">
+            ⏳ Aguardando <strong id="aguardando-nome">...</strong> continuar...
+        </div>
+        
         <div id="result-list" style="width:100%;"></div>
         <div style="margin: 20px 0; font-size:1.5rem;">TOTAL: <strong id="total-round" style="color:var(--amarelo)">0</strong></div>
         <button class="btn btn-girar" id="btn-next" onclick="proximaRodada()">PRÓXIMA >></button>
@@ -194,6 +202,7 @@
         let lastLetter = "";
         let letraAtual = "";
         let saveTimeout = null;
+        let pontosJaCalculados = false; // NOVA FLAG DE CONTROLE
         
         const cats = ["Nome", "Animal", "Cor", "Fruta", "Objeto", "CEP", "Profissão", "Marca", "Corpo", "Sogra"];
 
@@ -229,7 +238,6 @@
             const input = document.getElementById(`in-${cat}`);
             const valor = input.value.trim();
             
-            // Remove classes anteriores
             input.classList.remove('valido', 'invalido');
             
             if (valor && letraAtual) {
@@ -245,16 +253,13 @@
         }
 
         function salvarLocal() {
-            // Cancela salvamento anterior
             if (saveTimeout) clearTimeout(saveTimeout);
             
-            // Salva após 500ms de inatividade
             saveTimeout = setTimeout(() => {
                 let r = {}; 
                 cats.forEach(c => r[c] = document.getElementById(`in-${c}`).value);
                 ref.child('respostas').child(eu).update(r);
                 
-                // Mostra indicador
                 const indicator = document.getElementById('saveIndicator');
                 indicator.classList.add('show');
                 setTimeout(() => indicator.classList.remove('show'), 1000);
@@ -284,6 +289,7 @@
 
                 // ESTADOS
                 if (d.status === 'ESPERA') {
+                    pontosJaCalculados = false; // RESETAR FLAG
                     document.getElementById('btn-spin').style.display = 'block';
                     document.getElementById('game-ui').classList.add('hidden');
                     document.getElementById('letra-big').innerText = "?";
@@ -292,12 +298,12 @@
                     trocarTela('screen-game');
                 }
                 else if (d.status === 'JOGANDO') {
+                    pontosJaCalculados = false; // RESETAR FLAG
                     document.getElementById('btn-spin').style.display = 'none';
                     document.getElementById('game-ui').classList.remove('hidden');
                     
                     if (d.deadline) iniciarTimer(d.deadline);
                     
-                    // Limpar inputs em nova rodada
                     if (d.limpar_id && d.limpar_id !== lastLetter) {
                         lastLetter = d.limpar_id;
                         document.querySelectorAll('.game-input').forEach(i => {
@@ -309,7 +315,7 @@
                 }
                 else if (d.status === 'STOP') {
                     pararTimer();
-                    mostrarResultado(d.respostas, d.quem);
+                    mostrarResultado(d.respostas, d.quem, d.pontos_confirmados || {});
                 }
                 else if (d.status === 'VITORIA') {
                     pararTimer();
@@ -336,7 +342,6 @@
                 if (left <= 0) {
                     clearInterval(timerInterval);
                     display.innerText = "00:00";
-                    // Auto-stop apenas se ainda estiver jogando
                     ref.once('value').then(s => { 
                         if(s.val().status === 'JOGANDO') darStop(); 
                     });
@@ -362,7 +367,6 @@
                 return; 
             }
             
-            // Animação de giro
             const letraBig = document.getElementById('letra-big');
             letraBig.classList.add('letra-girando');
             setTimeout(() => letraBig.classList.remove('letra-girando'), 500);
@@ -375,7 +379,8 @@
                 letra: l,
                 deadline: Date.now() + (5 * 60 * 1000),
                 respostas: {}, 
-                limpar_id: Date.now() 
+                limpar_id: Date.now(),
+                pontos_confirmados: {} // RESETAR CONTROLE DE PONTOS
             });
         }
 
@@ -384,7 +389,7 @@
             ref.update({ status: 'STOP', quem: eu }); 
         }
 
-        function mostrarResultado(all, quemParou) {
+        function mostrarResultado(all, quemParou, pontosConf) {
             trocarTela('screen-result');
             const lista = document.getElementById('result-list'); 
             lista.innerHTML = "";
@@ -397,7 +402,6 @@
                 let mv = (m[c]||"").trim();
                 let ov = (o[c]||"").trim();
                 
-                // Normaliza para comparação
                 let mvNorm = mv.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g,"");
                 let ovNorm = ov.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g,"");
                 
@@ -405,7 +409,6 @@
                 let b = "#333";
                 let msg = "";
                 
-                // Valida letra inicial
                 const letraCorreta = mvNorm && mvNorm[0] === letraAtual.toLowerCase();
                 
                 if(mvNorm === "") { 
@@ -443,24 +446,55 @@
                 btn.style.color = "#fff"; 
             }
 
-            // CORREÇÃO: Soma pontos apenas para quem parou
-            if (quemParou === eu) {
-                ref.once('value').then(s => {
-                    const d = s.val();
-                    const k = `placar_${eu.toLowerCase()}`;
-                    ref.child(k).set((d[k] || 0) + t);
-                });
+            // ⭐ CONTROLE DE PONTUAÇÃO - SÓ CALCULA UMA VEZ POR JOGADOR
+            if (!pontosJaCalculados && !pontosConf[eu]) {
+                pontosJaCalculados = true;
+                
+                // Salvar pontos no banco COM CONTROLE
+                ref.child('pontos_confirmados').child(eu).set(true);
+                
+                // Atualizar placar usando TRANSACTION (evita duplicação)
+                const k = `placar_${eu.toLowerCase()}`;
+                ref.child(k).transaction(atual => (atual || 0) + t);
+            }
+            
+            // Mostrar mensagem de aguardo se adversário não confirmou
+            const aguardandoMsg = document.getElementById('aguardando-msg');
+            if (!pontosConf[ele]) {
+                aguardandoMsg.classList.remove('hidden');
+                document.getElementById('aguardando-nome').innerText = ele;
+                btn.disabled = true;
+                btn.style.opacity = '0.5';
+            } else {
+                aguardandoMsg.classList.add('hidden');
+                btn.disabled = false;
+                btn.style.opacity = '1';
             }
         }
 
         function proximaRodada() {
-            if(rodada >= maxR) {
-                ref.update({status:'VITORIA'});
-            } else { 
-                ref.child('rodada').transaction(r => (r || 1) + 1); 
-                ref.update({status: 'ESPERA', letra: '?'}); 
-                trocarTela('screen-game');
-            }
+            // Verificar se ambos confirmaram antes de avançar
+            ref.once('value').then(snap => {
+                const d = snap.val();
+                const pontosConf = d.pontos_confirmados || {};
+                
+                if (!pontosConf['THIAGO'] || !pontosConf['SAMELLA']) {
+                    alert('Aguarde o outro jogador visualizar os resultados!');
+                    return;
+                }
+                
+                if(rodada >= maxR) {
+                    ref.update({status:'VITORIA'});
+                } else { 
+                    ref.child('rodada').transaction(r => (r || 1) + 1); 
+                    ref.update({
+                        status: 'ESPERA', 
+                        letra: '?',
+                        pontos_confirmados: {} // LIMPAR CONTROLE
+                    }); 
+                    trocarTela('screen-game');
+                }
+            });
         }
 
         function trocarTela(id) { 
@@ -480,7 +514,7 @@
         
         function zerarTudo() { 
             if(confirm("ZERAR TUDO E COMEÇAR NOVA PARTIDA?")) { 
-                ref.update({
+                ref.set({
                     placar_thiago: 0, 
                     placar_samella: 0, 
                     rodada: 1, 
@@ -489,11 +523,13 @@
                     respostas: {},
                     quem: null,
                     deadline: null,
-                    limpar_id: null
+                    limpar_id: null,
+                    pontos_confirmados: {},
+                    config_max: maxR
                 }); 
                 toggleMenu(); 
             } 
         }
     </script>
 </body>
-    </html>
+</html>
