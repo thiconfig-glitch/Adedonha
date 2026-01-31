@@ -24,12 +24,10 @@
             min-height: 100vh; overflow-x: hidden; display: flex; flex-direction: column;
         }
 
-        /* HEADER */
         header { display: flex; justify-content: space-between; align-items: center; padding: 15px 20px; background: rgba(0,0,0,0.8); border-bottom: 1px solid #333; position: sticky; top: 0; z-index: 100; }
         .logo { font-family: 'Orbitron'; font-weight: 900; letter-spacing: 2px; background: linear-gradient(90deg, var(--thiago), var(--samella)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
         .round-badge { border: 1px solid var(--amarelo); color: var(--amarelo); padding: 5px 12px; border-radius: 20px; font-size: 0.9rem; font-family: 'Orbitron'; }
 
-        /* PLACAR */
         #scoreboard { display: flex; justify-content: space-between; align-items: center; padding: 10px 15px; margin: 15px; background: var(--vidro); border: 1px solid #333; border-radius: 12px; }
         .score-box { text-align: center; width: 45%; }
         .s-name { font-size: 0.7rem; color: #888; letter-spacing: 1px; }
@@ -39,7 +37,6 @@
         .active { display: flex; }
         @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
 
-        /* VISUAL CLÁSSICO DA LETRA */
         .roleta-box {
             width: 140px; height: 140px; border-radius: 20px; border: 2px solid var(--roxo);
             display: flex; justify-content: center; align-items: center; margin: 20px 0;
@@ -53,11 +50,9 @@
         .letra-girando { animation: spin 0.5s ease-in-out; }
         @keyframes spin { 0% { transform: rotateY(0deg); } 100% { transform: rotateY(360deg); } }
 
-        /* TIMER */
         #timer-display { font-family: 'Orbitron'; font-size: 2.5rem; color: var(--amarelo); margin-bottom: 20px; text-shadow: 0 0 15px var(--amarelo); transition: 0.3s; }
         .time-critical { color: #ff0055 !important; animation: pulse 0.5s infinite; }
 
-        /* INPUTS */
         .input-wrap { width: 100%; margin-bottom: 15px; position: relative; }
         .input-tag { position: absolute; top: -10px; left: 10px; background: #050014; padding: 0 8px; color: var(--roxo); font-size: 0.8rem; font-weight: bold; border: 1px solid #333; border-radius: 4px; z-index: 1; }
         .game-input { width: 100%; background: transparent; border: 1px solid #444; border-radius: 10px; color: #fff; padding: 15px; font-size: 1.2rem; font-family: 'Rajdhani'; transition: 0.3s; }
@@ -65,11 +60,9 @@
         .game-input.valido { border-color: #0f0 !important; }
         .game-input.invalido { border-color: #f00 !important; }
         
-        /* Indicador de salvamento */
         .save-indicator { position: fixed; top: 80px; right: 20px; background: rgba(0, 255, 0, 0.8); padding: 8px 15px; border-radius: 20px; font-size: 0.8rem; opacity: 0; transition: 0.3s; z-index: 200; }
         .save-indicator.show { opacity: 1; }
 
-        /* BOTÕES */
         .btn { width: 100%; padding: 18px; border: none; border-radius: 12px; font-family: 'Orbitron'; font-size: 1.1rem; font-weight: bold; color: #fff; cursor: pointer; margin-bottom: 15px; transition: 0.2s; }
         .btn:active { transform: scale(0.98); }
         .btn-girar { background: linear-gradient(45deg, #7b00ff, #bd00ff); box-shadow: 0 0 15px var(--roxo); }
@@ -80,9 +73,20 @@
         .p-card:active { transform: scale(0.98); }
         .card-t { border-color: var(--thiago); } .card-s { border-color: var(--samella); }
         
-        .res-row { background: rgba(255,255,255,0.03); width: 100%; padding: 12px; margin-bottom: 8px; border-left: 4px solid #555; text-align: left; border-radius: 5px; }
+        .res-row { background: rgba(255,255,255,0.03); width: 100%; padding: 12px; margin-bottom: 8px; border-left: 4px solid #555; text-align: left; border-radius: 5px; position: relative; }
+        .res-row.invalida { opacity: 0.5; text-decoration: line-through; }
         .res-pts { float: right; font-family: 'Orbitron'; font-weight: bold; }
-        .res-adversario { font-size: 0.85rem; color: #888; margin-top: 5px; padding: 5px; background: rgba(0,0,0,0.3); border-radius: 3px; }
+        .res-adversario { font-size: 0.85rem; color: #888; margin-top: 5px; padding: 8px; background: rgba(0,0,0,0.3); border-radius: 3px; display: flex; justify-content: space-between; align-items: center; }
+        
+        /* BOTÕES DE VALIDAÇÃO */
+        .validacao-btns { display: flex; gap: 5px; margin-top: 5px; }
+        .btn-validar { padding: 5px 10px; border: none; border-radius: 5px; font-size: 0.75rem; cursor: pointer; font-family: 'Orbitron'; font-weight: bold; transition: 0.2s; }
+        .btn-validar:active { transform: scale(0.95); }
+        .btn-aceitar { background: #0a0; color: #fff; }
+        .btn-rejeitar { background: #f00; color: #fff; }
+        .status-validacao { font-size: 0.75rem; padding: 3px 8px; border-radius: 10px; font-weight: bold; }
+        .status-aceito { background: rgba(0, 255, 0, 0.2); color: #0f0; border: 1px solid #0f0; }
+        .status-rejeitado { background: rgba(255, 0, 0, 0.2); color: #f00; border: 1px solid #f00; }
         
         @keyframes pulse { 0% { transform: scale(1); } 50% { transform: scale(1.02); } 100% { transform: scale(1); } }
         .hidden { display: none !important; }
@@ -94,7 +98,6 @@
         .cfg-btn.selected { border: 1px solid var(--roxo); color: var(--roxo); background: rgba(189, 0, 255, 0.15); font-weight: bold; }
         
         .info-box { background: rgba(255, 255, 255, 0.05); padding: 10px; border-radius: 8px; margin: 10px 0; font-size: 0.9rem; color: #aaa; }
-        
         .aguardando-badge { background: rgba(255, 235, 59, 0.2); border: 1px solid var(--amarelo); color: var(--amarelo); padding: 10px 15px; border-radius: 10px; margin: 15px 0; font-size: 0.9rem; }
     </style>
 </head>
@@ -148,14 +151,19 @@
     </div>
 
     <div id="screen-result" class="screen">
-        <h2 style="color:var(--amarelo); font-family:'Orbitron'; margin-bottom:20px;">RESULTADOS</h2>
+        <h2 style="color:var(--amarelo); font-family:'Orbitron'; margin-bottom:10px;">RESULTADOS</h2>
+        <div class="info-box" style="font-size:0.85rem;">
+            ⚖️ Você pode <strong>aceitar ✓</strong> ou <strong>rejeitar ✗</strong> as respostas do adversário
+        </div>
         
         <div id="aguardando-msg" class="aguardando-badge hidden">
-            ⏳ Aguardando <strong id="aguardando-nome">...</strong> continuar...
+            ⏳ Aguardando <strong id="aguardando-nome">...</strong> validar...
         </div>
         
         <div id="result-list" style="width:100%;"></div>
-        <div style="margin: 20px 0; font-size:1.5rem;">TOTAL: <strong id="total-round" style="color:var(--amarelo)">0</strong></div>
+        <div style="margin: 20px 0; font-size:1.5rem;">
+            MEU TOTAL: <strong id="total-round" style="color:var(--amarelo)">0</strong>
+        </div>
         <button class="btn btn-girar" id="btn-next" onclick="proximaRodada()">PRÓXIMA >></button>
     </div>
 
@@ -202,7 +210,7 @@
         let lastLetter = "";
         let letraAtual = "";
         let saveTimeout = null;
-        let pontosJaCalculados = false; // NOVA FLAG DE CONTROLE
+        let pontosJaCalculados = false;
         
         const cats = ["Nome", "Animal", "Cor", "Fruta", "Objeto", "CEP", "Profissão", "Marca", "Corpo", "Sogra"];
 
@@ -270,14 +278,12 @@
             ref.on('value', snap => {
                 const d = snap.val() || {};
                 
-                // HUD
                 document.getElementById('hud-thiago').innerText = d.placar_thiago || 0;
                 document.getElementById('hud-samella').innerText = d.placar_samella || 0;
                 maxR = d.config_max || 10;
                 rodada = d.rodada || 1;
                 document.getElementById('hud-round').innerText = `R: ${rodada}/${maxR}`;
                 
-                // Menu ativo
                 document.querySelectorAll('.cfg-btn').forEach(b => b.classList.remove('selected'));
                 if(document.getElementById(`cfg-${maxR}`)) document.getElementById(`cfg-${maxR}`).classList.add('selected');
 
@@ -287,9 +293,8 @@
                     document.getElementById('letra-atual-info').innerText = d.letra;
                 }
 
-                // ESTADOS
                 if (d.status === 'ESPERA') {
-                    pontosJaCalculados = false; // RESETAR FLAG
+                    pontosJaCalculados = false;
                     document.getElementById('btn-spin').style.display = 'block';
                     document.getElementById('game-ui').classList.add('hidden');
                     document.getElementById('letra-big').innerText = "?";
@@ -298,7 +303,7 @@
                     trocarTela('screen-game');
                 }
                 else if (d.status === 'JOGANDO') {
-                    pontosJaCalculados = false; // RESETAR FLAG
+                    pontosJaCalculados = false;
                     document.getElementById('btn-spin').style.display = 'none';
                     document.getElementById('game-ui').classList.remove('hidden');
                     
@@ -315,7 +320,7 @@
                 }
                 else if (d.status === 'STOP') {
                     pararTimer();
-                    mostrarResultado(d.respostas, d.quem, d.pontos_confirmados || {});
+                    mostrarResultado(d.respostas, d.quem, d.validacoes || {}, d.pontos_confirmados || {});
                 }
                 else if (d.status === 'VITORIA') {
                     pararTimer();
@@ -380,7 +385,8 @@
                 deadline: Date.now() + (5 * 60 * 1000),
                 respostas: {}, 
                 limpar_id: Date.now(),
-                pontos_confirmados: {} // RESETAR CONTROLE DE PONTOS
+                pontos_confirmados: {},
+                validacoes: {} // NOVA ESTRUTURA PARA VALIDAÇÕES
             });
         }
 
@@ -389,14 +395,23 @@
             ref.update({ status: 'STOP', quem: eu }); 
         }
 
-        function mostrarResultado(all, quemParou, pontosConf) {
+        // ⭐ FUNÇÕES DE VALIDAÇÃO
+        function validarResposta(categoria, aceitar) {
+            const validacaoKey = `validacoes/${eu}/${categoria}`;
+            ref.child(validacaoKey).set(aceitar);
+        }
+
+        function mostrarResultado(all, quemParou, validacoes, pontosConf) {
             trocarTela('screen-result');
             const lista = document.getElementById('result-list'); 
             lista.innerHTML = "";
             
             const m = (all && all[eu]) ? all[eu] : {};
             const o = (all && all[ele]) ? all[ele] : {};
-            let t = 0;
+            const minhasValidacoes = (validacoes && validacoes[eu]) ? validacoes[eu] : {};
+            const validacoesAdversario = (validacoes && validacoes[ele]) ? validacoes[ele] : {};
+            
+            let meuTotal = 0;
             
             cats.forEach(c => {
                 let mv = (m[c]||"").trim();
@@ -405,35 +420,77 @@
                 let mvNorm = mv.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g,"");
                 let ovNorm = ov.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g,"");
                 
-                let p = 0; 
-                let b = "#333";
-                let msg = "";
+                // CALCULAR MEUS PONTOS (considerando validação do adversário)
+                let meuPonto = 0;
+                let minhaCor = "#333";
+                let minhaMsg = "";
                 
-                const letraCorreta = mvNorm && mvNorm[0] === letraAtual.toLowerCase();
+                const minhaLetraCorreta = mvNorm && mvNorm[0] === letraAtual.toLowerCase();
+                const foiRejeitada = validacoesAdversario[c] === false;
                 
                 if(mvNorm === "") { 
-                    p = 0; b = "#f05"; msg = "Vazio";
-                } else if (!letraCorreta) {
-                    p = 0; b = "#f50"; msg = `Letra errada (${mv[0]} ≠ ${letraAtual})`;
+                    meuPonto = 0; minhaCor = "#f05"; minhaMsg = "Vazio";
+                } else if (!minhaLetraCorreta) {
+                    meuPonto = 0; minhaCor = "#f50"; minhaMsg = `Letra errada`;
+                } else if (foiRejeitada) {
+                    meuPonto = 0; minhaCor = "#f00"; minhaMsg = "Rejeitada pelo adversário";
                 } else if(mvNorm === ovNorm) { 
-                    p = 5; b = "#fe0"; msg = "Igual";
+                    meuPonto = 5; minhaCor = "#fe0"; minhaMsg = "Igual";
                 } else { 
-                    p = 10; b = "#0ff"; msg = "Único";
+                    meuPonto = 10; minhaCor = "#0ff"; minhaMsg = "Único";
                 }
                 
-                t += p;
+                meuTotal += meuPonto;
+                
+                // CALCULAR PONTOS DO ADVERSÁRIO (considerando MINHA validação)
+                let pontoAdv = 0;
+                const advLetraCorreta = ovNorm && ovNorm[0] === letraAtual.toLowerCase();
+                const euRejeitei = minhasValidacoes[c] === false;
+                const euAceitei = minhasValidacoes[c] === true;
+                
+                if(ovNorm === "") { 
+                    pontoAdv = 0;
+                } else if (!advLetraCorreta) {
+                    pontoAdv = 0;
+                } else if (euRejeitei) {
+                    pontoAdv = 0;
+                } else if(mvNorm === ovNorm) { 
+                    pontoAdv = 5;
+                } else { 
+                    pontoAdv = 10;
+                }
+                
+                // RENDERIZAR LINHA
+                let validacaoHTML = "";
+                if (ov && advLetraCorreta && !euRejeitei && !euAceitei) {
+                    validacaoHTML = `
+                        <div class="validacao-btns">
+                            <button class="btn-validar btn-aceitar" onclick="validarResposta('${c}', true)">✓ Aceitar</button>
+                            <button class="btn-validar btn-rejeitar" onclick="validarResposta('${c}', false)">✗ Rejeitar</button>
+                        </div>
+                    `;
+                } else if (euAceitei) {
+                    validacaoHTML = `<span class="status-validacao status-aceito">✓ ACEITO (+${pontoAdv})</span>`;
+                } else if (euRejeitei) {
+                    validacaoHTML = `<span class="status-validacao status-rejeitado">✗ REJEITADO</span>`;
+                }
+                
+                const rowClass = foiRejeitada ? 'res-row invalida' : 'res-row';
                 
                 lista.innerHTML += `
-                    <div class="res-row" style="border-color:${b}">
-                        <span class="res-pts">+${p}</span>
-                        <div style="font-size:0.7rem;color:#888;">${c} <span style="color:${b}">(${msg})</span></div>
+                    <div class="${rowClass}" style="border-color:${minhaCor}">
+                        <span class="res-pts">+${meuPonto}</span>
+                        <div style="font-size:0.7rem;color:#888;">${c} <span style="color:${minhaCor}">(${minhaMsg})</span></div>
                         <div><strong>${mv || "-"}</strong></div>
-                        <div class="res-adversario">${ele}: ${ov || "-"}</div>
+                        <div class="res-adversario">
+                            <div><strong>${ele}:</strong> ${ov || "-"}</div>
+                            ${validacaoHTML}
+                        </div>
                     </div>
                 `;
             });
             
-            document.getElementById('total-round').innerText = t;
+            document.getElementById('total-round').innerText = meuTotal;
             
             const btn = document.getElementById('btn-next');
             if(rodada >= maxR) { 
@@ -446,23 +503,31 @@
                 btn.style.color = "#fff"; 
             }
 
-            // ⭐ CONTROLE DE PONTUAÇÃO - SÓ CALCULA UMA VEZ POR JOGADOR
+            // CALCULAR E SALVAR PONTOS (considerando validações)
             if (!pontosJaCalculados && !pontosConf[eu]) {
                 pontosJaCalculados = true;
-                
-                // Salvar pontos no banco COM CONTROLE
                 ref.child('pontos_confirmados').child(eu).set(true);
                 
-                // Atualizar placar usando TRANSACTION (evita duplicação)
                 const k = `placar_${eu.toLowerCase()}`;
-                ref.child(k).transaction(atual => (atual || 0) + t);
+                ref.child(k).transaction(atual => (atual || 0) + meuTotal);
             }
             
-            // Mostrar mensagem de aguardo se adversário não confirmou
+            // VERIFICAR SE AMBOS VALIDARAM
+            const todasValidadas = cats.every(c => {
+                const ov = (o[c]||"").trim();
+                const ovNorm = ov.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g,"");
+                const advLetraCorreta = ovNorm && ovNorm[0] === letraAtual.toLowerCase();
+                
+                // Não precisa validar se estiver vazio ou com letra errada
+                if (!ov || !advLetraCorreta) return true;
+                
+                return minhasValidacoes[c] !== undefined;
+            });
+            
             const aguardandoMsg = document.getElementById('aguardando-msg');
-            if (!pontosConf[ele]) {
+            if (!todasValidadas || !pontosConf[ele]) {
                 aguardandoMsg.classList.remove('hidden');
-                document.getElementById('aguardando-nome').innerText = ele;
+                document.getElementById('aguardando-nome').innerText = todasValidadas ? ele : 'você validar';
                 btn.disabled = true;
                 btn.style.opacity = '0.5';
             } else {
@@ -473,13 +538,12 @@
         }
 
         function proximaRodada() {
-            // Verificar se ambos confirmaram antes de avançar
             ref.once('value').then(snap => {
                 const d = snap.val();
                 const pontosConf = d.pontos_confirmados || {};
                 
                 if (!pontosConf['THIAGO'] || !pontosConf['SAMELLA']) {
-                    alert('Aguarde o outro jogador visualizar os resultados!');
+                    alert('Aguarde ambos validarem as respostas!');
                     return;
                 }
                 
@@ -490,7 +554,8 @@
                     ref.update({
                         status: 'ESPERA', 
                         letra: '?',
-                        pontos_confirmados: {} // LIMPAR CONTROLE
+                        pontos_confirmados: {},
+                        validacoes: {}
                     }); 
                     trocarTela('screen-game');
                 }
@@ -525,6 +590,7 @@
                     deadline: null,
                     limpar_id: null,
                     pontos_confirmados: {},
+                    validacoes: {},
                     config_max: maxR
                 }); 
                 toggleMenu(); 
