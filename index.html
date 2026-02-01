@@ -3,746 +3,601 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Super App de Jogos 🎮</title>
+    <title>Super App Casal Online 🎮</title>
     
     <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500;700;900&family=Rajdhani:wght@500;700&display=swap" rel="stylesheet">
+    
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
 
     <style>
+        /* === ESTILO GERAL (Fundo e Cores) === */
         :root {
             --cor-primaria: #6aaa64;
-            --cor-secundaria: #c9b458;
             --cor-roxo: #bd00ff;
             --cor-azul: #00f3ff;
             --cor-rosa: #ff0055;
-            --cor-amarelo: #ffeb3b;
-            --cor-vermelho: #e74c3c;
-            --cor-ouro: #ffd700;
-            --sombra: 0 4px 6px rgba(0,0,0,0.1);
-            --sombra-forte: 0 8px 16px rgba(0,0,0,0.2);
+            --cor-fundo-dark: #121213;
+            --cor-card: rgba(255, 255, 255, 0.05);
         }
 
-        * { 
-            box-sizing: border-box; 
-            margin: 0; 
-            padding: 0; 
-            -webkit-tap-highlight-color: transparent; 
-        }
+        * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; user-select: none; }
 
         body {
             font-family: 'Rajdhani', sans-serif;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: linear-gradient(135deg, #0f0c29 0%, #302b63 50%, #24243e 100%);
             color: white;
             min-height: 100vh;
             display: flex;
             flex-direction: column;
             overflow-x: hidden;
-            touch-action: manipulation; /* FIX para mobile */
         }
 
-        /* ========== HEADER ========== */
+        /* HEADER */
         header {
             background: rgba(0,0,0,0.8);
             backdrop-filter: blur(10px);
-            width: 100%;
             padding: 15px 20px;
-            box-shadow: var(--sombra-forte);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid #333;
             position: sticky;
             top: 0;
             z-index: 100;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.5);
         }
 
-        .logo {
-            font-family: 'Orbitron';
-            font-weight: 900;
-            font-size: 1.3rem;
+        .logo { 
+            font-family: 'Orbitron'; 
+            font-weight: 900; 
             background: linear-gradient(90deg, var(--cor-azul), var(--cor-rosa));
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
-            background-clip: text;
+            font-size: 1.2rem;
         }
-
+        
         .btn-voltar {
             background: rgba(255,255,255,0.1);
-            border: 1px solid rgba(255,255,255,0.3);
-            padding: 8px 15px;
-            border-radius: 20px;
+            border: 1px solid rgba(255,255,255,0.2);
             color: white;
+            padding: 8px 16px;
+            border-radius: 20px;
             cursor: pointer;
             font-family: 'Orbitron';
-            font-size: 0.9rem;
+            font-size: 0.8rem;
             transition: 0.3s;
-            touch-action: manipulation; /* FIX */
         }
-
-        .btn-voltar:hover, .btn-voltar:active { 
-            background: rgba(255,255,255,0.2); 
-            transform: scale(1.05); 
-        }
+        .btn-voltar:active { transform: scale(0.95); background: rgba(255,255,255,0.2); }
 
         .hidden { display: none !important; }
 
-        /* ========== MENU PRINCIPAL ========== */
-        .menu-principal {
+        /* MENU PRINCIPAL */
+        #menu-principal {
             display: flex;
             flex-direction: column;
             align-items: center;
-            padding: 40px 20px;
-            flex: 1;
-            z-index: 1; /* FIX */
-            pointer-events: auto; /* FIX */
-        }
-
-        .menu-titulo {
-            font-family: 'Orbitron';
-            font-size: 2.5rem;
-            margin-bottom: 40px;
-            text-align: center;
-            text-shadow: 0 0 20px rgba(255,255,255,0.5);
-        }
-
-        .grid-jogos {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            padding: 30px 20px;
             gap: 20px;
             width: 100%;
-            max-width: 900px;
-            z-index: 2; /* FIX */
-        }
-
-        .card-jogo {
-            background: white;
-            color: #1a1a1b;
-            padding: 30px;
-            border-radius: 20px;
-            cursor: pointer;
-            transition: 0.3s;
-            box-shadow: var(--sombra-forte);
-            text-align: center;
-            position: relative;
-            overflow: hidden;
-            /* FIX CRÍTICO para mobile */
-            pointer-events: auto;
-            touch-action: manipulation;
-            -webkit-user-select: none;
-            user-select: none;
-            z-index: 10;
-        }
-
-        .card-jogo:active {
-            transform: scale(0.95);
-            background: #f0f0f0;
-        }
-
-        .card-jogo:hover {
-            transform: translateY(-10px) scale(1.02);
-            box-shadow: 0 12px 24px rgba(0,0,0,0.3);
-        }
-
-        .card-jogo::before {
-            content: '';
-            position: absolute;
-            top: 0; left: -100%;
-            width: 100%; height: 100%;
-            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent);
-            transition: 0.5s;
-            pointer-events: none; /* FIX */
-        }
-
-        .card-jogo:hover::before { left: 100%; }
-
-        .card-icon { 
-            font-size: 4rem; 
-            margin-bottom: 15px; 
-            pointer-events: none; /* FIX */
-        }
-
-        .card-titulo { 
-            font-family: 'Orbitron'; 
-            font-size: 1.3rem; 
-            font-weight: bold; 
-            margin-bottom: 10px; 
-            pointer-events: none; /* FIX */
-        }
-
-        .card-desc { 
-            font-size: 0.9rem; 
-            color: #666; 
-            pointer-events: none; /* FIX */
-        }
-
-        /* ========== TELAS DE JOGOS ========== */
-        .tela-jogo {
-            display: none;
-            flex-direction: column;
-            align-items: center;
-            padding: 20px;
-            flex: 1;
-            width: 100%;
-        }
-
-        .tela-jogo.ativa { 
-            display: flex; 
-            animation: slideIn 0.4s ease-out; 
-        }
-
-        @keyframes slideIn {
-            from { opacity: 0; transform: translateY(30px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-
-        .container-jogo {
-            background: white;
-            color: #1a1a1b;
-            padding: 30px;
-            border-radius: 20px;
-            box-shadow: var(--sombra-forte);
-            width: 100%;
             max-width: 600px;
-        }
-
-        h1 {
-            font-family: 'Orbitron';
-            text-align: center;
-            margin-bottom: 20px;
-            color: var(--cor-primaria);
-        }
-
-        .btn-acao {
-            background: linear-gradient(135deg, var(--cor-primaria), #5a9954);
-            color: white;
-            border: none;
-            padding: 12px 30px;
-            border-radius: 25px;
-            font-size: 1rem;
-            font-weight: bold;
-            cursor: pointer;
-            margin-top: 20px;
-            box-shadow: var(--sombra);
-            transition: 0.3s;
-            font-family: 'Orbitron';
-            width: 100%;
-            touch-action: manipulation;
-        }
-
-        .btn-acao:hover { transform: scale(1.05); }
-        .btn-acao:active { transform: scale(0.98); }
-        .btn-acao:disabled { opacity: 0.5; cursor: not-allowed; }
-
-        /* ========== JOGO DA VELHA ========== */
-        .tabuleiro-velha {
-            display: grid;
-            grid-template-columns: repeat(3, 90px);
-            gap: 8px;
-            margin: 20px auto;
-            justify-content: center;
-        }
-
-        .celula-velha {
-            width: 90px; height: 90px;
-            background: #f0f2f5;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 3rem;
-            font-weight: bold;
-            cursor: pointer;
-            border-radius: 12px;
-            box-shadow: var(--sombra);
-            transition: 0.2s;
-            touch-action: manipulation;
-        }
-
-        .celula-velha:hover:not(.preenchida) {
-            background: #e0e0e0;
-            transform: scale(1.05);
-        }
-
-        .celula-velha.vencedor {
-            background: linear-gradient(135deg, #d4edda, #c3e6cb);
-            color: #155724;
-            animation: vitoria 0.5s;
-        }
-
-        @keyframes vitoria {
-            0%, 100% { transform: scale(1); }
-            50% { transform: scale(1.1); }
-        }
-
-        #status-velha {
-            text-align: center;
-            font-weight: bold;
-            font-size: 1.2rem;
-            color: var(--cor-primaria);
-            margin-bottom: 15px;
-        }
-
-        /* ========== FORCA ========== */
-        .forca-erros {
-            background: var(--cor-vermelho);
-            color: white;
-            padding: 8px 15px;
-            border-radius: 20px;
-            font-weight: bold;
-            text-align: center;
-            margin: 0 auto 20px;
-            display: inline-block;
-        }
-
-        .palavra-forca {
-            font-size: 2.2rem;
-            letter-spacing: 8px;
-            margin: 20px 0;
-            font-weight: bold;
-            color: var(--cor-primaria);
-            text-align: center;
-        }
-
-        .teclado-forca {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 6px;
-            justify-content: center;
-            max-width: 400px;
             margin: 0 auto;
         }
 
-        .tecla {
-            width: 38px; height: 48px;
-            border: 2px solid #787c7e;
-            background: white;
-            border-radius: 6px;
-            cursor: pointer;
-            font-weight: bold;
-            transition: 0.2s;
-            touch-action: manipulation;
-        }
-
-        .tecla:hover:not(:disabled) {
-            background: var(--cor-primaria);
-            color: white;
-            transform: scale(1.1);
-        }
-
-        .tecla:disabled {
-            background: #ddd;
-            color: #888;
-            cursor: not-allowed;
-        }
-
-        #msg-forca {
-            margin-top: 15px;
-            font-size: 1.2rem;
-            font-weight: bold;
-            text-align: center;
-        }
-
-        /* ========== TERMO ========== */
-        .grid-termo {
-            display: grid;
-            grid-template-rows: repeat(6, 1fr);
-            gap: 6px;
-            margin: 20px auto;
-            justify-content: center;
-        }
-
-        .linha-termo {
-            display: grid;
-            grid-template-columns: repeat(5, 55px);
-            gap: 6px;
-        }
-
-        .caixa-termo {
-            width: 55px; height: 55px;
-            border: 3px solid #d3d6da;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 1.8rem;
-            font-weight: bold;
-            text-transform: uppercase;
-            background: white;
-            border-radius: 4px;
-        }
-
-        .caixa-termo.verde { background: var(--cor-primaria); color: white; border-color: var(--cor-primaria); animation: flip 0.5s; }
-        .caixa-termo.amarelo { background: var(--cor-secundaria); color: white; border-color: var(--cor-secundaria); animation: flip 0.5s; }
-        .caixa-termo.cinza { background: #787c7e; color: white; border-color: #787c7e; animation: flip 0.5s; }
-
-        @keyframes flip {
-            0% { transform: rotateX(0); }
-            50% { transform: rotateX(90deg); }
-            100% { transform: rotateX(0); }
-        }
-
-        .input-termo-container {
-            display: flex;
-            gap: 10px;
-            justify-content: center;
-            margin-top: 15px;
-        }
-
-        #input-termo {
-            padding: 12px;
-            font-size: 1.3rem;
-            text-transform: uppercase;
-            width: 180px;
-            text-align: center;
-            border: 3px solid #787c7e;
-            border-radius: 10px;
-            font-weight: bold;
-        }
-
-        #input-termo:focus {
-            outline: none;
-            border-color: var(--cor-primaria);
-        }
-
-        #msg-termo {
-            margin-top: 15px;
-            font-weight: bold;
-            font-size: 1.2rem;
-            text-align: center;
-        }
-
-        /* ========== ADEDONHA ========== */
-        .adedonha-container {
-            background: #050014;
-            background-image: radial-gradient(circle at 50% 20%, #1a0b38 0%, #000 100%);
-            min-height: 100vh;
-            display: flex;
-            flex-direction: column;
-        }
-
-        .adedonha-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 15px 20px;
-            background: rgba(0,0,0,0.8);
-            border-bottom: 1px solid #333;
-        }
-
-        .adedonha-logo {
-            font-family: 'Orbitron';
-            font-weight: 900;
-            letter-spacing: 2px;
-            background: linear-gradient(90deg, var(--cor-azul), var(--cor-rosa));
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-        }
-
-        .round-badge {
-            border: 1px solid var(--cor-amarelo);
-            color: var(--cor-amarelo);
-            padding: 5px 12px;
+        .card-jogo {
+            background: var(--cor-card);
+            border: 1px solid rgba(255,255,255,0.1);
+            width: 100%;
+            padding: 25px;
             border-radius: 20px;
-            font-size: 0.9rem;
-            font-family: 'Orbitron';
-        }
-
-        #scoreboard {
             display: flex;
-            justify-content: space-between;
             align-items: center;
-            padding: 10px 15px;
-            margin: 15px;
-            background: rgba(255,255,255,0.05);
-            border: 1px solid #333;
-            border-radius: 12px;
+            cursor: pointer;
+            transition: 0.3s;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.2);
         }
 
-        .score-box { text-align: center; width: 45%; }
-        .s-name { font-size: 0.7rem; color: #888; letter-spacing: 1px; }
-        .s-val { font-family: 'Orbitron'; font-size: 1.8rem; font-weight: bold; }
+        .card-jogo:active { transform: scale(0.98); background: rgba(255,255,255,0.1); }
+        
+        .card-icon { 
+            font-size: 2.5rem; 
+            margin-right: 20px; 
+            width: 60px; 
+            text-align: center;
+        }
+        
+        .card-info h3 { font-family: 'Orbitron'; color: var(--cor-azul); margin-bottom: 5px; }
+        .card-info p { font-size: 0.9rem; color: #aaa; }
 
-        .screen { display: none; padding: 20px; flex-direction: column; align-items: center; flex: 1; }
-        .screen.active { display: flex; }
-
-        .roleta-box {
-            width: 140px; height: 140px; border-radius: 20px; border: 2px solid var(--cor-roxo);
-            display: flex; justify-content: center; align-items: center; margin: 20px 0;
-            background: rgba(0,0,0,0.3); box-shadow: 0 0 40px rgba(189, 0, 255, 0.2);
-            position: relative; overflow: hidden;
+        /* TELAS DE JOGO */
+        .tela-jogo {
+            display: none;
+            flex: 1;
+            flex-direction: column;
+            padding: 20px;
+            align-items: center;
+            width: 100%;
+            max-width: 500px;
+            margin: 0 auto;
         }
 
-        .roleta-box::before {
-            content:''; position: absolute; width: 100%; height: 5px;
-            background: var(--cor-roxo); top: 0; animation: scan 2s infinite linear; opacity: 0.5;
-        }
+        .tela-jogo.ativa { display: flex; animation: slideUp 0.4s ease-out; }
 
-        @keyframes scan { 0% {top:0;} 100% {top:100%;} }
+        @keyframes slideUp { from { opacity:0; transform:translateY(30px); } to { opacity:1; transform:translateY(0); } }
 
-        #letra-big {
-            font-family: 'Orbitron'; font-size: 5rem;
-            text-shadow: 0 0 20px #fff; z-index: 2; transition: 0.3s;
-        }
-
-        .letra-girando { animation: spin 0.5s ease-in-out; }
-        @keyframes spin { 0% { transform: rotateY(0deg); } 100% { transform: rotateY(360deg); } }
-
-        #timer-display {
-            font-family: 'Orbitron'; font-size: 2.5rem; color: var(--cor-amarelo);
-            margin-bottom: 20px; text-shadow: 0 0 15px var(--cor-amarelo); transition: 0.3s;
-        }
-
-        .time-critical { color: var(--cor-rosa) !important; animation: pulse 0.5s infinite; }
-        @keyframes pulse { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.02); } }
-
-        .input-wrap { width: 100%; margin-bottom: 15px; position: relative; }
-        .input-tag {
-            position: absolute; top: -10px; left: 10px; background: #050014;
-            padding: 0 8px; color: var(--cor-roxo); font-size: 0.8rem;
-            font-weight: bold; border: 1px solid #333; border-radius: 4px; z-index: 1;
-        }
-
-        .game-input {
-            width: 100%; background: transparent; border: 1px solid #444;
-            border-radius: 10px; color: #fff; padding: 15px; font-size: 1.2rem;
-            font-family: 'Rajdhani'; transition: 0.3s;
-        }
-
-        .game-input:focus {
-            border-color: var(--cor-azul); outline: none;
-            background: rgba(0, 243, 255, 0.05);
-        }
-
-        .game-input.valido { border-color: #0f0 !important; }
-        .game-input.invalido { border-color: #f00 !important; }
-
-        .save-indicator {
-            position: fixed; top: 80px; right: 20px;
-            background: rgba(0, 255, 0, 0.8); padding: 8px 15px;
-            border-radius: 20px; font-size: 0.8rem; opacity: 0;
-            transition: 0.3s; z-index: 200;
-        }
-
-        .save-indicator.show { opacity: 1; }
-
-        .btn-girar {
-            background: linear-gradient(45deg, #7b00ff, #bd00ff);
-            box-shadow: 0 0 15px var(--cor-roxo);
-        }
-
-        .btn-stop {
-            background: linear-gradient(45deg, #ff0055, #ff4d00);
-            font-size: 1.5rem; animation: pulse 1.5s infinite; margin-top: 20px;
-        }
-
-        .p-card {
-            width: 100%; height: 100px; margin-bottom: 20px;
-            background: rgba(255,255,255,0.05); border: 1px solid #444;
-            border-radius: 15px; display: flex; align-items: center;
-            justify-content: space-between; padding: 25px; cursor: pointer;
-            transition: 0.2s; touch-action: manipulation;
-        }
-
-        .p-card:active { transform: scale(0.98); }
-        .card-t { border-color: var(--cor-azul); }
-        .card-s { border-color: var(--cor-rosa); }
-
-        .res-row {
-            background: rgba(255,255,255,0.03); width: 100%; padding: 12px;
-            margin-bottom: 8px; border-left: 4px solid #555; text-align: left;
-            border-radius: 5px; position: relative;
-        }
-
-        .res-row.invalida { opacity: 0.5; text-decoration: line-through; }
-        .res-pts { float: right; font-family: 'Orbitron'; font-weight: bold; }
-        .res-adversario {
-            font-size: 0.85rem; color: #888; margin-top: 5px;
-            padding: 8px; background: rgba(0,0,0,0.3); border-radius: 3px;
-            display: flex; justify-content: space-between; align-items: center;
-        }
-
-        .validacao-btns { display: flex; gap: 5px; margin-top: 5px; }
-        .btn-validar {
-            padding: 5px 10px; border: none; border-radius: 5px;
-            font-size: 0.75rem; cursor: pointer; font-family: 'Orbitron';
-            font-weight: bold; transition: 0.2s; touch-action: manipulation;
-        }
-
-        .btn-validar:active { transform: scale(0.95); }
-        .btn-aceitar { background: #0a0; color: #fff; }
-        .btn-rejeitar { background: #f00; color: #fff; }
-
-        .status-validacao {
-            font-size: 0.75rem; padding: 3px 8px; border-radius: 10px; font-weight: bold;
-        }
-
-        .status-aceito {
-            background: rgba(0, 255, 0, 0.2); color: #0f0; border: 1px solid #0f0;
-        }
-
-        .status-rejeitado {
-            background: rgba(255, 0, 0, 0.2); color: #f00; border: 1px solid #f00;
-        }
-
-        .info-box {
-            background: rgba(255, 255, 255, 0.05); padding: 10px;
-            border-radius: 8px; margin: 10px 0; font-size: 0.9rem; color: #aaa;
-        }
-
-        .aguardando-badge {
-            background: rgba(255, 235, 59, 0.2); border: 1px solid var(--cor-amarelo);
-            color: var(--cor-amarelo); padding: 10px 15px; border-radius: 10px;
-            margin: 15px 0; font-size: 0.9rem;
-        }
-
-        #modal {
+        /* LOGIN */
+        #tela-login {
             position: fixed; top:0; left:0; width:100%; height:100%;
-            background:rgba(0,0,0,0.95); z-index:999; display:none;
-            justify-content:center; align-items:center; flex-direction:column;
-            backdrop-filter: blur(5px);
+            background: #0f0c29; z-index: 200;
+            display: flex; flex-direction: column; justify-content: center; align-items: center;
+            padding: 20px;
         }
 
-        .modal-box {
-            background:#151520; padding:25px; border-radius:20px;
-            border:1px solid #333; text-align:center; width:85%; max-width: 320px;
+        .login-card {
+            background: var(--cor-card); border: 1px solid #444;
+            width: 100%; max-width: 300px; padding: 30px; margin: 10px;
+            border-radius: 15px; text-align: center; cursor: pointer;
+            transition: 0.3s;
         }
+        .login-card:active { transform: scale(0.95); border-color: var(--cor-azul); }
+        .login-card h2 { font-family: 'Orbitron'; margin-top: 10px; }
+        .avatar { font-size: 4rem; }
 
-        .cfg-btn {
-            background: transparent; border: 1px solid #444; color: #888;
-            padding: 12px; margin: 6px 0; width: 100%; border-radius: 8px;
-            cursor: pointer; font-family: 'Orbitron'; transition: 0.2s;
-            touch-action: manipulation;
+        /* BOTÕES */
+        .btn-acao {
+            background: linear-gradient(135deg, var(--cor-roxo), var(--cor-rosa));
+            border: none; color: white; padding: 15px 40px;
+            border-radius: 30px; font-family: 'Orbitron'; font-weight: bold;
+            font-size: 1.1rem; cursor: pointer; margin-top: 25px;
+            box-shadow: 0 0 20px rgba(189, 0, 255, 0.4); width: 100%;
         }
+        .btn-acao:active { transform: scale(0.98); }
+        .btn-acao.secondary { background: #333; box-shadow: none; border: 1px solid #555; }
 
-        .cfg-btn:active { transform: scale(0.98); }
-        .cfg-btn.selected {
-            border: 1px solid var(--cor-roxo); color: var(--cor-roxo);
-            background: rgba(189, 0, 255, 0.15); font-weight: bold;
+        /* JOGO DA VELHA */
+        .velha-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; width: 100%; aspect-ratio: 1; }
+        .velha-cell {
+            background: rgba(255,255,255,0.1); border-radius: 10px;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 4rem; font-weight: bold; cursor: pointer;
+            text-shadow: 0 0 10px rgba(255,255,255,0.5);
         }
+        .velha-cell.x { color: var(--cor-azul); }
+        .velha-cell.o { color: var(--cor-rosa); }
 
-        /* ========== RESPONSIVO ========== */
-        @media (max-width: 600px) {
-            .menu-titulo { font-size: 2rem; }
-            .grid-jogos { 
-                grid-template-columns: 1fr; 
-                padding: 0 10px;
-            }
-            .tabuleiro-velha { grid-template-columns: repeat(3, 80px); }
-            .celula-velha { width: 80px; height: 80px; font-size: 2.5rem; }
-            .linha-termo { grid-template-columns: repeat(5, 50px); }
-            .caixa-termo { width: 50px; height: 50px; font-size: 1.5rem; }
+        /* FORCA */
+        .forca-palavra { 
+            font-size: 2.5rem; letter-spacing: 0.5rem; margin: 30px 0; 
+            font-family: monospace; text-align: center; word-break: break-all;
         }
+        .teclado { display: flex; flex-wrap: wrap; gap: 5px; justify-content: center; }
+        .tecla {
+            width: 35px; height: 45px; background: rgba(255,255,255,0.1);
+            border: 1px solid rgba(255,255,255,0.2); color: white;
+            border-radius: 5px; font-weight: bold; cursor: pointer;
+        }
+        .tecla:disabled { opacity: 0.3; cursor: not-allowed; }
+
+        /* TERMO */
+        .termo-grid { display: grid; gap: 5px; margin-bottom: 20px; }
+        .termo-row { display: grid; grid-template-columns: repeat(5, 50px); gap: 5px; }
+        .termo-box {
+            width: 50px; height: 50px; border: 2px solid #444;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 1.8rem; font-weight: bold; text-transform: uppercase;
+        }
+        .termo-box.certo { background: var(--cor-primaria); border-color: var(--cor-primaria); }
+        .termo-box.lugar { background: #c9b458; border-color: #c9b458; }
+        .termo-box.errado { background: #3a3a3c; border-color: #3a3a3c; }
+
+        /* STATUS BAR */
+        .status-bar {
+            background: rgba(0,0,0,0.5); padding: 10px 20px; border-radius: 30px;
+            margin-bottom: 20px; display: flex; gap: 15px; font-size: 0.9rem;
+            border: 1px solid rgba(255,255,255,0.1);
+        }
+        .status-dot { width: 10px; height: 10px; border-radius: 50%; background: #555; }
+        .status-dot.online { background: #0f0; box-shadow: 0 0 10px #0f0; }
+
     </style>
 </head>
 <body>
 
-    <header>
-        <div class="logo">🎮 SUPER APP</div>
-        <button class="btn-voltar hidden" id="btn-voltar" onclick="voltarMenu()">← VOLTAR</button>
+    <div id="tela-login">
+        <h1 style="font-family:'Orbitron'; color:var(--cor-azul); margin-bottom:40px;">QUEM É VOCÊ?</h1>
+        
+        <div class="login-card" onclick="fazerLogin('THIAGO')">
+            <div class="avatar">👨🏻‍💻</div>
+            <h2>THIAGO</h2>
+        </div>
+
+        <div class="login-card" onclick="fazerLogin('SAMELLA')">
+            <div class="avatar">👩🏻‍🎨</div>
+            <h2>SÂMELLA</h2>
+        </div>
+    </div>
+
+    <header id="app-header" class="hidden">
+        <div class="logo">🎮 CASAL PLAY</div>
+        <div style="display:flex; align-items:center; gap:10px;">
+            <div id="user-badge" style="font-size:0.8rem; opacity:0.7;"></div>
+            <button class="btn-voltar hidden" id="btn-voltar" onclick="voltarMenu()">SAIR DO JOGO</button>
+        </div>
     </header>
 
-    <!-- ========== MENU PRINCIPAL ========== -->
-    <div id="menu-principal" class="menu-principal">
-        <div class="menu-titulo">ESCOLHA SEU JOGO</div>
-        <div class="grid-jogos">
-            <div class="card-jogo" onclick="abrirJogo('adedonha')">
-                <div class="card-icon">📝</div>
-                <div class="card-titulo">ADEDONHA</div>
-                <div class="card-desc">Jogo de categorias - 2 jogadores</div>
-            </div>
+    <div id="menu-principal" class="hidden">
+        <div class="status-bar">
+            <div class="status-dot online"></div>
+            <span>Conectado como <strong id="lbl-nome">...</strong></span>
+        </div>
 
-            <div class="card-jogo" onclick="abrirJogo('velha')">
-                <div class="card-icon">❌⭕</div>
-                <div class="card-titulo">JOGO DA VELHA</div>
-                <div class="card-desc">Clássico 3x3</div>
+        <div class="card-jogo" onclick="abrirJogo('adedonha')">
+            <div class="card-icon">📝</div>
+            <div class="card-info">
+                <h3>ADEDONHA</h3>
+                <p>O clássico Stop! Quem escreve mais rápido?</p>
             </div>
+        </div>
 
-            <div class="card-jogo" onclick="abrirJogo('forca')">
-                <div class="card-icon">🔤</div>
-                <div class="card-titulo">FORCA</div>
-                <div class="card-desc">Adivinhe a palavra</div>
+        <div class="card-jogo" onclick="abrirJogo('velha')">
+            <div class="card-icon">⭕</div>
+            <div class="card-info">
+                <h3>JOGO DA VELHA</h3>
+                <p>Disputa rápida. Quem fizer a linha vence.</p>
             </div>
+        </div>
 
-            <div class="card-jogo" onclick="abrirJogo('termo')">
-                <div class="card-icon">🟩</div>
-                <div class="card-titulo">TERMO</div>
-                <div class="card-desc">Wordle em português</div>
+        <div class="card-jogo" onclick="abrirJogo('forca')">
+            <div class="card-icon">💀</div>
+            <div class="card-info">
+                <h3>FORCA BÍBLICA</h3>
+                <p>Adivinhe a palavra antes do boneco.</p>
+            </div>
+        </div>
+
+        <div class="card-jogo" onclick="abrirJogo('termo')">
+            <div class="card-icon">🟩</div>
+            <div class="card-info">
+                <h3>TERMO DUO</h3>
+                <p>Descubram a palavra de 5 letras juntos.</p>
             </div>
         </div>
     </div>
 
-    <!-- [REST OF THE HTML - Same as before, keeping all game sections] -->
-    <!-- (Continua com todas as seções de jogos exatamente como estava) -->
+    <div id="tela-velha" class="tela-jogo">
+        <h2 style="font-family:'Orbitron'; color:var(--cor-azul); margin-bottom:10px;">JOGO DA VELHA</h2>
+        <p id="velha-status" style="margin-bottom:20px; color:#aaa;">Aguardando...</p>
+        
+        <div class="velha-grid" id="velha-board">
+            </div>
+
+        <button class="btn-acao secondary" onclick="resetVelha()">REINICIAR PARTIDA</button>
+    </div>
+
+    <div id="tela-forca" class="tela-jogo">
+        <h2 style="font-family:'Orbitron'; color:var(--cor-rosa);">FORCA</h2>
+        <div id="forca-boneco" style="font-size:1.2rem; margin:10px 0; color:var(--cor-rosa);">Erros: 0/6</div>
+        
+        <div id="forca-palavra" class="forca-palavra">_ _ _ _ _</div>
+        
+        <div id="forca-teclado" class="teclado"></div>
+        
+        <div id="forca-msg" style="margin-top:20px; font-weight:bold;"></div>
+        <button class="btn-acao secondary" onclick="resetForca()">NOVA PALAVRA</button>
+    </div>
+
+    <div id="tela-termo" class="tela-jogo">
+        <h2 style="font-family:'Orbitron'; color:var(--cor-primaria);">TERMO</h2>
+        <p style="font-size:0.8rem; margin-bottom:20px; color:#aaa;">Vocês compartilham o mesmo tabuleiro!</p>
+        
+        <div id="termo-grid" class="termo-grid"></div>
+        
+        <div style="display:flex; gap:10px; margin-bottom:10px;">
+            <input type="text" id="termo-input" maxlength="5" style="padding:10px; text-transform:uppercase; text-align:center; width:150px; font-size:1.2rem; border-radius:10px; border:none;">
+            <button class="btn-acao" style="margin:0; width:auto; padding:10px 20px;" onclick="chutarTermo()">ENVIAR</button>
+        </div>
+        
+        <div id="termo-msg" style="margin-top:10px; font-weight:bold;"></div>
+        <button class="btn-acao secondary" onclick="resetTermo()">NOVO JOGO</button>
+    </div>
+
+    <div id="tela-adedonha" class="tela-jogo">
+        <h2 style="font-family:'Orbitron'; color:var(--cor-roxo);">ADEDONHA</h2>
+        <div style="background:#222; padding:20px; border-radius:20px; width:100%; text-align:center; margin:20px 0;">
+            <div id="adedonha-letra" style="font-size:4rem; font-weight:bold; color:var(--cor-azul);">?</div>
+            <p id="adedonha-status">Toque para girar</p>
+        </div>
+        
+        <div id="adedonha-controles">
+            <button class="btn-acao" onclick="girarAdedonha()">GIRAR ROLETA</button>
+        </div>
+        
+        <div id="adedonha-inputs" class="hidden" style="width:100%;">
+            <input type="text" placeholder="Nome" class="btn-acao secondary" style="margin-top:10px; text-align:left; background:#111;">
+            <input type="text" placeholder="Lugar" class="btn-acao secondary" style="margin-top:10px; text-align:left; background:#111;">
+            <input type="text" placeholder="Objeto" class="btn-acao secondary" style="margin-top:10px; text-align:left; background:#111;">
+        </div>
+    </div>
 
     <script>
-        // ========== FIX para garantir que os clicks funcionem ==========
-        document.addEventListener('DOMContentLoaded', function() {
-            console.log('App iniciado!');
-            
-            // Força os cards a serem clicáveis
-            const cards = document.querySelectorAll('.card-jogo');
-            cards.forEach((card, index) => {
-                card.addEventListener('touchstart', function(e) {
-                    console.log('Card tocado:', index);
-                    this.style.transform = 'scale(0.95)';
-                });
-                
-                card.addEventListener('touchend', function(e) {
-                    this.style.transform = 'scale(1)';
-                });
-            });
-        });
-
-        // ========== FIREBASE CONFIG ==========
+        // === CONFIGURAÇÃO DO FIREBASE ===
         const firebaseConfig = {
             apiKey: "AIzaSyAjgEFZB3_FHelXH9YtCnFYFO4RCGO7Wd8",
             authDomain: "adedonha-8b2a4.firebaseapp.com",
             databaseURL: "https://adedonha-8b2a4-default-rtdb.firebaseio.com",
             projectId: "adedonha-8b2a4",
             storageBucket: "adedonha-8b2a4.firebasestorage.app",
-            messagingSenderId: "1061633793316",
             appId: "1:1061633793316:web:e4f9a23ce9e28ae8d2e7b1"
         };
-        firebase.initializeApp(firebaseConfig);
-        const db = firebase.database();
-        const ref = db.ref('partida_casal');
 
-        if ('serviceWorker' in navigator) {
-            navigator.serviceWorker.getRegistrations().then(r => r.forEach(i => i.unregister()));
+        // Inicializa Firebase com segurança
+        if (!firebase.apps.length) {
+            firebase.initializeApp(firebaseConfig);
         }
+        const db = firebase.database();
 
-        // ========== NAVEGAÇÃO ENTRE JOGOS ========== 
-        function abrirJogo(id) {
-            console.log('Abrindo jogo:', id); // DEBUG
+        // === ESTADO GLOBAL ===
+        let MEU_NOME = "";
+        let JOGO_ATUAL = "";
+        
+        // === SISTEMA DE LOGIN ===
+        function fazerLogin(nome) {
+            MEU_NOME = nome;
+            document.getElementById('lbl-nome').innerText = nome;
+            document.getElementById('user-badge').innerText = nome;
             
-            document.getElementById('menu-principal').style.display = 'none';
-            document.getElementById('btn-voltar').classList.remove('hidden');
-            
-            document.querySelectorAll('.tela-jogo').forEach(t => t.classList.remove('ativa'));
-            document.getElementById(`tela-${id}`).classList.add('ativa');
-
-            // Ajusta o body background conforme o jogo
-            if(id === 'adedonha') {
-                document.body.style.background = '#050014';
-            } else {
-                document.body.style.background = 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)';
-            }
-
-            // Inicializa o jogo
-            if(id === 'velha') iniciarVelha();
-            if(id === 'forca') iniciarForca();
-            if(id === 'termo') iniciarTermo();
+            // Transição de tela
+            document.getElementById('tela-login').style.display = 'none';
+            document.getElementById('app-header').classList.remove('hidden');
+            document.getElementById('menu-principal').classList.remove('hidden');
         }
 
         function voltarMenu() {
-            console.log('Voltando ao menu'); // DEBUG
-            document.getElementById('menu-principal').style.display = 'flex';
-            document.getElementById('btn-voltar').classList.add('hidden');
+            // Esconde jogos
             document.querySelectorAll('.tela-jogo').forEach(t => t.classList.remove('ativa'));
-            document.body.style.background = 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)';
+            document.getElementById('btn-voltar').classList.add('hidden');
+            
+            // Mostra menu
+            document.getElementById('menu-principal').classList.remove('hidden');
+            
+            // Limpa listener do jogo anterior para economizar dados
+            if(JOGO_ATUAL) db.ref(`games/${JOGO_ATUAL}`).off();
+            JOGO_ATUAL = "";
         }
 
-        // [RESTO DO JAVASCRIPT - Mantém todo o código dos jogos]
-        // (Continua exatamente como estava)
+        function abrirJogo(jogo) {
+            JOGO_ATUAL = jogo;
+            
+            document.getElementById('menu-principal').classList.add('hidden');
+            document.getElementById('btn-voltar').classList.remove('hidden');
+            
+            document.querySelectorAll('.tela-jogo').forEach(t => t.classList.remove('ativa'));
+            document.getElementById(`tela-${jogo}`).classList.add('ativa');
+
+            // Inicia listeners específicos
+            if(jogo === 'velha') initVelha();
+            if(jogo === 'forca') initForca();
+            if(jogo === 'termo') initTermo();
+            if(jogo === 'adedonha') initAdedonha();
+        }
+
+        // ============================================
+        // 1. JOGO DA VELHA (ONLINE REAL-TIME)
+        // ============================================
+        function initVelha() {
+            const board = document.getElementById('velha-board');
+            board.innerHTML = '';
+            
+            // Cria tabuleiro
+            for(let i=0; i<9; i++) {
+                const cell = document.createElement('div');
+                cell.className = 'velha-cell';
+                cell.onclick = () => jogarVelha(i);
+                cell.id = `v-cell-${i}`;
+                board.appendChild(cell);
+            }
+
+            // Escuta mudanças no Firebase
+            db.ref('games/velha').on('value', snap => {
+                const data = snap.val() || { grid: Array(9).fill(''), turn: 'THIAGO' };
+                
+                // Atualiza grid visualmente
+                data.grid.forEach((val, idx) => {
+                    const el = document.getElementById(`v-cell-${idx}`);
+                    el.innerText = val;
+                    el.className = `velha-cell ${val.toLowerCase()}`;
+                });
+
+                // Atualiza status
+                const statusEl = document.getElementById('velha-status');
+                if(checkWinner(data.grid)) {
+                    statusEl.innerText = "FIM DE JOGO!";
+                    statusEl.style.color = "var(--cor-rosa)";
+                } else {
+                    statusEl.innerText = data.turn === MEU_NOME ? "SUA VEZ!" : `VEZ DE ${data.turn}`;
+                    statusEl.style.color = data.turn === MEU_NOME ? "#0f0" : "#aaa";
+                }
+            });
+        }
+
+        function jogarVelha(idx) {
+            db.ref('games/velha').once('value', snap => {
+                const data = snap.val() || { grid: Array(9).fill(''), turn: 'THIAGO' };
+                
+                // Regras de validação
+                if(data.grid[idx] !== '') return; // Já marcado
+                if(data.turn !== MEU_NOME) return; // Não é sua vez
+                if(checkWinner(data.grid)) return; // Já acabou
+
+                // Marca jogada
+                const simbolo = MEU_NOME === 'THIAGO' ? 'X' : 'O';
+                data.grid[idx] = simbolo;
+                data.turn = MEU_NOME === 'THIAGO' ? 'SAMELLA' : 'THIAGO';
+
+                // Envia pro Firebase
+                db.ref('games/velha').set(data);
+            });
+        }
+
+        function resetVelha() {
+            db.ref('games/velha').set({
+                grid: Array(9).fill(''),
+                turn: 'THIAGO'
+            });
+        }
+
+        function checkWinner(grid) {
+            const wins = [[0,1,2],[3,4,5],[6,7,8],[0,3,6],[1,4,7],[2,5,8],[0,4,8],[2,4,6]];
+            return wins.some(c => grid[c[0]] && grid[c[0]] === grid[c[1]] && grid[c[0]] === grid[c[2]]);
+        }
+
+        // ============================================
+        // 2. FORCA (COOPERATIVO ONLINE)
+        // ============================================
+        const PALAVRAS_FORCA = ["BIBLIA", "JESUS", "IGREJA", "AMOR", "CRUZ", "SALVAÇÃO", "BAHIA", "VIDA", "NOIVOS", "ETERNO"];
+
+        function initForca() {
+            // Cria teclado
+            const kb = document.getElementById('forca-teclado');
+            kb.innerHTML = '';
+            "ABCDEFGHIJKLMNOPQRSTUVWXYZ".split('').forEach(l => {
+                const btn = document.createElement('button');
+                btn.className = 'tecla';
+                btn.innerText = l;
+                btn.id = `key-${l}`;
+                btn.onclick = () => chutarForca(l);
+                kb.appendChild(btn);
+            });
+
+            // Escuta Firebase
+            db.ref('games/forca').on('value', snap => {
+                const data = snap.val();
+                if(!data) { resetForca(); return; }
+
+                // Atualiza palavra escondida
+                const display = data.palavra.split('').map(l => (data.chutes || []).includes(l) ? l : "_").join(' ');
+                document.getElementById('forca-palavra').innerText = display;
+                
+                // Atualiza erros
+                const erros = (data.chutes || []).filter(c => !data.palavra.includes(c)).length;
+                document.getElementById('forca-boneco').innerText = `Erros: ${erros}/6`;
+
+                // Atualiza teclado (desabilita usados)
+                document.querySelectorAll('.tecla').forEach(b => b.disabled = false);
+                (data.chutes || []).forEach(c => {
+                    const btn = document.getElementById(`key-${c}`);
+                    if(btn) btn.disabled = true;
+                });
+
+                // Checa fim de jogo
+                const msg = document.getElementById('forca-msg');
+                if(!display.includes('_')) {
+                    msg.innerText = "VOCÊS VENCERAM! 🎉";
+                    msg.style.color = "#0f0";
+                } else if(erros >= 6) {
+                    msg.innerText = `PERDERAM! Era: ${data.palavra}`;
+                    msg.style.color = "red";
+                } else {
+                    msg.innerText = "";
+                }
+            });
+        }
+
+        function chutarForca(letra) {
+            db.ref('games/forca').transaction(data => {
+                if(!data) return data;
+                if(!data.chutes) data.chutes = [];
+                if(!data.chutes.includes(letra)) data.chutes.push(letra);
+                return data;
+            });
+        }
+
+        function resetForca() {
+            const nova = PALAVRAS_FORCA[Math.floor(Math.random() * PALAVRAS_FORCA.length)];
+            db.ref('games/forca').set({
+                palavra: nova,
+                chutes: []
+            });
+        }
+
+        // ============================================
+        // 3. TERMO (COOPERATIVO ONLINE)
+        // ============================================
+        const PALAVRAS_TERMO = ["AMIGO","ANJOS","BENTA","CASAL","CULTO","JESUS","LIVRO","MUNDO","NATAL","PADRE"];
+
+        function initTermo() {
+            const grid = document.getElementById('termo-grid');
+            grid.innerHTML = '';
+            for(let i=0; i<6; i++) {
+                const row = document.createElement('div');
+                row.className = 'termo-row';
+                for(let j=0; j<5; j++) {
+                    const box = document.createElement('div');
+                    box.className = 'termo-box';
+                    box.id = `t-${i}-${j}`;
+                    row.appendChild(box);
+                }
+                grid.appendChild(row);
+            }
+
+            db.ref('games/termo').on('value', snap => {
+                const data = snap.val();
+                if(!data) { resetTermo(); return; }
+
+                // Renderiza tentativas anteriores
+                (data.tentativas || []).forEach((tentativa, rowIdx) => {
+                    for(let i=0; i<5; i++) {
+                        const box = document.getElementById(`t-${rowIdx}-${i}`);
+                        const letra = tentativa[i];
+                        box.innerText = letra;
+                        
+                        // Cores
+                        if(letra === data.segredo[i]) box.classList.add('certo');
+                        else if(data.segredo.includes(letra)) box.classList.add('lugar');
+                        else box.classList.add('errado');
+                    }
+                });
+            });
+        }
+
+        function chutarTermo() {
+            const input = document.getElementById('termo-input');
+            const chute = input.value.toUpperCase();
+            if(chute.length !== 5) return alert("Precisa de 5 letras!");
+
+            db.ref('games/termo').transaction(data => {
+                if(!data) return data;
+                if(!data.tentativas) data.tentativas = [];
+                if(data.tentativas.length < 6) data.tentativas.push(chute);
+                return data;
+            });
+            input.value = '';
+        }
+
+        function resetTermo() {
+            const nova = PALAVRAS_TERMO[Math.floor(Math.random() * PALAVRAS_TERMO.length)];
+            db.ref('games/termo').set({
+                segredo: nova,
+                tentativas: []
+            });
+        }
+
+        // ============================================
+        // 4. ADEDONHA (RÁPIDA)
+        // ============================================
+        function initAdedonha() {
+            db.ref('games/adedonha').on('value', snap => {
+                const data = snap.val() || {};
+                document.getElementById('adedonha-letra').innerText = data.letra || "?";
+            });
+        }
+
+        function girarAdedonha() {
+            const abc = "ABCDEFJLMNPQRSTUV";
+            const letra = abc[Math.floor(Math.random() * abc.length)];
+            db.ref('games/adedonha/letra').set(letra);
+        }
+
     </script>
 </body>
 </html>
