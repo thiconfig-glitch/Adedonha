@@ -3,29 +3,28 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Super App Casal Online 🎮</title>
+    <title>Super App Casal - Versão Bíblica 📖</title>
     
     <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500;700;900&family=Rajdhani:wght@500;700&display=swap" rel="stylesheet">
-    
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
 
     <style>
-        /* === ESTILO GERAL (Fundo e Cores) === */
         :root {
             --cor-primaria: #6aaa64;
             --cor-roxo: #bd00ff;
             --cor-azul: #00f3ff;
             --cor-rosa: #ff0055;
-            --cor-fundo-dark: #121213;
-            --cor-card: rgba(255, 255, 255, 0.05);
+            --cor-ouro: #ffd700;
+            --cor-card: rgba(255, 255, 255, 0.08);
+            --bg-gradiente: linear-gradient(135deg, #1a0b2e 0%, #2b1055 100%);
         }
 
-        * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; user-select: none; }
+        * { box-sizing: border-box; margin: 0; padding: 0; user-select: none; -webkit-tap-highlight-color: transparent; }
 
         body {
             font-family: 'Rajdhani', sans-serif;
-            background: linear-gradient(135deg, #0f0c29 0%, #302b63 50%, #24243e 100%);
+            background: var(--bg-gradiente);
             color: white;
             min-height: 100vh;
             display: flex;
@@ -35,124 +34,78 @@
 
         /* HEADER */
         header {
-            background: rgba(0,0,0,0.8);
+            background: rgba(0,0,0,0.6);
             backdrop-filter: blur(10px);
             padding: 15px 20px;
             display: flex;
             justify-content: space-between;
             align-items: center;
-            border-bottom: 1px solid #333;
-            position: sticky;
-            top: 0;
-            z-index: 100;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.5);
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+            position: sticky; top: 0; z-index: 100;
         }
 
         .logo { 
-            font-family: 'Orbitron'; 
-            font-weight: 900; 
+            font-family: 'Orbitron'; font-weight: 900; 
             background: linear-gradient(90deg, var(--cor-azul), var(--cor-rosa));
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            font-size: 1.2rem;
+            -webkit-background-clip: text; -webkit-text-fill-color: transparent;
         }
-        
-        .btn-voltar {
-            background: rgba(255,255,255,0.1);
-            border: 1px solid rgba(255,255,255,0.2);
-            color: white;
-            padding: 8px 16px;
-            border-radius: 20px;
-            cursor: pointer;
-            font-family: 'Orbitron';
-            font-size: 0.8rem;
-            transition: 0.3s;
-        }
-        .btn-voltar:active { transform: scale(0.95); background: rgba(255,255,255,0.2); }
 
-        .hidden { display: none !important; }
-
-        /* MENU PRINCIPAL */
+        /* MENU */
         #menu-principal {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            padding: 30px 20px;
-            gap: 20px;
-            width: 100%;
-            max-width: 600px;
-            margin: 0 auto;
+            display: flex; flex-direction: column; align-items: center;
+            padding: 20px; gap: 15px; width: 100%; max-width: 600px; margin: 0 auto;
         }
 
         .card-jogo {
-            background: var(--cor-card);
-            border: 1px solid rgba(255,255,255,0.1);
-            width: 100%;
-            padding: 25px;
-            border-radius: 20px;
-            display: flex;
-            align-items: center;
-            cursor: pointer;
-            transition: 0.3s;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.2);
+            background: var(--cor-card); border: 1px solid rgba(255,255,255,0.1);
+            width: 100%; padding: 20px; border-radius: 15px;
+            display: flex; align-items: center; cursor: pointer; transition: 0.3s;
         }
-
-        .card-jogo:active { transform: scale(0.98); background: rgba(255,255,255,0.1); }
-        
-        .card-icon { 
-            font-size: 2.5rem; 
-            margin-right: 20px; 
-            width: 60px; 
-            text-align: center;
-        }
-        
+        .card-jogo:active { transform: scale(0.98); background: rgba(255,255,255,0.15); }
+        .card-icon { font-size: 2.5rem; margin-right: 15px; min-width: 50px; text-align: center; }
         .card-info h3 { font-family: 'Orbitron'; color: var(--cor-azul); margin-bottom: 5px; }
         .card-info p { font-size: 0.9rem; color: #aaa; }
 
-        /* TELAS DE JOGO */
+        /* TELAS */
         .tela-jogo {
-            display: none;
-            flex: 1;
-            flex-direction: column;
-            padding: 20px;
-            align-items: center;
-            width: 100%;
-            max-width: 500px;
-            margin: 0 auto;
+            display: none; flex: 1; flex-direction: column;
+            padding: 20px; align-items: center; width: 100%; max-width: 500px; margin: 0 auto;
         }
-
         .tela-jogo.ativa { display: flex; animation: slideUp 0.4s ease-out; }
+        @keyframes slideUp { from { opacity:0; transform:translateY(20px); } to { opacity:1; transform:translateY(0); } }
 
-        @keyframes slideUp { from { opacity:0; transform:translateY(30px); } to { opacity:1; transform:translateY(0); } }
-
-        /* LOGIN */
-        #tela-login {
+        /* MODAL DE AVISO (O PULO DO GATO) */
+        #modal-aviso {
             position: fixed; top:0; left:0; width:100%; height:100%;
-            background: #0f0c29; z-index: 200;
-            display: flex; flex-direction: column; justify-content: center; align-items: center;
-            padding: 20px;
+            background: rgba(0,0,0,0.9); z-index: 999;
+            display: none; justify-content: center; align-items: center; flex-direction: column;
+            backdrop-filter: blur(5px);
         }
+        #modal-aviso.show { display: flex; animation: popIn 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
+        
+        @keyframes popIn { from{transform:scale(0.5); opacity:0;} to{transform:scale(1); opacity:1;} }
 
-        .login-card {
-            background: var(--cor-card); border: 1px solid #444;
-            width: 100%; max-width: 300px; padding: 30px; margin: 10px;
-            border-radius: 15px; text-align: center; cursor: pointer;
-            transition: 0.3s;
+        .aviso-box {
+            background: #1a1a2e; border: 2px solid var(--cor-azul);
+            padding: 30px; border-radius: 20px; text-align: center; width: 85%; max-width: 320px;
+            box-shadow: 0 0 30px rgba(0, 243, 255, 0.2);
         }
-        .login-card:active { transform: scale(0.95); border-color: var(--cor-azul); }
-        .login-card h2 { font-family: 'Orbitron'; margin-top: 10px; }
-        .avatar { font-size: 4rem; }
+        .aviso-titulo { font-family: 'Orbitron'; font-size: 1.8rem; margin-bottom: 10px; color: white; }
+        .aviso-msg { font-size: 1.1rem; color: #ccc; margin-bottom: 25px; }
 
         /* BOTÕES */
         .btn-acao {
             background: linear-gradient(135deg, var(--cor-roxo), var(--cor-rosa));
-            border: none; color: white; padding: 15px 40px;
-            border-radius: 30px; font-family: 'Orbitron'; font-weight: bold;
-            font-size: 1.1rem; cursor: pointer; margin-top: 25px;
-            box-shadow: 0 0 20px rgba(189, 0, 255, 0.4); width: 100%;
+            border: none; color: white; padding: 15px 30px; border-radius: 30px;
+            font-family: 'Orbitron'; font-weight: bold; font-size: 1rem;
+            cursor: pointer; width: 100%; box-shadow: 0 5px 15px rgba(189, 0, 255, 0.3);
         }
-        .btn-acao:active { transform: scale(0.98); }
-        .btn-acao.secondary { background: #333; box-shadow: none; border: 1px solid #555; }
+        .btn-acao:active { transform: scale(0.95); }
+        
+        .btn-voltar {
+            background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.3);
+            color: white; padding: 8px 15px; border-radius: 20px; font-size: 0.8rem;
+        }
 
         /* JOGO DA VELHA */
         .velha-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; width: 100%; aspect-ratio: 1; }
@@ -160,23 +113,20 @@
             background: rgba(255,255,255,0.1); border-radius: 10px;
             display: flex; align-items: center; justify-content: center;
             font-size: 4rem; font-weight: bold; cursor: pointer;
-            text-shadow: 0 0 10px rgba(255,255,255,0.5);
         }
-        .velha-cell.x { color: var(--cor-azul); }
-        .velha-cell.o { color: var(--cor-rosa); }
+        .velha-cell.x { color: var(--cor-azul); text-shadow: 0 0 10px var(--cor-azul); }
+        .velha-cell.o { color: var(--cor-rosa); text-shadow: 0 0 10px var(--cor-rosa); }
 
         /* FORCA */
-        .forca-palavra { 
-            font-size: 2.5rem; letter-spacing: 0.5rem; margin: 30px 0; 
-            font-family: monospace; text-align: center; word-break: break-all;
-        }
+        .forca-vidas { font-size: 1.5rem; margin: 10px 0; color: var(--cor-rosa); letter-spacing: 5px; }
+        .forca-palavra { font-size: 2.2rem; letter-spacing: 0.3rem; margin: 20px 0; font-family: monospace; text-align: center; }
         .teclado { display: flex; flex-wrap: wrap; gap: 5px; justify-content: center; }
         .tecla {
-            width: 35px; height: 45px; background: rgba(255,255,255,0.1);
-            border: 1px solid rgba(255,255,255,0.2); color: white;
-            border-radius: 5px; font-weight: bold; cursor: pointer;
+            width: 32px; height: 42px; background: rgba(255,255,255,0.1);
+            border: 1px solid rgba(255,255,255,0.2); color: white; border-radius: 5px;
+            font-weight: bold; font-size: 1rem;
         }
-        .tecla:disabled { opacity: 0.3; cursor: not-allowed; }
+        .tecla:disabled { opacity: 0.2; }
 
         /* TERMO */
         .termo-grid { display: grid; gap: 5px; margin-bottom: 20px; }
@@ -186,141 +136,106 @@
             display: flex; align-items: center; justify-content: center;
             font-size: 1.8rem; font-weight: bold; text-transform: uppercase;
         }
-        .termo-box.certo { background: var(--cor-primaria); border-color: var(--cor-primaria); }
-        .termo-box.lugar { background: #c9b458; border-color: #c9b458; }
-        .termo-box.errado { background: #3a3a3c; border-color: #3a3a3c; }
+        .certo { background: var(--cor-primaria); border-color: var(--cor-primaria); }
+        .lugar { background: #c9b458; border-color: #c9b458; }
+        .errado { background: #3a3a3c; border-color: #3a3a3c; }
 
-        /* STATUS BAR */
-        .status-bar {
-            background: rgba(0,0,0,0.5); padding: 10px 20px; border-radius: 30px;
-            margin-bottom: 20px; display: flex; gap: 15px; font-size: 0.9rem;
-            border: 1px solid rgba(255,255,255,0.1);
+        /* LOGIN */
+        #tela-login {
+            position: fixed; top:0; left:0; width:100%; height:100%; background: #151520; z-index: 200;
+            display: flex; flex-direction: column; justify-content: center; align-items: center;
         }
-        .status-dot { width: 10px; height: 10px; border-radius: 50%; background: #555; }
-        .status-dot.online { background: #0f0; box-shadow: 0 0 10px #0f0; }
-
+        .avatar { font-size: 3.5rem; margin-bottom: 10px; }
     </style>
 </head>
 <body>
 
-    <div id="tela-login">
-        <h1 style="font-family:'Orbitron'; color:var(--cor-azul); margin-bottom:40px;">QUEM É VOCÊ?</h1>
-        
-        <div class="login-card" onclick="fazerLogin('THIAGO')">
-            <div class="avatar">👨🏻‍💻</div>
-            <h2>THIAGO</h2>
+    <div id="modal-aviso">
+        <div class="aviso-box">
+            <div id="aviso-icone" style="font-size: 4rem; margin-bottom: 15px;">🏆</div>
+            <div id="aviso-titulo" class="aviso-titulo">TITULO</div>
+            <div id="aviso-msg" class="aviso-msg">Mensagem aqui</div>
+            <button class="btn-acao" onclick="fecharModalEReiniciar()">JOGAR NOVAMENTE</button>
         </div>
+    </div>
 
-        <div class="login-card" onclick="fazerLogin('SAMELLA')">
-            <div class="avatar">👩🏻‍🎨</div>
-            <h2>SÂMELLA</h2>
+    <div id="tela-login">
+        <h1 style="font-family:'Orbitron'; margin-bottom:40px; color:var(--cor-azul);">QUEM É VOCÊ?</h1>
+        <div style="display:flex; gap:20px;">
+            <div onclick="fazerLogin('THIAGO')" style="background:var(--cor-card); padding:20px; border-radius:15px; text-align:center; border:1px solid #444;">
+                <div class="avatar">🤵🏻‍♂️</div>
+                <h3>THIAGO</h3>
+            </div>
+            <div onclick="fazerLogin('SAMELLA')" style="background:var(--cor-card); padding:20px; border-radius:15px; text-align:center; border:1px solid #444;">
+                <div class="avatar">👰🏻‍♀️</div>
+                <h3>SÂMELLA</h3>
+            </div>
         </div>
     </div>
 
     <header id="app-header" class="hidden">
-        <div class="logo">🎮 CASAL PLAY</div>
-        <div style="display:flex; align-items:center; gap:10px;">
-            <div id="user-badge" style="font-size:0.8rem; opacity:0.7;"></div>
-            <button class="btn-voltar hidden" id="btn-voltar" onclick="voltarMenu()">SAIR DO JOGO</button>
-        </div>
+        <div class="logo">APP BÍBLICO 📖</div>
+        <button class="btn-voltar hidden" id="btn-voltar" onclick="voltarMenu()">MENU</button>
     </header>
 
     <div id="menu-principal" class="hidden">
-        <div class="status-bar">
-            <div class="status-dot online"></div>
-            <span>Conectado como <strong id="lbl-nome">...</strong></span>
-        </div>
-
+        <p style="color:#aaa; text-align:center;">Conectado como: <strong id="lbl-nome" style="color:white;">...</strong></p>
+        
         <div class="card-jogo" onclick="abrirJogo('adedonha')">
             <div class="card-icon">📝</div>
-            <div class="card-info">
-                <h3>ADEDONHA</h3>
-                <p>O clássico Stop! Quem escreve mais rápido?</p>
-            </div>
+            <div class="card-info"><h3>ADEDONHA</h3><p>Stop Bíblico e Geral</p></div>
         </div>
 
         <div class="card-jogo" onclick="abrirJogo('velha')">
             <div class="card-icon">⭕</div>
-            <div class="card-info">
-                <h3>JOGO DA VELHA</h3>
-                <p>Disputa rápida. Quem fizer a linha vence.</p>
-            </div>
+            <div class="card-info"><h3>JOGO DA VELHA</h3><p>Desafio rápido</p></div>
         </div>
 
         <div class="card-jogo" onclick="abrirJogo('forca')">
-            <div class="card-icon">💀</div>
-            <div class="card-info">
-                <h3>FORCA BÍBLICA</h3>
-                <p>Adivinhe a palavra antes do boneco.</p>
-            </div>
+            <div class="card-icon">📖</div>
+            <div class="card-info"><h3>FORCA BÍBLICA</h3><p>Descubra a palavra</p></div>
         </div>
 
         <div class="card-jogo" onclick="abrirJogo('termo')">
             <div class="card-icon">🟩</div>
-            <div class="card-info">
-                <h3>TERMO DUO</h3>
-                <p>Descubram a palavra de 5 letras juntos.</p>
-            </div>
+            <div class="card-info"><h3>TERMO</h3><p>Adivinhe em 6 chances</p></div>
         </div>
     </div>
 
     <div id="tela-velha" class="tela-jogo">
         <h2 style="font-family:'Orbitron'; color:var(--cor-azul); margin-bottom:10px;">JOGO DA VELHA</h2>
-        <p id="velha-status" style="margin-bottom:20px; color:#aaa;">Aguardando...</p>
-        
-        <div class="velha-grid" id="velha-board">
-            </div>
-
-        <button class="btn-acao secondary" onclick="resetVelha()">REINICIAR PARTIDA</button>
+        <div id="velha-status" style="margin-bottom:20px; color:#aaa;">Vez de...</div>
+        <div class="velha-grid" id="velha-board"></div>
+        <button class="btn-acao" style="margin-top:20px; background:#333;" onclick="resetVelha()">REINICIAR TABULEIRO</button>
     </div>
 
     <div id="tela-forca" class="tela-jogo">
-        <h2 style="font-family:'Orbitron'; color:var(--cor-rosa);">FORCA</h2>
-        <div id="forca-boneco" style="font-size:1.2rem; margin:10px 0; color:var(--cor-rosa);">Erros: 0/6</div>
-        
+        <h2 style="font-family:'Orbitron'; color:var(--cor-ouro);">FORCA BÍBLICA</h2>
+        <div id="forca-vidas" class="forca-vidas">❤️❤️❤️❤️❤️❤️</div>
         <div id="forca-palavra" class="forca-palavra">_ _ _ _ _</div>
-        
         <div id="forca-teclado" class="teclado"></div>
-        
-        <div id="forca-msg" style="margin-top:20px; font-weight:bold;"></div>
-        <button class="btn-acao secondary" onclick="resetForca()">NOVA PALAVRA</button>
+        <button class="btn-acao" style="margin-top:20px; background:#333;" onclick="resetForca()">NOVA PALAVRA</button>
     </div>
 
     <div id="tela-termo" class="tela-jogo">
         <h2 style="font-family:'Orbitron'; color:var(--cor-primaria);">TERMO</h2>
-        <p style="font-size:0.8rem; margin-bottom:20px; color:#aaa;">Vocês compartilham o mesmo tabuleiro!</p>
-        
         <div id="termo-grid" class="termo-grid"></div>
-        
-        <div style="display:flex; gap:10px; margin-bottom:10px;">
+        <div style="display:flex; gap:10px;">
             <input type="text" id="termo-input" maxlength="5" style="padding:10px; text-transform:uppercase; text-align:center; width:150px; font-size:1.2rem; border-radius:10px; border:none;">
-            <button class="btn-acao" style="margin:0; width:auto; padding:10px 20px;" onclick="chutarTermo()">ENVIAR</button>
+            <button class="btn-acao" style="width:auto; padding:10px 20px; margin:0;" onclick="chutarTermo()">OK</button>
         </div>
-        
-        <div id="termo-msg" style="margin-top:10px; font-weight:bold;"></div>
-        <button class="btn-acao secondary" onclick="resetTermo()">NOVO JOGO</button>
+        <button class="btn-acao" style="margin-top:20px; background:#333;" onclick="resetTermo()">REINICIAR</button>
     </div>
 
     <div id="tela-adedonha" class="tela-jogo">
         <h2 style="font-family:'Orbitron'; color:var(--cor-roxo);">ADEDONHA</h2>
-        <div style="background:#222; padding:20px; border-radius:20px; width:100%; text-align:center; margin:20px 0;">
-            <div id="adedonha-letra" style="font-size:4rem; font-weight:bold; color:var(--cor-azul);">?</div>
-            <p id="adedonha-status">Toque para girar</p>
+        <div style="background:#222; padding:30px; border-radius:20px; margin:30px 0; width:100%; text-align:center;">
+            <div id="adedonha-letra" style="font-size:5rem; font-weight:bold; color:var(--cor-azul); text-shadow:0 0 20px var(--cor-azul);">?</div>
         </div>
-        
-        <div id="adedonha-controles">
-            <button class="btn-acao" onclick="girarAdedonha()">GIRAR ROLETA</button>
-        </div>
-        
-        <div id="adedonha-inputs" class="hidden" style="width:100%;">
-            <input type="text" placeholder="Nome" class="btn-acao secondary" style="margin-top:10px; text-align:left; background:#111;">
-            <input type="text" placeholder="Lugar" class="btn-acao secondary" style="margin-top:10px; text-align:left; background:#111;">
-            <input type="text" placeholder="Objeto" class="btn-acao secondary" style="margin-top:10px; text-align:left; background:#111;">
-        </div>
+        <button class="btn-acao" onclick="girarAdedonha()">GIRAR LETRA</button>
     </div>
 
     <script>
-        // === CONFIGURAÇÃO DO FIREBASE ===
         const firebaseConfig = {
             apiKey: "AIzaSyAjgEFZB3_FHelXH9YtCnFYFO4RCGO7Wd8",
             authDomain: "adedonha-8b2a4.firebaseapp.com",
@@ -329,275 +244,266 @@
             storageBucket: "adedonha-8b2a4.firebasestorage.app",
             appId: "1:1061633793316:web:e4f9a23ce9e28ae8d2e7b1"
         };
-
-        // Inicializa Firebase com segurança
-        if (!firebase.apps.length) {
-            firebase.initializeApp(firebaseConfig);
-        }
+        if (!firebase.apps.length) firebase.initializeApp(firebaseConfig);
         const db = firebase.database();
 
-        // === ESTADO GLOBAL ===
         let MEU_NOME = "";
         let JOGO_ATUAL = "";
-        
-        // === SISTEMA DE LOGIN ===
+        let MODAL_ABERTO = false;
+
         function fazerLogin(nome) {
             MEU_NOME = nome;
             document.getElementById('lbl-nome').innerText = nome;
-            document.getElementById('user-badge').innerText = nome;
-            
-            // Transição de tela
             document.getElementById('tela-login').style.display = 'none';
             document.getElementById('app-header').classList.remove('hidden');
             document.getElementById('menu-principal').classList.remove('hidden');
         }
 
         function voltarMenu() {
-            // Esconde jogos
             document.querySelectorAll('.tela-jogo').forEach(t => t.classList.remove('ativa'));
             document.getElementById('btn-voltar').classList.add('hidden');
-            
-            // Mostra menu
             document.getElementById('menu-principal').classList.remove('hidden');
-            
-            // Limpa listener do jogo anterior para economizar dados
             if(JOGO_ATUAL) db.ref(`games/${JOGO_ATUAL}`).off();
             JOGO_ATUAL = "";
         }
 
         function abrirJogo(jogo) {
             JOGO_ATUAL = jogo;
-            
             document.getElementById('menu-principal').classList.add('hidden');
             document.getElementById('btn-voltar').classList.remove('hidden');
-            
             document.querySelectorAll('.tela-jogo').forEach(t => t.classList.remove('ativa'));
             document.getElementById(`tela-${jogo}`).classList.add('ativa');
 
-            // Inicia listeners específicos
             if(jogo === 'velha') initVelha();
             if(jogo === 'forca') initForca();
             if(jogo === 'termo') initTermo();
             if(jogo === 'adedonha') initAdedonha();
         }
 
-        // ============================================
-        // 1. JOGO DA VELHA (ONLINE REAL-TIME)
-        // ============================================
+        // === SISTEMA DE AVISO (MODAL) ===
+        function mostrarAviso(titulo, msg, icone, corBorda) {
+            if(MODAL_ABERTO) return; // Evita abrir vários
+            MODAL_ABERTO = true;
+            
+            document.getElementById('aviso-titulo').innerText = titulo;
+            document.getElementById('aviso-msg').innerText = msg;
+            document.getElementById('aviso-icone').innerText = icone;
+            document.querySelector('.aviso-box').style.borderColor = corBorda;
+            
+            document.getElementById('modal-aviso').classList.add('show');
+        }
+
+        function fecharModalEReiniciar() {
+            document.getElementById('modal-aviso').classList.remove('show');
+            MODAL_ABERTO = false;
+            
+            // Reseta o jogo atual automaticamente
+            if(JOGO_ATUAL === 'velha') resetVelha();
+            if(JOGO_ATUAL === 'forca') resetForca();
+            if(JOGO_ATUAL === 'termo') resetTermo();
+        }
+
+        // === JOGO DA VELHA ===
         function initVelha() {
             const board = document.getElementById('velha-board');
             board.innerHTML = '';
-            
-            // Cria tabuleiro
             for(let i=0; i<9; i++) {
-                const cell = document.createElement('div');
-                cell.className = 'velha-cell';
-                cell.onclick = () => jogarVelha(i);
-                cell.id = `v-cell-${i}`;
-                board.appendChild(cell);
+                const c = document.createElement('div');
+                c.className = 'velha-cell';
+                c.onclick = () => jogarVelha(i);
+                c.id = `v-${i}`;
+                board.appendChild(c);
             }
 
-            // Escuta mudanças no Firebase
             db.ref('games/velha').on('value', snap => {
                 const data = snap.val() || { grid: Array(9).fill(''), turn: 'THIAGO' };
                 
-                // Atualiza grid visualmente
-                data.grid.forEach((val, idx) => {
-                    const el = document.getElementById(`v-cell-${idx}`);
-                    el.innerText = val;
-                    el.className = `velha-cell ${val.toLowerCase()}`;
+                // Atualiza visual
+                data.grid.forEach((v, i) => {
+                    const el = document.getElementById(`v-${i}`);
+                    el.innerText = v;
+                    el.className = `velha-cell ${v.toLowerCase()}`;
                 });
 
-                // Atualiza status
-                const statusEl = document.getElementById('velha-status');
-                if(checkWinner(data.grid)) {
-                    statusEl.innerText = "FIM DE JOGO!";
-                    statusEl.style.color = "var(--cor-rosa)";
-                } else {
-                    statusEl.innerText = data.turn === MEU_NOME ? "SUA VEZ!" : `VEZ DE ${data.turn}`;
-                    statusEl.style.color = data.turn === MEU_NOME ? "#0f0" : "#aaa";
+                document.getElementById('velha-status').innerText = 
+                    data.turn === MEU_NOME ? "SUA VEZ!" : `VEZ DE ${data.turn}`;
+                document.getElementById('velha-status').style.color = 
+                    data.turn === MEU_NOME ? "#0f0" : "#aaa";
+
+                // Checa Fim
+                if(!MODAL_ABERTO) {
+                    const vencedor = checkWinner(data.grid);
+                    if(vencedor) {
+                        mostrarAviso("FIM DE JOGO!", `O JOGADOR ${vencedor} VENCEU!`, "🏆", "var(--cor-azul)");
+                    } else if(!data.grid.includes('')) {
+                        mostrarAviso("TRAVOU!", "O JOGO EMPATOU (DEU VELHA)", "🤝", "var(--cor-rosa)");
+                    }
                 }
             });
         }
 
-        function jogarVelha(idx) {
+        function jogarVelha(i) {
             db.ref('games/velha').once('value', snap => {
                 const data = snap.val() || { grid: Array(9).fill(''), turn: 'THIAGO' };
-                
-                // Regras de validação
-                if(data.grid[idx] !== '') return; // Já marcado
-                if(data.turn !== MEU_NOME) return; // Não é sua vez
-                if(checkWinner(data.grid)) return; // Já acabou
+                if(data.grid[i] !== '' || data.turn !== MEU_NOME || checkWinner(data.grid)) return;
 
-                // Marca jogada
-                const simbolo = MEU_NOME === 'THIAGO' ? 'X' : 'O';
-                data.grid[idx] = simbolo;
+                data.grid[i] = MEU_NOME === 'THIAGO' ? 'X' : 'O';
                 data.turn = MEU_NOME === 'THIAGO' ? 'SAMELLA' : 'THIAGO';
-
-                // Envia pro Firebase
                 db.ref('games/velha').set(data);
             });
         }
 
         function resetVelha() {
-            db.ref('games/velha').set({
-                grid: Array(9).fill(''),
-                turn: 'THIAGO'
-            });
+            db.ref('games/velha').set({ grid: Array(9).fill(''), turn: 'THIAGO' });
         }
 
         function checkWinner(grid) {
             const wins = [[0,1,2],[3,4,5],[6,7,8],[0,3,6],[1,4,7],[2,5,8],[0,4,8],[2,4,6]];
-            return wins.some(c => grid[c[0]] && grid[c[0]] === grid[c[1]] && grid[c[0]] === grid[c[2]]);
+            for(let w of wins) {
+                if(grid[w[0]] && grid[w[0]] === grid[w[1]] && grid[w[0]] === grid[w[2]]) return grid[w[0]];
+            }
+            return null;
         }
 
-        // ============================================
-        // 2. FORCA (COOPERATIVO ONLINE)
-        // ============================================
-        const PALAVRAS_FORCA = ["BIBLIA", "JESUS", "IGREJA", "AMOR", "CRUZ", "SALVAÇÃO", "BAHIA", "VIDA", "NOIVOS", "ETERNO"];
+        // === FORCA BÍBLICA ===
+        const PALAVRAS = ["BIBLIA", "JESUS", "IGREJA", "SALMO", "CRUZ", "PROFETA", "MILAGRE", "DANIEL", "ARCA", "EDEN"];
 
         function initForca() {
-            // Cria teclado
             const kb = document.getElementById('forca-teclado');
             kb.innerHTML = '';
             "ABCDEFGHIJKLMNOPQRSTUVWXYZ".split('').forEach(l => {
-                const btn = document.createElement('button');
-                btn.className = 'tecla';
-                btn.innerText = l;
-                btn.id = `key-${l}`;
-                btn.onclick = () => chutarForca(l);
-                kb.appendChild(btn);
+                const b = document.createElement('button');
+                b.className = 'tecla'; b.innerText = l; b.id = `fk-${l}`;
+                b.onclick = () => chutarForca(l);
+                kb.appendChild(b);
             });
 
-            // Escuta Firebase
             db.ref('games/forca').on('value', snap => {
                 const data = snap.val();
                 if(!data) { resetForca(); return; }
 
-                // Atualiza palavra escondida
-                const display = data.palavra.split('').map(l => (data.chutes || []).includes(l) ? l : "_").join(' ');
-                document.getElementById('forca-palavra').innerText = display;
+                const chutes = data.chutes || [];
+                const palavra = data.palavra;
                 
-                // Atualiza erros
-                const erros = (data.chutes || []).filter(c => !data.palavra.includes(c)).length;
-                document.getElementById('forca-boneco').innerText = `Erros: ${erros}/6`;
+                // Visual Palavra
+                const display = palavra.split('').map(l => chutes.includes(l) ? l : "_").join(' ');
+                document.getElementById('forca-palavra').innerText = display;
 
-                // Atualiza teclado (desabilita usados)
+                // Visual Teclado
                 document.querySelectorAll('.tecla').forEach(b => b.disabled = false);
-                (data.chutes || []).forEach(c => {
-                    const btn = document.getElementById(`key-${c}`);
+                chutes.forEach(l => {
+                    const btn = document.getElementById(`fk-${l}`);
                     if(btn) btn.disabled = true;
                 });
 
-                // Checa fim de jogo
-                const msg = document.getElementById('forca-msg');
-                if(!display.includes('_')) {
-                    msg.innerText = "VOCÊS VENCERAM! 🎉";
-                    msg.style.color = "#0f0";
-                } else if(erros >= 6) {
-                    msg.innerText = `PERDERAM! Era: ${data.palavra}`;
-                    msg.style.color = "red";
-                } else {
-                    msg.innerText = "";
+                // Visual Vidas
+                const erros = chutes.filter(c => !palavra.includes(c)).length;
+                let coracoes = "❤️❤️❤️❤️❤️❤️".substring(0, (6-erros)*2); // Cada coração são 2 chars utf-16
+                if(erros >= 6) coracoes = "💔";
+                document.getElementById('forca-vidas').innerText = coracoes;
+
+                // Checa Fim
+                if(!MODAL_ABERTO) {
+                    if(!display.includes('_')) {
+                        mostrarAviso("GLÓRIA!", "VOCÊS ACERTARAM A PALAVRA!", "🙌", "var(--cor-verde)");
+                    } else if(erros >= 6) {
+                        mostrarAviso("NÃO FOI DESSA VEZ", `A PALAVRA ERA: ${palavra}`, "📖", "var(--cor-rosa)");
+                    }
                 }
             });
         }
 
-        function chutarForca(letra) {
-            db.ref('games/forca').transaction(data => {
-                if(!data) return data;
-                if(!data.chutes) data.chutes = [];
-                if(!data.chutes.includes(letra)) data.chutes.push(letra);
-                return data;
+        function chutarForca(l) {
+            db.ref('games/forca').transaction(d => {
+                if(d && d.chutes && !d.chutes.includes(l)) d.chutes.push(l);
+                return d;
             });
         }
 
         function resetForca() {
-            const nova = PALAVRAS_FORCA[Math.floor(Math.random() * PALAVRAS_FORCA.length)];
-            db.ref('games/forca').set({
-                palavra: nova,
-                chutes: []
-            });
+            const nova = PALAVRAS[Math.floor(Math.random() * PALAVRAS.length)];
+            db.ref('games/forca').set({ palavra: nova, chutes: [] });
         }
 
-        // ============================================
-        // 3. TERMO (COOPERATIVO ONLINE)
-        // ============================================
-        const PALAVRAS_TERMO = ["AMIGO","ANJOS","BENTA","CASAL","CULTO","JESUS","LIVRO","MUNDO","NATAL","PADRE"];
-
+        // === TERMO ===
+        const P_TERMO = ["AMIGO","ANJOS","BENTA","CULTO","JESUS","LIVRO","MUNDO","NATAL","PADRE","SALMO"];
         function initTermo() {
-            const grid = document.getElementById('termo-grid');
-            grid.innerHTML = '';
+            const g = document.getElementById('termo-grid');
+            g.innerHTML = '';
             for(let i=0; i<6; i++) {
-                const row = document.createElement('div');
-                row.className = 'termo-row';
+                const r = document.createElement('div'); r.className = 'termo-row';
                 for(let j=0; j<5; j++) {
-                    const box = document.createElement('div');
-                    box.className = 'termo-box';
-                    box.id = `t-${i}-${j}`;
-                    row.appendChild(box);
+                    const b = document.createElement('div'); b.className = 'termo-box'; b.id = `tb-${i}-${j}`;
+                    r.appendChild(b);
                 }
-                grid.appendChild(row);
+                g.appendChild(r);
             }
 
             db.ref('games/termo').on('value', snap => {
                 const data = snap.val();
                 if(!data) { resetTermo(); return; }
+                
+                const tentativas = data.tentativas || [];
+                const segredo = data.segredo;
 
-                // Renderiza tentativas anteriores
-                (data.tentativas || []).forEach((tentativa, rowIdx) => {
-                    for(let i=0; i<5; i++) {
-                        const box = document.getElementById(`t-${rowIdx}-${i}`);
-                        const letra = tentativa[i];
-                        box.innerText = letra;
-                        
-                        // Cores
-                        if(letra === data.segredo[i]) box.classList.add('certo');
-                        else if(data.segredo.includes(letra)) box.classList.add('lugar');
+                // Limpa tudo antes
+                document.querySelectorAll('.termo-box').forEach(b => {
+                    b.className = 'termo-box'; b.innerText = '';
+                });
+
+                // Preenche
+                tentativas.forEach((word, i) => {
+                    for(let j=0; j<5; j++) {
+                        const box = document.getElementById(`tb-${i}-${j}`);
+                        const l = word[j];
+                        box.innerText = l;
+                        if(l === segredo[j]) box.classList.add('certo');
+                        else if(segredo.includes(l)) box.classList.add('lugar');
                         else box.classList.add('errado');
                     }
                 });
+
+                // Checa Fim
+                if(!MODAL_ABERTO) {
+                    if(tentativas.includes(segredo)) {
+                        mostrarAviso("VITÓRIA!", "VOCÊS DESCOBRIRAM A PALAVRA!", "🎉", "var(--cor-primaria)");
+                    } else if(tentativas.length >= 6) {
+                        mostrarAviso("ACABOU", `A PALAVRA ERA: ${segredo}`, "❌", "var(--cor-rosa)");
+                    }
+                }
             });
         }
 
         function chutarTermo() {
-            const input = document.getElementById('termo-input');
-            const chute = input.value.toUpperCase();
-            if(chute.length !== 5) return alert("Precisa de 5 letras!");
-
-            db.ref('games/termo').transaction(data => {
-                if(!data) return data;
-                if(!data.tentativas) data.tentativas = [];
-                if(data.tentativas.length < 6) data.tentativas.push(chute);
-                return data;
+            const inp = document.getElementById('termo-input');
+            const val = inp.value.toUpperCase();
+            if(val.length !== 5) return alert("Digite 5 letras!");
+            
+            db.ref('games/termo').transaction(d => {
+                if(d && (!d.tentativas || d.tentativas.length < 6)) {
+                    if(!d.tentativas) d.tentativas = [];
+                    d.tentativas.push(val);
+                }
+                return d;
             });
-            input.value = '';
+            inp.value = '';
         }
 
         function resetTermo() {
-            const nova = PALAVRAS_TERMO[Math.floor(Math.random() * PALAVRAS_TERMO.length)];
-            db.ref('games/termo').set({
-                segredo: nova,
-                tentativas: []
-            });
+            const nova = P_TERMO[Math.floor(Math.random() * P_TERMO.length)];
+            db.ref('games/termo').set({ segredo: nova, tentativas: [] });
         }
 
-        // ============================================
-        // 4. ADEDONHA (RÁPIDA)
-        // ============================================
+        // === ADEDONHA ===
         function initAdedonha() {
-            db.ref('games/adedonha').on('value', snap => {
-                const data = snap.val() || {};
-                document.getElementById('adedonha-letra').innerText = data.letra || "?";
+            db.ref('games/adedonha/letra').on('value', snap => {
+                document.getElementById('adedonha-letra').innerText = snap.val() || "?";
             });
         }
-
         function girarAdedonha() {
             const abc = "ABCDEFJLMNPQRSTUV";
-            const letra = abc[Math.floor(Math.random() * abc.length)];
-            db.ref('games/adedonha/letra').set(letra);
+            db.ref('games/adedonha/letra').set(abc[Math.floor(Math.random() * abc.length)]);
         }
-
     </script>
 </body>
 </html>
