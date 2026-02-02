@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Super App Casal - Versão Bíblica 📖</title>
+    <title>CêrosPlay 🎮</title>
     
     <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500;700;900&family=Rajdhani:wght@500;700&display=swap" rel="stylesheet">
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
@@ -15,16 +15,16 @@
             --cor-roxo: #bd00ff;
             --cor-azul: #00f3ff;
             --cor-rosa: #ff0055;
-            --cor-ouro: #ffd700;
+            --cor-fundo: #151520;
             --cor-card: rgba(255, 255, 255, 0.08);
-            --bg-gradiente: linear-gradient(135deg, #1a0b2e 0%, #2b1055 100%);
         }
 
         * { box-sizing: border-box; margin: 0; padding: 0; user-select: none; -webkit-tap-highlight-color: transparent; }
 
         body {
             font-family: 'Rajdhani', sans-serif;
-            background: var(--bg-gradiente);
+            background-color: var(--cor-fundo);
+            background-image: radial-gradient(circle at 50% 0%, #2b1055 0%, #151520 80%);
             color: white;
             min-height: 100vh;
             display: flex;
@@ -34,107 +34,96 @@
 
         /* HEADER */
         header {
-            background: rgba(0,0,0,0.6);
+            background: rgba(0,0,0,0.8);
             backdrop-filter: blur(10px);
             padding: 15px 20px;
             display: flex;
             justify-content: space-between;
             align-items: center;
-            border-bottom: 1px solid rgba(255,255,255,0.1);
-            position: sticky; top: 0; z-index: 100;
+            border-bottom: 1px solid #333;
+            position: fixed; top: 0; left: 0; right: 0; z-index: 100;
         }
 
         .logo { 
-            font-family: 'Orbitron'; font-weight: 900; 
-            background: linear-gradient(90deg, var(--cor-azul), var(--cor-rosa));
+            font-family: 'Orbitron'; font-weight: 900; font-size: 1.2rem;
+            background: linear-gradient(90deg, var(--cor-azul), var(--cor-roxo));
             -webkit-background-clip: text; -webkit-text-fill-color: transparent;
         }
 
-        /* MENU */
-        #menu-principal {
-            display: flex; flex-direction: column; align-items: center;
-            padding: 20px; gap: 15px; width: 100%; max-width: 600px; margin: 0 auto;
+        .btn-voltar {
+            background: rgba(255,255,255,0.1); border: 1px solid #555;
+            color: white; padding: 5px 15px; border-radius: 20px; font-size: 0.8rem;
+            font-family: 'Orbitron'; cursor: pointer;
         }
+
+        .hidden { display: none !important; }
+
+        /* CONTAINER PRINCIPAL */
+        #main-container {
+            margin-top: 70px; /* Espaço para o header fixo */
+            padding: 20px;
+            width: 100%;
+            max-width: 600px;
+            margin-left: auto;
+            margin-right: auto;
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* MENU */
+        .menu-grid { display: flex; flex-direction: column; gap: 15px; width: 100%; }
 
         .card-jogo {
             background: var(--cor-card); border: 1px solid rgba(255,255,255,0.1);
-            width: 100%; padding: 20px; border-radius: 15px;
-            display: flex; align-items: center; cursor: pointer; transition: 0.3s;
+            padding: 20px; border-radius: 15px; display: flex; align-items: center;
+            cursor: pointer; transition: 0.2s;
         }
         .card-jogo:active { transform: scale(0.98); background: rgba(255,255,255,0.15); }
-        .card-icon { font-size: 2.5rem; margin-right: 15px; min-width: 50px; text-align: center; }
-        .card-info h3 { font-family: 'Orbitron'; color: var(--cor-azul); margin-bottom: 5px; }
-        .card-info p { font-size: 0.9rem; color: #aaa; }
+        .card-icon { font-size: 2.2rem; margin-right: 15px; width: 50px; text-align: center; }
+        .card-info h3 { font-family: 'Orbitron'; color: var(--cor-azul); margin-bottom: 4px; }
+        .card-info p { font-size: 0.85rem; color: #aaa; }
 
-        /* TELAS */
-        .tela-jogo {
-            display: none; flex: 1; flex-direction: column;
-            padding: 20px; align-items: center; width: 100%; max-width: 500px; margin: 0 auto;
-        }
-        .tela-jogo.ativa { display: flex; animation: slideUp 0.4s ease-out; }
-        @keyframes slideUp { from { opacity:0; transform:translateY(20px); } to { opacity:1; transform:translateY(0); } }
+        /* TELAS DE JOGO */
+        .tela-jogo { display: none; flex-direction: column; align-items: center; width: 100%; }
+        .tela-jogo.ativa { display: flex; animation: fadeIn 0.3s ease; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
 
-        /* MODAL DE AVISO (O PULO DO GATO) */
-        #modal-aviso {
-            position: fixed; top:0; left:0; width:100%; height:100%;
-            background: rgba(0,0,0,0.9); z-index: 999;
-            display: none; justify-content: center; align-items: center; flex-direction: column;
-            backdrop-filter: blur(5px);
-        }
-        #modal-aviso.show { display: flex; animation: popIn 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
-        
-        @keyframes popIn { from{transform:scale(0.5); opacity:0;} to{transform:scale(1); opacity:1;} }
-
-        .aviso-box {
-            background: #1a1a2e; border: 2px solid var(--cor-azul);
-            padding: 30px; border-radius: 20px; text-align: center; width: 85%; max-width: 320px;
-            box-shadow: 0 0 30px rgba(0, 243, 255, 0.2);
-        }
-        .aviso-titulo { font-family: 'Orbitron'; font-size: 1.8rem; margin-bottom: 10px; color: white; }
-        .aviso-msg { font-size: 1.1rem; color: #ccc; margin-bottom: 25px; }
-
-        /* BOTÕES */
+        /* INPUTS E BOTÕES */
         .btn-acao {
             background: linear-gradient(135deg, var(--cor-roxo), var(--cor-rosa));
-            border: none; color: white; padding: 15px 30px; border-radius: 30px;
-            font-family: 'Orbitron'; font-weight: bold; font-size: 1rem;
-            cursor: pointer; width: 100%; box-shadow: 0 5px 15px rgba(189, 0, 255, 0.3);
+            border: none; color: white; padding: 12px; border-radius: 8px;
+            font-family: 'Orbitron'; font-weight: bold; width: 100%; margin-top: 15px;
+            cursor: pointer; box-shadow: 0 4px 15px rgba(189, 0, 255, 0.3);
         }
-        .btn-acao:active { transform: scale(0.95); }
-        
-        .btn-voltar {
-            background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.3);
-            color: white; padding: 8px 15px; border-radius: 20px; font-size: 0.8rem;
+        .btn-stop { background: linear-gradient(135deg, #ff0000, #ff4d4d); box-shadow: 0 4px 15px rgba(255, 0, 0, 0.3); }
+
+        /* ADEDONHA INPUTS */
+        .adedonha-field { width: 100%; margin-bottom: 10px; text-align: left; }
+        .adedonha-field label { font-size: 0.8rem; color: #888; margin-left: 5px; }
+        .adedonha-input {
+            width: 100%; background: #222; border: 1px solid #444; color: white;
+            padding: 10px; border-radius: 8px; font-size: 1rem;
         }
+        .adedonha-input:focus { border-color: var(--cor-azul); outline: none; }
 
         /* JOGO DA VELHA */
-        .velha-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; width: 100%; aspect-ratio: 1; }
+        .velha-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; width: 100%; aspect-ratio: 1; max-width: 350px; }
         .velha-cell {
             background: rgba(255,255,255,0.1); border-radius: 10px;
             display: flex; align-items: center; justify-content: center;
-            font-size: 4rem; font-weight: bold; cursor: pointer;
+            font-size: 3.5rem; font-weight: bold; cursor: pointer;
         }
-        .velha-cell.x { color: var(--cor-azul); text-shadow: 0 0 10px var(--cor-azul); }
-        .velha-cell.o { color: var(--cor-rosa); text-shadow: 0 0 10px var(--cor-rosa); }
-
-        /* FORCA */
-        .forca-vidas { font-size: 1.5rem; margin: 10px 0; color: var(--cor-rosa); letter-spacing: 5px; }
-        .forca-palavra { font-size: 2.2rem; letter-spacing: 0.3rem; margin: 20px 0; font-family: monospace; text-align: center; }
-        .teclado { display: flex; flex-wrap: wrap; gap: 5px; justify-content: center; }
-        .tecla {
-            width: 32px; height: 42px; background: rgba(255,255,255,0.1);
-            border: 1px solid rgba(255,255,255,0.2); color: white; border-radius: 5px;
-            font-weight: bold; font-size: 1rem;
-        }
-        .tecla:disabled { opacity: 0.2; }
+        .velha-cell.x { color: var(--cor-azul); }
+        .velha-cell.o { color: var(--cor-rosa); }
 
         /* TERMO */
         .termo-grid { display: grid; gap: 5px; margin-bottom: 20px; }
-        .termo-row { display: grid; grid-template-columns: repeat(5, 50px); gap: 5px; }
+        .termo-row { display: grid; grid-template-columns: repeat(5, 45px); gap: 5px; }
         .termo-box {
-            width: 50px; height: 50px; border: 2px solid #444;
+            width: 45px; height: 45px; border: 2px solid #333;
             display: flex; align-items: center; justify-content: center;
-            font-size: 1.8rem; font-weight: bold; text-transform: uppercase;
+            font-size: 1.5rem; font-weight: bold; text-transform: uppercase;
         }
         .certo { background: var(--cor-primaria); border-color: var(--cor-primaria); }
         .lugar { background: #c9b458; border-color: #c9b458; }
@@ -142,100 +131,119 @@
 
         /* LOGIN */
         #tela-login {
-            position: fixed; top:0; left:0; width:100%; height:100%; background: #151520; z-index: 200;
+            position: fixed; top:0; left:0; width:100%; height:100%; background: #101015; z-index: 200;
             display: flex; flex-direction: column; justify-content: center; align-items: center;
         }
-        .avatar { font-size: 3.5rem; margin-bottom: 10px; }
+        .avatar-btn {
+            background: var(--cor-card); border: 1px solid #333; width: 140px; padding: 20px;
+            border-radius: 15px; margin: 10px; text-align: center; cursor: pointer;
+        }
+        .avatar-emoji { font-size: 3rem; display: block; margin-bottom: 10px; }
+
+        /* AVISO */
+        .status-msg {
+            background: rgba(255,255,255,0.1); padding: 10px; border-radius: 8px;
+            margin-bottom: 15px; text-align: center; font-size: 0.9rem; width: 100%;
+        }
     </style>
 </head>
 <body>
 
-    <div id="modal-aviso">
-        <div class="aviso-box">
-            <div id="aviso-icone" style="font-size: 4rem; margin-bottom: 15px;">🏆</div>
-            <div id="aviso-titulo" class="aviso-titulo">TITULO</div>
-            <div id="aviso-msg" class="aviso-msg">Mensagem aqui</div>
-            <button class="btn-acao" onclick="fecharModalEReiniciar()">JOGAR NOVAMENTE</button>
-        </div>
-    </div>
-
     <div id="tela-login">
-        <h1 style="font-family:'Orbitron'; margin-bottom:40px; color:var(--cor-azul);">QUEM É VOCÊ?</h1>
-        <div style="display:flex; gap:20px;">
-            <div onclick="fazerLogin('THIAGO')" style="background:var(--cor-card); padding:20px; border-radius:15px; text-align:center; border:1px solid #444;">
-                <div class="avatar">🤵🏻‍♂️</div>
-                <h3>THIAGO</h3>
+        <h1 style="font-family:'Orbitron'; color:var(--cor-roxo); margin-bottom:30px;">QUEM É VOCÊ?</h1>
+        <div style="display:flex; flex-wrap:wrap; justify-content:center;">
+            <div class="avatar-btn" onclick="fazerLogin('THIAGO')">
+                <span class="avatar-emoji">🧔🏽‍♂️</span>
+                <span>THIAGO</span>
             </div>
-            <div onclick="fazerLogin('SAMELLA')" style="background:var(--cor-card); padding:20px; border-radius:15px; text-align:center; border:1px solid #444;">
-                <div class="avatar">👰🏻‍♀️</div>
-                <h3>SÂMELLA</h3>
+            <div class="avatar-btn" onclick="fazerLogin('SAMELLA')">
+                <span class="avatar-emoji">👩🏽</span>
+                <span>SÂMELLA</span>
             </div>
         </div>
     </div>
 
     <header id="app-header" class="hidden">
-        <div class="logo">APP BÍBLICO 📖</div>
-        <button class="btn-voltar hidden" id="btn-voltar" onclick="voltarMenu()">MENU</button>
+        <div class="logo">CêrosPlay 🎮</div>
+        <button class="btn-voltar hidden" id="btn-voltar" onclick="voltarMenu()">VOLTAR</button>
     </header>
 
-    <div id="menu-principal" class="hidden">
-        <p style="color:#aaa; text-align:center;">Conectado como: <strong id="lbl-nome" style="color:white;">...</strong></p>
+    <div id="main-container" class="hidden">
         
-        <div class="card-jogo" onclick="abrirJogo('adedonha')">
-            <div class="card-icon">📝</div>
-            <div class="card-info"><h3>ADEDONHA</h3><p>Stop Bíblico e Geral</p></div>
+        <div id="menu-principal" class="menu-grid">
+            <div style="text-align:center; margin-bottom:10px; color:#888;">
+                Logado como: <strong id="user-display" style="color:white;">...</strong>
+            </div>
+
+            <div class="card-jogo" onclick="abrirJogo('adedonha')">
+                <div class="card-icon">📝</div>
+                <div class="card-info"><h3>ADEDONHA</h3><p>Com Stop e Campos</p></div>
+            </div>
+
+            <div class="card-jogo" onclick="abrirJogo('velha')">
+                <div class="card-icon">⭕</div>
+                <div class="card-info"><h3>JOGO DA VELHA</h3><p>Disputa rápida</p></div>
+            </div>
+
+            <div class="card-jogo" onclick="abrirJogo('forca')">
+                <div class="card-icon">📖</div>
+                <div class="card-info"><h3>FORCA BÍBLICA</h3><p>Descubra a palavra</p></div>
+            </div>
+
+            <div class="card-jogo" onclick="abrirJogo('termo')">
+                <div class="card-icon">🟩</div>
+                <div class="card-info"><h3>TERMO</h3><p>Acerte em 6 chances</p></div>
+            </div>
         </div>
 
-        <div class="card-jogo" onclick="abrirJogo('velha')">
-            <div class="card-icon">⭕</div>
-            <div class="card-info"><h3>JOGO DA VELHA</h3><p>Desafio rápido</p></div>
+        <div id="tela-adedonha" class="tela-jogo">
+            <div style="background:#222; padding:20px; border-radius:15px; width:100%; text-align:center; margin-bottom:20px;">
+                <div style="font-size:0.9rem; color:#aaa;">LETRA DA RODADA</div>
+                <div id="adedonha-letra" style="font-size:4rem; font-weight:bold; color:var(--cor-azul);">?</div>
+                <button class="btn-voltar" style="margin-top:10px;" onclick="girarLetra()">GIRAR NOVA LETRA</button>
+            </div>
+
+            <div id="adedonha-status-msg" class="status-msg">Aguardando...</div>
+
+            <div id="adedonha-campos" style="width:100%;">
+                <div class="adedonha-field"><label>NOME</label><input type="text" id="input-nome" class="adedonha-input" oninput="salvarAdedonha('nome')"></div>
+                <div class="adedonha-field"><label>LUGAR</label><input type="text" id="input-lugar" class="adedonha-input" oninput="salvarAdedonha('lugar')"></div>
+                <div class="adedonha-field"><label>COR</label><input type="text" id="input-cor" class="adedonha-input" oninput="salvarAdedonha('cor')"></div>
+                <div class="adedonha-field"><label>FRUTA</label><input type="text" id="input-fruta" class="adedonha-input" oninput="salvarAdedonha('fruta')"></div>
+                <div class="adedonha-field"><label>OBJETO</label><input type="text" id="input-objeto" class="adedonha-input" oninput="salvarAdedonha('objeto')"></div>
+                <div class="adedonha-field"><label>SOGRA</label><input type="text" id="input-sogra" class="adedonha-input" oninput="salvarAdedonha('sogra')"></div>
+            </div>
+
+            <button class="btn-acao btn-stop" onclick="pedirStop()">🚨 STOP!</button>
         </div>
 
-        <div class="card-jogo" onclick="abrirJogo('forca')">
-            <div class="card-icon">📖</div>
-            <div class="card-info"><h3>FORCA BÍBLICA</h3><p>Descubra a palavra</p></div>
+        <div id="tela-velha" class="tela-jogo">
+            <div id="velha-msg" class="status-msg">Vez de: ...</div>
+            <div class="velha-grid" id="velha-grid"></div>
+            <button class="btn-acao" onclick="resetVelha()">REINICIAR</button>
         </div>
 
-        <div class="card-jogo" onclick="abrirJogo('termo')">
-            <div class="card-icon">🟩</div>
-            <div class="card-info"><h3>TERMO</h3><p>Adivinhe em 6 chances</p></div>
+        <div id="tela-forca" class="tela-jogo">
+            <div id="forca-msg" class="status-msg" style="color:var(--cor-rosa); font-weight:bold;">Vidas: ❤️❤️❤️❤️❤️❤️</div>
+            <div id="forca-word" style="font-size:2rem; letter-spacing:5px; margin:20px 0; font-family:monospace;">_ _ _ _</div>
+            <div id="forca-kb" style="display:flex; flex-wrap:wrap; gap:5px; justify-content:center;"></div>
+            <button class="btn-acao" onclick="resetForca()">NOVA PALAVRA</button>
         </div>
-    </div>
 
-    <div id="tela-velha" class="tela-jogo">
-        <h2 style="font-family:'Orbitron'; color:var(--cor-azul); margin-bottom:10px;">JOGO DA VELHA</h2>
-        <div id="velha-status" style="margin-bottom:20px; color:#aaa;">Vez de...</div>
-        <div class="velha-grid" id="velha-board"></div>
-        <button class="btn-acao" style="margin-top:20px; background:#333;" onclick="resetVelha()">REINICIAR TABULEIRO</button>
-    </div>
-
-    <div id="tela-forca" class="tela-jogo">
-        <h2 style="font-family:'Orbitron'; color:var(--cor-ouro);">FORCA BÍBLICA</h2>
-        <div id="forca-vidas" class="forca-vidas">❤️❤️❤️❤️❤️❤️</div>
-        <div id="forca-palavra" class="forca-palavra">_ _ _ _ _</div>
-        <div id="forca-teclado" class="teclado"></div>
-        <button class="btn-acao" style="margin-top:20px; background:#333;" onclick="resetForca()">NOVA PALAVRA</button>
-    </div>
-
-    <div id="tela-termo" class="tela-jogo">
-        <h2 style="font-family:'Orbitron'; color:var(--cor-primaria);">TERMO</h2>
-        <div id="termo-grid" class="termo-grid"></div>
-        <div style="display:flex; gap:10px;">
-            <input type="text" id="termo-input" maxlength="5" style="padding:10px; text-transform:uppercase; text-align:center; width:150px; font-size:1.2rem; border-radius:10px; border:none;">
-            <button class="btn-acao" style="width:auto; padding:10px 20px; margin:0;" onclick="chutarTermo()">OK</button>
+        <div id="tela-termo" class="tela-jogo">
+            <div class="status-msg">Dica: Palavras de 5 letras (Bíblia ou Comum)</div>
+            <div id="termo-grid" class="termo-grid"></div>
+            <div style="display:flex; gap:10px; width:100%;">
+                <input type="text" id="termo-input" maxlength="5" style="width:100%; padding:10px; text-transform:uppercase; text-align:center; border-radius:8px; border:none;">
+                <button class="btn-acao" style="margin:0; width:auto;" onclick="chutarTermo()">OK</button>
+            </div>
+            <button class="btn-acao" style="background:#333; margin-top:20px;" onclick="resetTermo()">NOVO JOGO</button>
         </div>
-        <button class="btn-acao" style="margin-top:20px; background:#333;" onclick="resetTermo()">REINICIAR</button>
-    </div>
 
-    <div id="tela-adedonha" class="tela-jogo">
-        <h2 style="font-family:'Orbitron'; color:var(--cor-roxo);">ADEDONHA</h2>
-        <div style="background:#222; padding:30px; border-radius:20px; margin:30px 0; width:100%; text-align:center;">
-            <div id="adedonha-letra" style="font-size:5rem; font-weight:bold; color:var(--cor-azul); text-shadow:0 0 20px var(--cor-azul);">?</div>
-        </div>
-        <button class="btn-acao" onclick="girarAdedonha()">GIRAR LETRA</button>
     </div>
 
     <script>
+        // CONFIGURAÇÃO FIREBASE
         const firebaseConfig = {
             apiKey: "AIzaSyAjgEFZB3_FHelXH9YtCnFYFO4RCGO7Wd8",
             authDomain: "adedonha-8b2a4.firebaseapp.com",
@@ -249,29 +257,43 @@
 
         let MEU_NOME = "";
         let JOGO_ATUAL = "";
-        let MODAL_ABERTO = false;
 
+        // LOGIN
         function fazerLogin(nome) {
             MEU_NOME = nome;
-            document.getElementById('lbl-nome').innerText = nome;
+            document.getElementById('user-display').innerText = nome;
             document.getElementById('tela-login').style.display = 'none';
             document.getElementById('app-header').classList.remove('hidden');
+            document.getElementById('main-container').classList.remove('hidden');
             document.getElementById('menu-principal').classList.remove('hidden');
         }
 
+        // NAVEGAÇÃO
         function voltarMenu() {
+            // Esconde tudo
             document.querySelectorAll('.tela-jogo').forEach(t => t.classList.remove('ativa'));
             document.getElementById('btn-voltar').classList.add('hidden');
+            
+            // Mostra menu
             document.getElementById('menu-principal').classList.remove('hidden');
+            document.getElementById('menu-principal').style.display = 'flex'; // Força display
+            
+            // Limpa conexões antigas
             if(JOGO_ATUAL) db.ref(`games/${JOGO_ATUAL}`).off();
             JOGO_ATUAL = "";
         }
 
         function abrirJogo(jogo) {
             JOGO_ATUAL = jogo;
+            
+            // Esconde Menu
             document.getElementById('menu-principal').classList.add('hidden');
+            document.getElementById('menu-principal').style.display = 'none'; // Garante que suma
+            
+            // Mostra Botão Voltar
             document.getElementById('btn-voltar').classList.remove('hidden');
-            document.querySelectorAll('.tela-jogo').forEach(t => t.classList.remove('ativa'));
+            
+            // Mostra Jogo Específico
             document.getElementById(`tela-${jogo}`).classList.add('ativa');
 
             if(jogo === 'velha') initVelha();
@@ -280,197 +302,166 @@
             if(jogo === 'adedonha') initAdedonha();
         }
 
-        // === SISTEMA DE AVISO (MODAL) ===
-        function mostrarAviso(titulo, msg, icone, corBorda) {
-            if(MODAL_ABERTO) return; // Evita abrir vários
-            MODAL_ABERTO = true;
-            
-            document.getElementById('aviso-titulo').innerText = titulo;
-            document.getElementById('aviso-msg').innerText = msg;
-            document.getElementById('aviso-icone').innerText = icone;
-            document.querySelector('.aviso-box').style.borderColor = corBorda;
-            
-            document.getElementById('modal-aviso').classList.add('show');
+        // === ADEDONHA COMPLETA ===
+        function initAdedonha() {
+            // Monitora a letra
+            db.ref('games/adedonha/letra').on('value', snap => {
+                document.getElementById('adedonha-letra').innerText = snap.val() || "?";
+            });
+
+            // Monitora Stop
+            db.ref('games/adedonha/status').on('value', snap => {
+                const st = snap.val();
+                const msg = document.getElementById('adedonha-status-msg');
+                if(st === 'STOP') {
+                    msg.innerText = "🛑 STOP FOI PEDIDO! MÃOS AO ALTO!";
+                    msg.style.background = "red";
+                    // Desabilita inputs
+                    document.querySelectorAll('.adedonha-input').forEach(i => i.disabled = true);
+                } else {
+                    msg.innerText = "Valendo! Preencham os campos...";
+                    msg.style.background = "rgba(255,255,255,0.1)";
+                    document.querySelectorAll('.adedonha-input').forEach(i => i.disabled = false);
+                }
+            });
+
+            // Carrega respostas antigas se houver (para não perder ao voltar)
+            // (Opcional, mas bom para UX)
         }
 
-        function fecharModalEReiniciar() {
-            document.getElementById('modal-aviso').classList.remove('show');
-            MODAL_ABERTO = false;
-            
-            // Reseta o jogo atual automaticamente
-            if(JOGO_ATUAL === 'velha') resetVelha();
-            if(JOGO_ATUAL === 'forca') resetForca();
-            if(JOGO_ATUAL === 'termo') resetTermo();
+        function girarLetra() {
+            const abc = "ABCDEFJLMNPQRSTUV";
+            const l = abc[Math.floor(Math.random() * abc.length)];
+            db.ref('games/adedonha').update({ letra: l, status: 'JOGANDO' });
+            // Limpa inputs locais
+            document.querySelectorAll('.adedonha-input').forEach(i => i.value = '');
+        }
+
+        function salvarAdedonha(campo) {
+            const val = document.getElementById(`input-${campo}`).value;
+            db.ref(`games/adedonha/respostas/${MEU_NOME}/${campo}`).set(val);
+        }
+
+        function pedirStop() {
+            db.ref('games/adedonha/status').set('STOP');
         }
 
         // === JOGO DA VELHA ===
         function initVelha() {
-            const board = document.getElementById('velha-board');
-            board.innerHTML = '';
+            const grid = document.getElementById('velha-grid');
+            grid.innerHTML = '';
             for(let i=0; i<9; i++) {
-                const c = document.createElement('div');
-                c.className = 'velha-cell';
-                c.onclick = () => jogarVelha(i);
-                c.id = `v-${i}`;
-                board.appendChild(c);
+                const d = document.createElement('div');
+                d.className = 'velha-cell';
+                d.id = `v-${i}`;
+                d.onclick = () => clickVelha(i);
+                grid.appendChild(d);
             }
 
             db.ref('games/velha').on('value', snap => {
-                const data = snap.val() || { grid: Array(9).fill(''), turn: 'THIAGO' };
-                
-                // Atualiza visual
-                data.grid.forEach((v, i) => {
+                const data = snap.val() || { board: Array(9).fill(''), turn: 'THIAGO' };
+                data.board.forEach((v, i) => {
                     const el = document.getElementById(`v-${i}`);
                     el.innerText = v;
-                    el.className = `velha-cell ${v.toLowerCase()}`;
+                    el.className = `velha-cell ${v ? v.toLowerCase() : ''}`;
                 });
-
-                document.getElementById('velha-status').innerText = 
-                    data.turn === MEU_NOME ? "SUA VEZ!" : `VEZ DE ${data.turn}`;
-                document.getElementById('velha-status').style.color = 
-                    data.turn === MEU_NOME ? "#0f0" : "#aaa";
-
-                // Checa Fim
-                if(!MODAL_ABERTO) {
-                    const vencedor = checkWinner(data.grid);
-                    if(vencedor) {
-                        mostrarAviso("FIM DE JOGO!", `O JOGADOR ${vencedor} VENCEU!`, "🏆", "var(--cor-azul)");
-                    } else if(!data.grid.includes('')) {
-                        mostrarAviso("TRAVOU!", "O JOGO EMPATOU (DEU VELHA)", "🤝", "var(--cor-rosa)");
-                    }
-                }
+                document.getElementById('velha-msg').innerText = `Vez de: ${data.turn}`;
             });
         }
 
-        function jogarVelha(i) {
+        function clickVelha(i) {
             db.ref('games/velha').once('value', snap => {
-                const data = snap.val() || { grid: Array(9).fill(''), turn: 'THIAGO' };
-                if(data.grid[i] !== '' || data.turn !== MEU_NOME || checkWinner(data.grid)) return;
-
-                data.grid[i] = MEU_NOME === 'THIAGO' ? 'X' : 'O';
-                data.turn = MEU_NOME === 'THIAGO' ? 'SAMELLA' : 'THIAGO';
-                db.ref('games/velha').set(data);
+                const d = snap.val() || { board: Array(9).fill(''), turn: 'THIAGO' };
+                if(d.board[i] || d.turn !== MEU_NOME) return;
+                
+                d.board[i] = MEU_NOME === 'THIAGO' ? 'X' : 'O';
+                d.turn = MEU_NOME === 'THIAGO' ? 'SAMELLA' : 'THIAGO';
+                db.ref('games/velha').set(d);
             });
         }
+        function resetVelha() { db.ref('games/velha').set({ board: Array(9).fill(''), turn: 'THIAGO' }); }
 
-        function resetVelha() {
-            db.ref('games/velha').set({ grid: Array(9).fill(''), turn: 'THIAGO' });
-        }
-
-        function checkWinner(grid) {
-            const wins = [[0,1,2],[3,4,5],[6,7,8],[0,3,6],[1,4,7],[2,5,8],[0,4,8],[2,4,6]];
-            for(let w of wins) {
-                if(grid[w[0]] && grid[w[0]] === grid[w[1]] && grid[w[0]] === grid[w[2]]) return grid[w[0]];
-            }
-            return null;
-        }
-
-        // === FORCA BÍBLICA ===
-        const PALAVRAS = ["BIBLIA", "JESUS", "IGREJA", "SALMO", "CRUZ", "PROFETA", "MILAGRE", "DANIEL", "ARCA", "EDEN"];
-
+        // === FORCA ===
+        const P_FORCA = ["BIBLIA", "JESUS", "AMOR", "CRUZ", "SALMO", "VIDA", "ARCA"];
         function initForca() {
-            const kb = document.getElementById('forca-teclado');
+            // Teclado
+            const kb = document.getElementById('forca-kb');
             kb.innerHTML = '';
             "ABCDEFGHIJKLMNOPQRSTUVWXYZ".split('').forEach(l => {
                 const b = document.createElement('button');
-                b.className = 'tecla'; b.innerText = l; b.id = `fk-${l}`;
-                b.onclick = () => chutarForca(l);
+                b.innerText = l;
+                b.style.width = '30px'; b.style.height='35px'; b.style.background='#333'; b.style.border='1px solid #555'; b.style.color='white';
+                b.id = `k-${l}`;
+                b.onclick = () => db.ref('games/forca/chutes').push(l); // Simplificado push
                 kb.appendChild(b);
             });
 
             db.ref('games/forca').on('value', snap => {
-                const data = snap.val();
-                if(!data) { resetForca(); return; }
-
-                const chutes = data.chutes || [];
-                const palavra = data.palavra;
+                const d = snap.val(); 
+                if(!d) { resetForca(); return; }
                 
-                // Visual Palavra
-                const display = palavra.split('').map(l => chutes.includes(l) ? l : "_").join(' ');
-                document.getElementById('forca-palavra').innerText = display;
+                const chutes = Object.values(d.chutes || {});
+                const word = d.palavra;
+                
+                // Render Palavra
+                document.getElementById('forca-word').innerText = word.split('').map(x => chutes.includes(x) ? x : "_").join(' ');
+                
+                // Teclas
+                chutes.forEach(c => { try{document.getElementById(`k-${c}`).disabled=true; document.getElementById(`k-${c}`).style.opacity=0.3;}catch(e){} });
 
-                // Visual Teclado
-                document.querySelectorAll('.tecla').forEach(b => b.disabled = false);
-                chutes.forEach(l => {
-                    const btn = document.getElementById(`fk-${l}`);
-                    if(btn) btn.disabled = true;
-                });
-
-                // Visual Vidas
-                const erros = chutes.filter(c => !palavra.includes(c)).length;
-                let coracoes = "❤️❤️❤️❤️❤️❤️".substring(0, (6-erros)*2); // Cada coração são 2 chars utf-16
-                if(erros >= 6) coracoes = "💔";
-                document.getElementById('forca-vidas').innerText = coracoes;
-
-                // Checa Fim
-                if(!MODAL_ABERTO) {
-                    if(!display.includes('_')) {
-                        mostrarAviso("GLÓRIA!", "VOCÊS ACERTARAM A PALAVRA!", "🙌", "var(--cor-verde)");
-                    } else if(erros >= 6) {
-                        mostrarAviso("NÃO FOI DESSA VEZ", `A PALAVRA ERA: ${palavra}`, "📖", "var(--cor-rosa)");
-                    }
-                }
+                // Vidas
+                const erros = chutes.filter(x => !word.includes(x)).length;
+                let h = "❤️❤️❤️❤️❤️❤️";
+                if(erros > 0) h = h.substring(0, (6-erros)*2); 
+                document.getElementById('forca-msg').innerText = `Vidas: ${h}`;
             });
         }
-
-        function chutarForca(l) {
-            db.ref('games/forca').transaction(d => {
-                if(d && d.chutes && !d.chutes.includes(l)) d.chutes.push(l);
-                return d;
-            });
-        }
-
         function resetForca() {
-            const nova = PALAVRAS[Math.floor(Math.random() * PALAVRAS.length)];
-            db.ref('games/forca').set({ palavra: nova, chutes: [] });
+            const w = P_FORCA[Math.floor(Math.random() * P_FORCA.length)];
+            db.ref('games/forca').set({ palavra: w, chutes: {} });
         }
 
-        // === TERMO ===
-        const P_TERMO = ["AMIGO","ANJOS","BENTA","CULTO","JESUS","LIVRO","MUNDO","NATAL","PADRE","SALMO"];
+        // === TERMO (CORRIGIDO) ===
+        const P_TERMO = ["AMIGO","ANJOS","CULTO","JESUS","LIVRO","MUNDO","NATAL","PADRE","SALMO","SANTO"];
         function initTermo() {
-            const g = document.getElementById('termo-grid');
-            g.innerHTML = '';
+            const tg = document.getElementById('termo-grid');
+            tg.innerHTML = '';
             for(let i=0; i<6; i++) {
-                const r = document.createElement('div'); r.className = 'termo-row';
+                const row = document.createElement('div'); row.className = 'termo-row';
                 for(let j=0; j<5; j++) {
                     const b = document.createElement('div'); b.className = 'termo-box'; b.id = `tb-${i}-${j}`;
-                    r.appendChild(b);
+                    row.appendChild(b);
                 }
-                g.appendChild(r);
+                tg.appendChild(row);
             }
 
             db.ref('games/termo').on('value', snap => {
-                const data = snap.val();
-                if(!data) { resetTermo(); return; }
-                
-                const tentativas = data.tentativas || [];
-                const segredo = data.segredo;
+                const d = snap.val();
+                if(!d) { resetTermo(); return; }
 
-                // Limpa tudo antes
+                const tentativas = d.tentativas || [];
+                const segredo = d.segredo;
+
+                // Limpa visual antes de pintar
                 document.querySelectorAll('.termo-box').forEach(b => {
-                    b.className = 'termo-box'; b.innerText = '';
+                    b.innerText = ''; b.classList.remove('certo','lugar','errado');
                 });
 
-                // Preenche
-                tentativas.forEach((word, i) => {
-                    for(let j=0; j<5; j++) {
-                        const box = document.getElementById(`tb-${i}-${j}`);
-                        const l = word[j];
-                        box.innerText = l;
-                        if(l === segredo[j]) box.classList.add('certo');
-                        else if(segredo.includes(l)) box.classList.add('lugar');
-                        else box.classList.add('errado');
+                tentativas.forEach((t, lineIdx) => {
+                    for(let i=0; i<5; i++) {
+                        const box = document.getElementById(`tb-${lineIdx}-${i}`);
+                        const letra = t[i];
+                        box.innerText = letra;
+
+                        if(letra === segredo[i]) {
+                            box.classList.add('certo');
+                        } else if(segredo.includes(letra)) {
+                            box.classList.add('lugar');
+                        } else {
+                            box.classList.add('errado');
+                        }
                     }
                 });
-
-                // Checa Fim
-                if(!MODAL_ABERTO) {
-                    if(tentativas.includes(segredo)) {
-                        mostrarAviso("VITÓRIA!", "VOCÊS DESCOBRIRAM A PALAVRA!", "🎉", "var(--cor-primaria)");
-                    } else if(tentativas.length >= 6) {
-                        mostrarAviso("ACABOU", `A PALAVRA ERA: ${segredo}`, "❌", "var(--cor-rosa)");
-                    }
-                }
             });
         }
 
@@ -479,31 +470,22 @@
             const val = inp.value.toUpperCase();
             if(val.length !== 5) return alert("Digite 5 letras!");
             
-            db.ref('games/termo').transaction(d => {
-                if(d && (!d.tentativas || d.tentativas.length < 6)) {
-                    if(!d.tentativas) d.tentativas = [];
-                    d.tentativas.push(val);
+            db.ref('games/termo').once('value', snap => {
+                const d = snap.val();
+                let tries = d.tentativas || [];
+                if(tries.length < 6) {
+                    tries.push(val);
+                    db.ref('games/termo/tentativas').set(tries);
                 }
-                return d;
             });
             inp.value = '';
         }
 
         function resetTermo() {
-            const nova = P_TERMO[Math.floor(Math.random() * P_TERMO.length)];
-            db.ref('games/termo').set({ segredo: nova, tentativas: [] });
+            const w = P_TERMO[Math.floor(Math.random() * P_TERMO.length)];
+            db.ref('games/termo').set({ segredo: w, tentativas: [] });
         }
 
-        // === ADEDONHA ===
-        function initAdedonha() {
-            db.ref('games/adedonha/letra').on('value', snap => {
-                document.getElementById('adedonha-letra').innerText = snap.val() || "?";
-            });
-        }
-        function girarAdedonha() {
-            const abc = "ABCDEFJLMNPQRSTUV";
-            db.ref('games/adedonha/letra').set(abc[Math.floor(Math.random() * abc.length)]);
-        }
     </script>
 </body>
 </html>
