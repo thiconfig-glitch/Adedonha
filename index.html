@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>CêrosPlay 🎮</title>
+    <title>CêrosPlay </title>
     
     <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500;700;900&family=Rajdhani:wght@500;700&display=swap" rel="stylesheet">
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
@@ -15,6 +15,7 @@
             --cor-roxo: #bd00ff;
             --cor-azul: #00f3ff;
             --cor-rosa: #ff0055;
+            --cor-amarelo: #ffeb3b;
             --cor-fundo: #151520;
             --cor-card: rgba(255, 255, 255, 0.08);
         }
@@ -91,7 +92,7 @@
         .tela-jogo.ativa { display: flex; animation: fadeIn 0.3s ease; }
         @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
 
-        /* INPUTS E BOTÕES */
+        /* INPUTS E BOT脮ES */
         .btn-acao {
             background: linear-gradient(135deg, var(--cor-roxo), var(--cor-rosa));
             border: none; color: white; padding: 12px; border-radius: 8px;
@@ -100,6 +101,7 @@
             transition: 0.2s;
         }
         .btn-acao:active { transform: scale(0.98); }
+        .btn-acao:disabled { opacity: 0.5; cursor: not-allowed; }
         .btn-stop { background: linear-gradient(135deg, #ff0000, #ff4d4d); box-shadow: 0 4px 15px rgba(255, 0, 0, 0.3); }
 
         /* ADEDONHA INPUTS */
@@ -110,6 +112,36 @@
             padding: 10px; border-radius: 8px; font-size: 1rem;
         }
         .adedonha-input:focus { border-color: var(--cor-azul); outline: none; }
+        .adedonha-input.valido { border-color: #0f0; }
+        .adedonha-input.invalido { border-color: #f00; }
+
+        /* PLACAR ADEDONHA */
+        .placar-adedonha {
+            background: rgba(0,0,0,0.3); padding: 15px; border-radius: 10px;
+            margin-bottom: 15px; display: flex; justify-content: space-around;
+        }
+        .placar-item { text-align: center; }
+        .placar-nome { font-size: 0.7rem; color: #888; }
+        .placar-pts { font-family: 'Orbitron'; font-size: 1.5rem; font-weight: bold; }
+
+        /* MODAL CONFIG */
+        .modal-overlay {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.9); display: none; justify-content: center;
+            align-items: center; z-index: 999;
+        }
+        .modal-box {
+            background: #222; padding: 25px; border-radius: 15px;
+            border: 1px solid #444; width: 85%; max-width: 350px;
+        }
+        .cfg-btn {
+            background: rgba(255,255,255,0.1); border: 1px solid #555;
+            color: white; padding: 12px; margin: 8px 0; width: 100%;
+            border-radius: 8px; cursor: pointer; font-family: 'Orbitron';
+            transition: 0.2s;
+        }
+        .cfg-btn:active { transform: scale(0.98); }
+        .cfg-btn.selected { border-color: var(--cor-roxo); background: rgba(189,0,255,0.2); }
 
         /* JOGO DA VELHA */
         .velha-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; width: 100%; aspect-ratio: 1; max-width: 350px; }
@@ -156,26 +188,38 @@
             background: rgba(255,255,255,0.1); padding: 10px; border-radius: 8px;
             margin-bottom: 15px; text-align: center; font-size: 0.9rem; width: 100%;
         }
+
+        /* RESULTADO ADEDONHA */
+        .result-row {
+            background: rgba(255,255,255,0.05); padding: 12px; margin: 8px 0;
+            border-left: 4px solid #555; border-radius: 5px;
+        }
+        .result-pts { float: right; font-family: 'Orbitron'; font-weight: bold; }
+
+        @media (max-width: 600px) {
+            .placar-adedonha { padding: 10px; }
+            .placar-pts { font-size: 1.2rem; }
+        }
     </style>
 </head>
 <body>
 
     <div id="tela-login">
-        <h1 style="font-family:'Orbitron'; color:var(--cor-roxo); margin-bottom:30px;">QUEM É VOCÊ?</h1>
+        <h1 style="font-family:'Orbitron'; color:var(--cor-roxo); margin-bottom:30px;">QUEM 脡 VOC脢?</h1>
         <div style="display:flex; flex-wrap:wrap; justify-content:center;">
             <div class="avatar-btn" onclick="fazerLogin('THIAGO')">
-                <span class="avatar-emoji">🧔🏽‍♂️</span>
+                <span class="avatar-emoji">馃馃徑鈥嶁檪锔�</span>
                 <span>THIAGO</span>
             </div>
             <div class="avatar-btn" onclick="fazerLogin('SAMELLA')">
-                <span class="avatar-emoji">👩🏽</span>
-                <span>SÂMELLA</span>
+                <span class="avatar-emoji">馃懇馃徑</span>
+                <span>S脗MELLA</span>
             </div>
         </div>
     </div>
 
     <header id="app-header" class="hidden">
-        <div class="logo">CêrosPlay 🎮</div>
+        <div class="logo">C锚rosPlay 馃幃</div>
         <button class="btn-voltar hidden" id="btn-voltar" onclick="voltarMenu()">VOLTAR</button>
     </header>
 
@@ -187,35 +231,58 @@
             </div>
 
             <div class="card-jogo" onclick="abrirJogo('adedonha')">
-                <div class="card-icon">📝</div>
+                <div class="card-icon">馃摑</div>
                 <div class="card-info"><h3>ADEDONHA</h3><p>Com Stop e Campos</p></div>
             </div>
 
             <div class="card-jogo" onclick="abrirJogo('velha')">
-                <div class="card-icon">⭕</div>
-                <div class="card-info"><h3>JOGO DA VELHA</h3><p>Disputa rápida</p></div>
+                <div class="card-icon">猸�</div>
+                <div class="card-info"><h3>JOGO DA VELHA</h3><p>Disputa r谩pida</p></div>
             </div>
 
             <div class="card-jogo" onclick="abrirJogo('forca')">
-                <div class="card-icon">📖</div>
-                <div class="card-info"><h3>FORCA BÍBLICA</h3><p>Descubra a palavra</p></div>
+                <div class="card-icon">馃摉</div>
+                <div class="card-info"><h3>FORCA B脥BLICA</h3><p>Descubra a palavra</p></div>
             </div>
 
             <div class="card-jogo" onclick="abrirJogo('termo')">
-                <div class="card-icon">🟩</div>
+                <div class="card-icon">馃煩</div>
                 <div class="card-info"><h3>TERMO</h3><p>Acerte em 6 chances</p></div>
             </div>
         </div>
 
+        <!-- ========== ADEDONHA COMPLETA ========== -->
         <div id="tela-adedonha" class="tela-jogo">
+            
+            <!-- PLACAR -->
+            <div class="placar-adedonha">
+                <div class="placar-item">
+                    <div class="placar-nome">THIAGO</div>
+                    <div class="placar-pts" style="color:var(--cor-azul);" id="pts-thiago">0</div>
+                </div>
+                <div class="placar-item">
+                    <div class="placar-nome" style="color:var(--cor-amarelo);">RODADA</div>
+                    <div class="placar-pts" style="color:var(--cor-amarelo); font-size:1.2rem;" id="rodada-atual">1/5</div>
+                </div>
+                <div class="placar-item">
+                    <div class="placar-nome">S脗MELLA</div>
+                    <div class="placar-pts" style="color:var(--cor-rosa);" id="pts-samella">0</div>
+                </div>
+            </div>
+
+            <!-- CONFIG -->
+            <button class="btn-voltar" style="margin-bottom:15px; width:100%;" onclick="abrirConfigAdedonha()">鈿欙笍 CONFIGURAR RODADAS</button>
+
+            <!-- LETRA -->
             <div style="background:#222; padding:20px; border-radius:15px; width:100%; text-align:center; margin-bottom:20px;">
                 <div style="font-size:0.9rem; color:#aaa;">LETRA DA RODADA</div>
                 <div id="adedonha-letra" style="font-size:4rem; font-weight:bold; color:var(--cor-azul);">?</div>
-                <button class="btn-voltar" style="margin-top:10px;" onclick="girarLetra()">GIRAR NOVA LETRA</button>
+                <button class="btn-voltar" style="margin-top:10px;" id="btn-girar" onclick="girarLetra()">GIRAR NOVA LETRA</button>
             </div>
 
             <div id="adedonha-status-msg" class="status-msg">Aguardando...</div>
 
+            <!-- CAMPOS -->
             <div id="adedonha-campos" style="width:100%;">
                 <div class="adedonha-field"><label>NOME</label><input type="text" id="input-nome" class="adedonha-input" oninput="salvarAdedonha('nome')"></div>
                 <div class="adedonha-field"><label>LUGAR</label><input type="text" id="input-lugar" class="adedonha-input" oninput="salvarAdedonha('lugar')"></div>
@@ -225,25 +292,58 @@
                 <div class="adedonha-field"><label>SOGRA</label><input type="text" id="input-sogra" class="adedonha-input" oninput="salvarAdedonha('sogra')"></div>
             </div>
 
-            <button class="btn-acao btn-stop" onclick="pedirStop()">🚨 STOP!</button>
+            <button class="btn-acao btn-stop" id="btn-stop" onclick="pedirStop()">馃毃 STOP!</button>
+            <button class="btn-acao hidden" id="btn-proxima" onclick="proximaRodada()">PR脫XIMA RODADA 鉃★笍</button>
+
+            <!-- RESULTADOS -->
+            <div id="resultado-rodada" class="hidden" style="width:100%; margin-top:20px;">
+                <h3 style="color:var(--cor-amarelo); text-align:center; margin-bottom:15px;">RESULTADOS DA RODADA</h3>
+                <div id="lista-resultados"></div>
+            </div>
         </div>
 
+        <!-- MODAL CONFIG ADEDONHA -->
+        <div id="modal-config-adedonha" class="modal-overlay">
+            <div class="modal-box">
+                <h3 style="margin-bottom:15px; color:var(--cor-roxo);">CONFIGURAR PARTIDA</h3>
+                <button class="cfg-btn selected" id="cfg-5" onclick="setRodadas(5)">5 RODADAS</button>
+                <button class="cfg-btn" id="cfg-10" onclick="setRodadas(10)">10 RODADAS</button>
+                <button class="cfg-btn" id="cfg-20" onclick="setRodadas(20)">20 RODADAS</button>
+                <button class="btn-acao" style="background:#a00; margin-top:15px;" onclick="resetarAdedonha()">馃攧 RESETAR PARTIDA</button>
+                <button class="btn-voltar" style="margin-top:10px; width:100%;" onclick="fecharModal()">VOLTAR</button>
+            </div>
+        </div>
+
+        <!-- TELA VIT脫RIA ADEDONHA -->
+        <div id="tela-vitoria-adedonha" class="tela-jogo">
+            <div style="text-align:center;">
+                <div style="font-size:6rem;">馃弳</div>
+                <h1 style="color:gold; font-family:'Orbitron'; margin:20px 0;">CAMPE脙O</h1>
+                <h2 id="vencedor-nome" style="font-size:3rem; margin-bottom:20px;">...</h2>
+                <div id="placar-final" style="font-size:1.2rem; color:#aaa; margin-bottom:30px;"></div>
+                <button class="btn-acao" onclick="resetarAdedonha(); voltarAdedonha();">NOVA PARTIDA</button>
+            </div>
+        </div>
+
+        <!-- JOGO DA VELHA -->
         <div id="tela-velha" class="tela-jogo">
             <div id="velha-msg" class="status-msg">Vez de: ...</div>
             <div class="velha-grid" id="velha-grid"></div>
             <button class="btn-acao" onclick="resetVelha()">REINICIAR</button>
         </div>
 
+        <!-- FORCA -->
         <div id="tela-forca" class="tela-jogo">
-            <div id="forca-msg" class="status-msg" style="color:var(--cor-rosa); font-weight:bold;">Vidas: ❤️❤️❤️❤️❤️❤️</div>
+            <div id="forca-msg" class="status-msg" style="color:var(--cor-rosa); font-weight:bold;">Vidas: 鉂わ笍鉂わ笍鉂わ笍鉂わ笍鉂わ笍鉂わ笍</div>
             <div id="forca-word" style="font-size:2rem; letter-spacing:5px; margin:20px 0; font-family:monospace;">_ _ _ _</div>
             <div id="forca-kb" style="display:flex; flex-wrap:wrap; gap:5px; justify-content:center;"></div>
             <div id="forca-result" style="margin-top:15px; font-weight:bold; font-size:1.2rem;"></div>
             <button class="btn-acao" onclick="resetForca()">NOVA PALAVRA</button>
         </div>
 
+        <!-- TERMO -->
         <div id="tela-termo" class="tela-jogo">
-            <div class="status-msg" id="termo-status">Dica: Palavras de 5 letras (Bíblia ou Comum)</div>
+            <div class="status-msg" id="termo-status">Dica: Palavras de 5 letras (B铆blia ou Comum)</div>
             <div id="termo-grid" class="termo-grid"></div>
             <div style="display:flex; gap:10px; width:100%;">
                 <input type="text" id="termo-input" maxlength="5" style="width:100%; padding:10px; text-transform:uppercase; text-align:center; border-radius:8px; border:none;" onkeypress="if(event.key==='Enter')chutarTermo()">
@@ -255,7 +355,7 @@
     </div>
 
     <script>
-        // CONFIGURAÇÃO FIREBASE
+        // CONFIGURA脟脙O FIREBASE
         const firebaseConfig = {
             apiKey: "AIzaSyAjgEFZB3_FHelXH9YtCnFYFO4RCGO7Wd8",
             authDomain: "adedonha-8b2a4.firebaseapp.com",
@@ -269,6 +369,7 @@
 
         let MEU_NOME = "";
         let JOGO_ATUAL = "";
+        const CAMPOS_ADEDONHA = ['nome', 'lugar', 'cor', 'fruta', 'objeto', 'sogra'];
 
         // LOGIN
         function fazerLogin(nome) {
@@ -280,7 +381,7 @@
             document.getElementById('menu-principal').classList.remove('hidden');
         }
 
-        // NAVEGAÇÃO
+        // NAVEGA脟脙O
         function voltarMenu() {
             document.querySelectorAll('.tela-jogo').forEach(t => t.classList.remove('ativa'));
             document.getElementById('btn-voltar').classList.add('hidden');
@@ -304,23 +405,91 @@
             if(jogo === 'adedonha') initAdedonha();
         }
 
-        // === ADEDONHA ===
+        // ========== ADEDONHA COMPLETA ==========
         function initAdedonha() {
-            db.ref('games/adedonha/letra').on('value', snap => {
-                document.getElementById('adedonha-letra').innerText = snap.val() || "?";
-            });
+            db.ref('games/adedonha').on('value', snap => {
+                const d = snap.val() || { 
+                    letra: '?', 
+                    status: 'ESPERA', 
+                    rodadaAtual: 1, 
+                    totalRodadas: 5,
+                    placar: { THIAGO: 0, SAMELLA: 0 },
+                    respostas: {}
+                };
 
-            db.ref('games/adedonha/status').on('value', snap => {
-                const st = snap.val();
-                const msg = document.getElementById('adedonha-status-msg');
-                if(st === 'STOP') {
-                    msg.innerText = "🛑 STOP FOI PEDIDO! MÃOS AO ALTO!";
-                    msg.style.background = "red";
-                    document.querySelectorAll('.adedonha-input').forEach(i => i.disabled = true);
-                } else {
-                    msg.innerText = "Valendo! Preencham os campos...";
-                    msg.style.background = "rgba(255,255,255,0.1)";
-                    document.querySelectorAll('.adedonha-input').forEach(i => i.disabled = false);
+                // Atualizar HUD
+                document.getElementById('adedonha-letra').innerText = d.letra || '?';
+                document.getElementById('rodada-atual').innerText = `${d.rodadaAtual}/${d.totalRodadas}`;
+                document.getElementById('pts-thiago').innerText = d.placar?.THIAGO || 0;
+                document.getElementById('pts-samella').innerText = d.placar?.SAMELLA || 0;
+
+                // Controle de Bot玫es
+                const statusMsg = document.getElementById('adedonha-status-msg');
+                const btnGirar = document.getElementById('btn-girar');
+                const btnStop = document.getElementById('btn-stop');
+                const btnProxima = document.getElementById('btn-proxima');
+                const inputs = document.querySelectorAll('.adedonha-input');
+                const resultDiv = document.getElementById('resultado-rodada');
+                const cfgBtns = document.querySelectorAll('.cfg-btn');
+
+                cfgBtns.forEach(b => b.classList.remove('selected'));
+                const cfgBtn = document.getElementById(`cfg-${d.totalRodadas}`);
+                if(cfgBtn) cfgBtn.classList.add('selected');
+
+                if(d.status === 'ESPERA') {
+                    statusMsg.innerText = "Clique em GIRAR para come莽ar!";
+                    statusMsg.style.background = "rgba(255,255,255,0.1)";
+                    btnGirar.style.display = 'block';
+                    btnStop.classList.add('hidden');
+                    btnProxima.classList.add('hidden');
+                    inputs.forEach(i => { i.disabled = true; i.value = ''; });
+                    resultDiv.classList.add('hidden');
+                }
+                else if(d.status === 'JOGANDO') {
+                    statusMsg.innerText = "Preencham os campos! Corrida contra o tempo...";
+                    statusMsg.style.background = "rgba(0,255,0,0.2)";
+                    btnGirar.style.display = 'none';
+                    btnStop.classList.remove('hidden');
+                    btnProxima.classList.add('hidden');
+                    inputs.forEach(i => i.disabled = false);
+                    resultDiv.classList.add('hidden');
+                }
+                else if(d.status === 'STOP') {
+                    statusMsg.innerText = `馃洃 STOP pedido por ${d.quemParou}!`;
+                    statusMsg.style.background = "red";
+                    btnGirar.style.display = 'none';
+                    btnStop.classList.add('hidden');
+                    btnProxima.classList.remove('hidden');
+                    inputs.forEach(i => i.disabled = true);
+                    
+                    // Mostrar resultados
+                    mostrarResultados(d);
+                }
+                else if(d.status === 'VITORIA') {
+                    mostrarVitoria(d.placar);
+                }
+
+                // Validar letra nos inputs
+                validarLetraInputs(d.letra);
+            });
+        }
+
+        function validarLetraInputs(letra) {
+            if(!letra || letra === '?') return;
+            
+            CAMPOS_ADEDONHA.forEach(campo => {
+                const input = document.getElementById(`input-${campo}`);
+                const val = input.value.trim();
+                
+                input.classList.remove('valido', 'invalido');
+                
+                if(val) {
+                    const primeira = val[0].toUpperCase();
+                    if(primeira === letra) {
+                        input.classList.add('valido');
+                    } else {
+                        input.classList.add('invalido');
+                    }
                 }
             });
         }
@@ -328,8 +497,12 @@
         function girarLetra() {
             const abc = "ABCDEFJLMNPQRSTUV";
             const l = abc[Math.floor(Math.random() * abc.length)];
-            db.ref('games/adedonha').update({ letra: l, status: 'JOGANDO' });
-            document.querySelectorAll('.adedonha-input').forEach(i => i.value = '');
+            
+            db.ref('games/adedonha').update({ 
+                letra: l, 
+                status: 'JOGANDO',
+                respostas: {} 
+            });
         }
 
         function salvarAdedonha(campo) {
@@ -338,10 +511,165 @@
         }
 
         function pedirStop() {
-            db.ref('games/adedonha/status').set('STOP');
+            db.ref('games/adedonha').update({ 
+                status: 'STOP',
+                quemParou: MEU_NOME 
+            });
         }
 
-        // === JOGO DA VELHA (CORRIGIDO) ===
+        function mostrarResultados(data) {
+            const lista = document.getElementById('lista-resultados');
+            const resultDiv = document.getElementById('resultado-rodada');
+            lista.innerHTML = '';
+            resultDiv.classList.remove('hidden');
+
+            const minhas = data.respostas?.[MEU_NOME] || {};
+            const adversario = MEU_NOME === 'THIAGO' ? 'SAMELLA' : 'THIAGO';
+            const dele = data.respostas?.[adversario] || {};
+            const letra = data.letra;
+            let meuTotal = 0;
+
+            CAMPOS_ADEDONHA.forEach(campo => {
+                const meu = (minhas[campo] || '').trim();
+                const adv = (dele[campo] || '').trim();
+                
+                let pts = 0;
+                let cor = '#555';
+                let status = 'Vazio';
+
+                if(!meu) {
+                    pts = 0; cor = '#f00'; status = 'Vazio';
+                } else if(meu[0].toUpperCase() !== letra) {
+                    pts = 0; cor = '#f50'; status = 'Letra Errada';
+                } else if(meu.toLowerCase() === adv.toLowerCase()) {
+                    pts = 5; cor = '#fe0'; status = 'Igual';
+                } else {
+                    pts = 10; cor = '#0ff'; status = '脷nico';
+                }
+
+                meuTotal += pts;
+
+                lista.innerHTML += `
+                    <div class="result-row" style="border-color:${cor}">
+                        <span class="result-pts">+${pts}</span>
+                        <div style="font-size:0.8rem; color:#888;">${campo.toUpperCase()} (${status})</div>
+                        <div><strong>${meu || '-'}</strong></div>
+                        <div style="font-size:0.85rem; color:#666; margin-top:5px;">${adversario}: ${adv || '-'}</div>
+                    </div>
+                `;
+            });
+
+            lista.innerHTML += `
+                <div style="text-align:center; margin-top:15px; font-size:1.3rem; color:var(--cor-amarelo);">
+                    MEU TOTAL: <strong>${meuTotal}</strong> pontos
+                </div>
+            `;
+        }
+
+        function proximaRodada() {
+            db.ref('games/adedonha').once('value', snap => {
+                const d = snap.val();
+                const novaPontuacao = calcularPontos(d);
+                
+                // Atualizar placar
+                db.ref('games/adedonha/placar').set(novaPontuacao);
+
+                // Verificar fim de jogo
+                if(d.rodadaAtual >= d.totalRodadas) {
+                    db.ref('games/adedonha/status').set('VITORIA');
+                } else {
+                    db.ref('games/adedonha').update({
+                        rodadaAtual: d.rodadaAtual + 1,
+                        status: 'ESPERA',
+                        letra: '?',
+                        respostas: {}
+                    });
+                }
+            });
+        }
+
+        function calcularPontos(data) {
+            const placar = data.placar || { THIAGO: 0, SAMELLA: 0 };
+            const r1 = data.respostas?.THIAGO || {};
+            const r2 = data.respostas?.SAMELLA || {};
+            const letra = data.letra;
+
+            function calcular(minhas, dele) {
+                let total = 0;
+                CAMPOS_ADEDONHA.forEach(campo => {
+                    const meu = (minhas[campo] || '').trim();
+                    const adversario = (dele[campo] || '').trim();
+                    
+                    if(!meu || meu[0].toUpperCase() !== letra) {
+                        total += 0;
+                    } else if(meu.toLowerCase() === adversario.toLowerCase()) {
+                        total += 5;
+                    } else {
+                        total += 10;
+                    }
+                });
+                return total;
+            }
+
+            return {
+                THIAGO: placar.THIAGO + calcular(r1, r2),
+                SAMELLA: placar.SAMELLA + calcular(r2, r1)
+            };
+        }
+
+        function mostrarVitoria(placar) {
+            document.getElementById('tela-adedonha').classList.remove('ativa');
+            document.getElementById('tela-vitoria-adedonha').classList.add('ativa');
+
+            const pt = placar.THIAGO || 0;
+            const ps = placar.SAMELLA || 0;
+
+            const vencedor = pt > ps ? 'THIAGO' : ps > pt ? 'S脗MELLA' : 'EMPATE';
+            document.getElementById('vencedor-nome').innerText = vencedor;
+            document.getElementById('placar-final').innerHTML = `
+                <div>THIAGO: <strong style="color:var(--cor-azul)">${pt}</strong> pts</div>
+                <div>S脗MELLA: <strong style="color:var(--cor-rosa)">${ps}</strong> pts</div>
+            `;
+        }
+
+        function voltarAdedonha() {
+            document.getElementById('tela-vitoria-adedonha').classList.remove('ativa');
+            document.getElementById('tela-adedonha').classList.add('ativa');
+        }
+
+        function abrirConfigAdedonha() {
+            document.getElementById('modal-config-adedonha').style.display = 'flex';
+        }
+
+        function fecharModal() {
+            document.getElementById('modal-config-adedonha').style.display = 'none';
+        }
+
+        function setRodadas(n) {
+            db.ref('games/adedonha/totalRodadas').set(n);
+            document.querySelectorAll('.cfg-btn').forEach(b => b.classList.remove('selected'));
+            const btn = document.getElementById(`cfg-${n}`);
+            if(btn) btn.classList.add('selected');
+        }
+
+        function resetarAdedonha() {
+            if(confirm('RESETAR TUDO E COME脟AR NOVA PARTIDA?')) {
+                db.ref('games/adedonha').once('value', snap => {
+                    const totalRodadas = snap.val()?.totalRodadas || 5;
+                    db.ref('games/adedonha').set({
+                        letra: '?',
+                        status: 'ESPERA',
+                        rodadaAtual: 1,
+                        totalRodadas: totalRodadas,
+                        placar: { THIAGO: 0, SAMELLA: 0 },
+                        respostas: {}
+                    });
+                });
+                fecharModal();
+            }
+        }
+
+        // ========== JOGO DA VELHA ==========
         function initVelha() {
             const grid = document.getElementById('velha-grid');
             grid.innerHTML = '';
@@ -362,14 +690,13 @@
                     el.className = `velha-cell ${v ? v.toLowerCase() : ''}`;
                 });
 
-                // VERIFICAR VITÓRIA
                 const winner = checkWinner(data.board);
                 if(winner) {
-                    document.getElementById('velha-msg').innerText = `🏆 ${winner} VENCEU!`;
+                    document.getElementById('velha-msg').innerText = `馃弳 ${winner} VENCEU!`;
                     document.getElementById('velha-msg').style.background = "gold";
                     document.getElementById('velha-msg').style.color = "#000";
                 } else if(!data.board.includes('')) {
-                    document.getElementById('velha-msg').innerText = "🤝 EMPATE!";
+                    document.getElementById('velha-msg').innerText = "馃 EMPATE!";
                 } else {
                     document.getElementById('velha-msg').innerText = `Vez de: ${data.turn}`;
                     document.getElementById('velha-msg').style.background = "rgba(255,255,255,0.1)";
@@ -382,7 +709,6 @@
             db.ref('games/velha').once('value', snap => {
                 const d = snap.val() || { board: Array(9).fill(''), turn: 'THIAGO', winner: null };
                 
-                // Verifica se pode jogar
                 if(d.board[i] || d.turn !== MEU_NOME || checkWinner(d.board)) return;
                 
                 d.board[i] = MEU_NOME === 'THIAGO' ? 'X' : 'O';
@@ -394,9 +720,9 @@
 
         function checkWinner(board) {
             const lines = [
-                [0,1,2], [3,4,5], [6,7,8], // Linhas
-                [0,3,6], [1,4,7], [2,5,8], // Colunas
-                [0,4,8], [2,4,6]           // Diagonais
+                [0,1,2], [3,4,5], [6,7,8],
+                [0,3,6], [1,4,7], [2,5,8],
+                [0,4,8], [2,4,6]
             ];
             
             for(let [a,b,c] of lines) {
@@ -411,7 +737,7 @@
             db.ref('games/velha').set({ board: Array(9).fill(''), turn: 'THIAGO', winner: null }); 
         }
 
-        // === FORCA (CORRIGIDA) ===
+        // ========== FORCA ==========
         const P_FORCA = ["BIBLIA", "JESUS", "AMOR", "CRUZ", "SALMO", "VIDA", "ARCA", "DEUS", "GLORIA", "UNIAO"];
         
         function initForca() {
@@ -437,11 +763,9 @@
                 const chutes = Object.values(d.chutes || {});
                 const word = d.palavra;
                 
-                // Renderizar palavra
                 const revealed = word.split('').map(x => chutes.includes(x) ? x : "_").join(' ');
                 document.getElementById('forca-word').innerText = revealed;
                 
-                // Desabilitar teclas usadas
                 chutes.forEach(c => { 
                     try {
                         const btn = document.getElementById(`k-${c}`);
@@ -450,18 +774,16 @@
                     } catch(e) {}
                 });
 
-                // Calcular erros
                 const erros = chutes.filter(x => !word.includes(x)).length;
-                const hearts = "❤️".repeat(Math.max(0, 6 - erros));
-                document.getElementById('forca-msg').innerText = `Vidas: ${hearts || '💀'}`;
+                const hearts = "鉂わ笍".repeat(Math.max(0, 6 - erros));
+                document.getElementById('forca-msg').innerText = `Vidas: ${hearts || '馃拃'}`;
 
-                // Verificar vitória/derrota
                 const resultDiv = document.getElementById('forca-result');
                 if(!revealed.includes('_')) {
-                    resultDiv.innerText = "🏆 VOCÊ VENCEU!";
+                    resultDiv.innerText = "馃弳 VOC脢 VENCEU!";
                     resultDiv.style.color = "#0f0";
                 } else if(erros >= 6) {
-                    resultDiv.innerText = `💀 PERDEU! Era: ${word}`;
+                    resultDiv.innerText = `馃拃 PERDEU! Era: ${word}`;
                     resultDiv.style.color = "#f00";
                 } else {
                     resultDiv.innerText = "";
@@ -473,7 +795,6 @@
             const w = P_FORCA[Math.floor(Math.random() * P_FORCA.length)];
             db.ref('games/forca').set({ palavra: w, chutes: {} });
             
-            // Reabilitar teclado
             document.querySelectorAll('#forca-kb button').forEach(b => {
                 b.disabled = false;
                 b.style.opacity = 1;
@@ -481,8 +802,8 @@
             document.getElementById('forca-result').innerText = "";
         }
 
-        // === TERMO (CORRIGIDO) ===
-        const P_TERMO = ["AMIGO","ANJOS","CULTO","JESUS","LIVRO","MUNDO","NATAL","PADRE","SALMO","SANTO","BIBLIA","GRAÇA","HONRA","PODER","TERRA"];
+        // ========== TERMO ==========
+        const P_TERMO = ["AMIGO","ANJOS","CULTO","JESUS","LIVRO","MUNDO","NATAL","PADRE","SALMO","SANTO","BIBLIA","GRA脟A","HONRA","PODER","TERRA"];
         
         function initTermo() {
             const tg = document.getElementById('termo-grid');
@@ -506,13 +827,11 @@
                 const tentativas = d.tentativas || [];
                 const segredo = d.segredo;
 
-                // Limpar visual
                 document.querySelectorAll('.termo-box').forEach(b => {
                     b.innerText = ''; 
                     b.classList.remove('certo','lugar','errado');
                 });
 
-                // Renderizar tentativas
                 tentativas.forEach((t, lineIdx) => {
                     for(let i=0; i<5; i++) {
                         const box = document.getElementById(`tb-${lineIdx}-${i}`);
@@ -529,16 +848,15 @@
                     }
                 });
 
-                // Verificar vitória/derrota
                 const statusDiv = document.getElementById('termo-status');
                 const lastTry = tentativas[tentativas.length - 1];
                 
                 if(lastTry === segredo) {
-                    statusDiv.innerText = "🏆 PARABÉNS! VOCÊ ACERTOU!";
+                    statusDiv.innerText = "馃弳 PARAB脡NS! VOC脢 ACERTOU!";
                     statusDiv.style.background = "#0a0";
                     document.getElementById('termo-input').disabled = true;
                 } else if(tentativas.length >= 6) {
-                    statusDiv.innerText = `😢 PERDEU! Era: ${segredo}`;
+                    statusDiv.innerText = `馃槩 PERDEU! Era: ${segredo}`;
                     statusDiv.style.background = "#a00";
                     document.getElementById('termo-input').disabled = true;
                 } else {
